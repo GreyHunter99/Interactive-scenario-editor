@@ -6,12 +6,20 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <h2>{{ scenario['name'] }}</h2>
-    <p>{{ scenario['questions'][id]['text'] }}</p>
-    {% if scenario['questions'][id]['optionalText'] != [] and startingQuestionId == scenario['questions'][id]['optionalText'][0]['conditionalQuestionId'] %}
-        <p>{{ scenario['questions'][id]['optionalText'][0]['text'] }}</p>
-    {% endif %}
-    {% for answer in scenario['questions'][id]['answers'] %}
-        <p><a href="{{ url_for('scenario', id = answer['questionId']) }}">{{ answer['text'] }}<a><p>
-    {% endfor %}
+    <div class="board">
+        <h2>{{ scenario['name'] }}</h2>
+        <h3>{{ scenario['questions'][id]['text'] }}</h3>
+        {% if scenario['questions'][id]['optionalText'] != [] %}
+            {% for i in scenario['questions'][id]['optionalText'] %}
+                {% if startingQuestionId == i['conditionalQuestionId'] %}
+                    <h3>{{ i['text'] }}</h3>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% for answer in scenario['questions'][id]['answers'] %}
+            {% if answer['conditionalQuestionId'] == '' or startingQuestionId == answer['conditionalQuestionId'] %}
+                <p><a href="{{ url_for('scenario', id = answer['questionId']) }}">{{ answer['text'] }}</a></p>
+            {% endif %}
+        {% endfor %}
+    </div>
 {% endblock %}

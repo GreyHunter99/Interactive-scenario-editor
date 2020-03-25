@@ -6,8 +6,11 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <p>Wybierz punkt startowy:</p>
-    <p><a href="{{ url_for('scenario', id=0) }}">Góry</a></p>
-    <p><a href="{{ url_for('scenario', id=4) }}">Morze</a></p>
-    <p><a href="{{ url_for('scenario', id=7) }}">Miasto</a></p>
+    <div class="board">
+        <h2>{{ scenario['name'] }}</h2>
+        <h3>Wybierz punkt startowy:</h3>
+        <p><a href="{{ url_for('scenario', id=0) }}">Góry</a></p>
+        <p><a href="{{ url_for('scenario', id=4) }}">Morze</a></p>
+        <p><a href="{{ url_for('scenario', id=7) }}">Miasto</a></p>
+    </div>
 {% endblock %}
