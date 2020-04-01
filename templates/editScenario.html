@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
+    {{ scenario['name'] }}
+    {% for key in scenario['questions'] %}
+        {{ scenario['questions'][key]['text'] }}
+        <p><a href="{{ url_for('edit', questionId=key) }}">Edytuj</a></p>
+    {% endfor %}
+{% endblock %}

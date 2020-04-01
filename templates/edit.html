@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
+    <p>{{ scenario['questions'][questionId] }}</p>
+    <form action="{{ url_for('edit') }}" method="post">
+        <p><input name='text' type="text" value="{{ scenario['questions'][questionId]['text'] }}"></p>
+        {% for key, text in scenario['questions'][questionId]['optionalText'].items() %}
+            <p><input name='optionalText{{ key }}' type="text" value="{{ text['text'] }}"></p>
+            <p><select name="optionalTextConditionalQuestionId">
+                {% for key, question in scenario['questions'].items() %}
+                    <option value="{{ key }}">{{ question['text'] }}</option>
+                {% endfor %}
+            </select></p>
+        {% endfor %}
+        {% for key, text in scenario['questions'][questionId]['answers'].items() %}
+            <p><input name='answerText{{ key }}' type="text" value="{{ text['text'] }}">
+            <p><select name="answerQuestionId">
+                {% for key, question in scenario['questions'].items() %}
+                    <option value="{{ key }}">{{ question['text'] }}</option>
+                {% endfor %}
+            </select></p>
+            <p><select name="answerConditionalQuestionId">
+                {% for key, question in scenario['questions'].items() %}
+                    <option value="{{ key }}">{{ question['text'] }}</option>
+                {% endfor %}
+            </select></p>
+        {% endfor %}
+        <input type="submit" value="Zatwierdź zmiany">
+    </form>
+{% endblock %}

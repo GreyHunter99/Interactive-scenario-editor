@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
+    <div class="board">
+        <h2>{{ scenario['name'] }}</h2>
+        <h3>{{ scenario['questions'][questionId]['text'] }}</h3>
+        {% if scenario['questions'][questionId]['optionalText'] != [] %}
+            {% for text in scenario['questions'][questionId]['optionalText'].values() %}
+                {% if startingQuestionId == text['conditionalQuestionId'] %}
+                    <h3>{{ text['text'] }}</h3>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% for answer in scenario['questions'][questionId]['answers'].values() %}
+            {% if answer['conditionalQuestionId'] == '' or startingQuestionId == answer['conditionalQuestionId'] %}
+                <p><a href="{{ url_for('question', questionId = answer['questionId']) }}">{{ answer['text'] }}</a></p>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
