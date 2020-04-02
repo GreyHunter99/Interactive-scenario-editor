@@ -6,11 +6,12 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
+    <p><a href="{{ url_for('list') }}">Lista scenariuszy</a></p>
     <div class="board">
-        <h2>{{ scenario['name'] }}</h2>
+        <h2>{{ session['scenario']['name'] }}</h2>
         <h3>Wybierz punkt startowy:</h3>
-        <p><a href="{{ url_for('question', questionId=0) }}">Góry</a></p>
-        <p><a href="{{ url_for('question', questionId=4) }}">Morze</a></p>
-        <p><a href="{{ url_for('question', questionId=7) }}">Miasto</a></p>
+        {% for startingQuestionKey, startingQuestion in session['scenario']['startingQuestions'].items() %}
+            <p><a href="{{ url_for('question', questionId=startingQuestionKey) }}">{{ startingQuestion }}</a></p>
+        {% endfor %}
     </div>
 {% endblock %}

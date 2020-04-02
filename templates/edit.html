@@ -6,30 +6,43 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <form action="{{ url_for('editScenario') }}" method="post">
-        <p><input name='text' type="text" value="{{ scenario['questions'][questionId]['text'] }}"></p>
-        {% for key, text in scenario['questions'][questionId]['optionalText'].items() %}
-            <p><input name='optionalText{{ key }}' type="text" value="{{ text['text'] }}"></p>
-            <p><select name="optionalTextConditionalQuestionId{{ key }}">
-                {% for key, question in scenario['questions'].items() %}
-                    <option value="{{ key }}">{{ question['text'] }}</option>
-                {% endfor %}
-            </select></p>
-        {% endfor %}
-        {% for answer, text in scenario['questions'][questionId]['answers'].items() %}
-            <p><input name='answerText{{ answer }}' type="text" value="{{ text['text'] }}">
-            <p><select name="answerQuestionId{{ answer }}">
-                {% for key, question in scenario['questions'].items() %}
-                    <option value="{{ key }}"{% if scenario['questions'][questionId]['answers'][answer]['questionId'] == key|int %} selected{% endif %}>{{ question['text'] }}</option>
-                {% endfor %}
-            </select></p>
-            <p><select name="answerConditionalQuestionId{{ answer }}">
-                <option value="">Żadne</option>
-                {% for key, question in scenario['questions'].items() %}
-                    <option value="{{ key }}">{{ question['text'] }}</option>
-                {% endfor %}
-            </select></p>
-        {% endfor %}
-        <input type="submit" value="Zatwierdź zmiany">
-    </form>
+    <p><a href="{{ url_for('editScenario', scenarioId = session['scenario']['id']) }}">Lista pytań</a></p>
+    <div class="board">
+        <form action="{{ url_for('edit', questionId=questionId, scenarioId=session['scenario']['id']) }}" method="post">
+            <h2>Treść pytania:</h2>
+            <p><input name='text' type="text" value="{{ session['scenario']['questions'][questionId]['text'] }}"></p>
+            {% if session['scenario']['questions'][questionId]['optionalText'] != {} %}
+                <h3>Tekst opcjonalny:</h3>
+            {% endif %}
+            {% for optionalKey, text in session['scenario']['questions'][questionId]['optionalText'].items() %}
+                <h4>Treść tekstu {{ optionalKey|int + 1 }} :</h4>
+                <p><input name='optionalText{{ optionalKey }}' type="text" value="{{ text['text'] }}"></p>
+                <h4>Pytanie warunkowe:</h4>
+                <p><select name="optionalTextConditionalQuestionId{{ optionalKey }}">
+                    {% for questionKey, question in session['scenario']['questions'].items() %}
+                        <option value="{{ questionKey }}"{% if session['scenario']['questions'][questionId]['optionalText'][optionalKey]['conditionalQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                    {% endfor %}
+                </select></p>
+            {% endfor %}
+            <h2>Odpowiedzi:</h2>
+            {% for answerKey, answer in session['scenario']['questions'][questionId]['answers'].items() %}
+                <h3>Treść odpowiedzi {{ answerKey|int + 1 }} :</h3>
+                <p><input name='answerText{{ answerKey }}' type="text" value="{{ answer['text'] }}"></p>
+                <h4>Pytanie docelowe:</h4>
+                <p><select name="answerQuestionId{{ answerKey }}">
+                    {% for questionKey, question in session['scenario']['questions'].items() %}
+                        <option value="{{ questionKey }}"{% if session['scenario']['questions'][questionId]['answers'][answerKey]['questionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                    {% endfor %}
+                </select></p>
+                <h4>Pytanie warunkowe:</h4>
+                <p><select name="answerConditionalQuestionId{{ answerKey }}">
+                    <option value="" selected="selected">Żadne</option>
+                    {% for conditionalQuestionKey, question in session['scenario']['questions'].items() %}
+                        <option value="{{ conditionalQuestionKey }}"{% if session['scenario']['questions'][questionId]['answers'][answerKey]['conditionalQuestionId'] == conditionalQuestionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                    {% endfor %}
+                </select></p>
+            {% endfor %}
+            <input type="submit" value="Zatwierdź zmiany">
+        </form>
+    </div>
 {% endblock %}
