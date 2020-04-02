@@ -1,26 +1,18 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 import json
 import os
 import example
 
 app = Flask(__name__)
+app.secret_key = 'extra secret key'
 
-scenario = ''
-playingScenario = False
-startingQuestionId = ''
 scenarioList = {}
+
 
 @app.route('/')
 def menu():
-    global scenarioList
-
-    scenarioList = {}
-    for scenario in os.listdir("database/scenarios/"):
-        currentScenario = loadFromDatabase(scenario)
-        scenarioList.update(currentScenario)
-
-    global playingScenario
-    playingScenario = False
+    refreshScenarioList()
+    session['playingScenario'] = False
     return render_template('menu.html')
 
 
@@ -33,29 +25,33 @@ def list():
 
 @app.route('/start')
 def start():
-    global scenarioList, scenario
+    global scenarioList
 
-    #saveToDatabase("test_scenario.json", example.data)
-    #scenario = loadFromDatabase("test_scenario.json")
+    #saveToDatabase("0.json", example.data)
+    #session['scenario'] = loadFromDatabase("0.json")
 
     scenarioId = request.args.get('scenarioId')
+    if scenarioId == None:
+        return redirect(url_for('menu'))
 
-    scenario = scenarioList[scenarioId]
+    session['scenario'] = scenarioList[scenarioId]
 
-    return render_template('start.html', scenario=scenario)
+    return render_template('start.html', scenario=session['scenario'])
 
 
 @app.route('/scenario')
 def question():
-    global scenario, playingScenario, startingQuestionId
-
     questionId = request.args.get('questionId')
 
-    if playingScenario == False:
-        startingQuestionId = int(questionId)
-        playingScenario = True
+    if questionId == None:
+        return redirect(url_for('menu'))
 
-    return render_template('question.html', scenario=scenario, questionId=questionId, startingQuestionId=startingQuestionId)
+    if session['playingScenario'] == False:
+        session['startingQuestionId'] = int(questionId)
+        session['playingScenario'] = True
+
+    return render_template('question.html', scenario=session['scenario'], questionId=questionId, startingQuestionId=session['startingQuestionId'])
+
 
 @app.route('/createScenario')
 def createScenario():
@@ -63,23 +59,46 @@ def createScenario():
 
     return render_template('editScenario.html')
 
-@app.route('/editScenario')
-def editScenario():
-    global scenario
 
+@app.route('/editScenario', methods=['GET', 'POST'])
+def editScenario():
     scenarioId = request.args.get('scenarioId')
 
-    scenario = scenarioList[scenarioId]
+    if scenarioId != None:
+        session['scenario'] = scenarioList[scenarioId]
+    elif session['scenario'] == None:
+        return redirect(url_for('menu'))
 
-    return render_template('editScenario.html', scenario=scenario)
+    if request.method == 'POST':
+        session['scenario']['questions'][session['questionId']]['text'] = request.form['text']
+        for key in session['scenario']['questions'][session['questionId']]['optionalText']:
+            session['scenario']['questions'][session['questionId']]['optionalText'][key]['text'] = request.form['optionalText'+key]
+            session['scenario']['questions'][session['questionId']]['optionalText'][key]['conditionalQuestionId'] = request.form['optionalTextConditionalQuestionId'+key]
+        for key in session['scenario']['questions'][session['questionId']]['answers']:
+            session['scenario']['questions'][session['questionId']]['answers'][key]['text'] = request.form['answerText'+key]
+            session['scenario']['questions'][session['questionId']]['answers'][key]['questionId'] = request.form['answerQuestionId'+key]
+            session['scenario']['questions'][session['questionId']]['answers'][key]['conditionalQuestionId'] = request.form['answerConditionalQuestionId'+key]
+
+        scenario = {str(session['scenario']['id']) : session['scenario']}
+        saveToDatabase(str(session['scenario']['id'])+'.json', scenario)
+
+    return render_template('editScenario.html', scenario=session['scenario'])
 
 
 @app.route('/edit')
 def edit():
-    global scenario
     questionId = request.args.get('questionId')
 
-    return render_template('edit.html', scenario=scenario, questionId=questionId)
+    if questionId != None:
+        session['questionId'] = questionId
+    else:
+        return redirect(url_for('menu'))
+
+    return render_template('edit.html', scenario=session['scenario'], questionId=questionId)
+
+
+def updateQuestion():
+    pass
 
 
 def saveToDatabase(name, scenario):
@@ -93,6 +112,15 @@ def loadFromDatabase(name):
     with open("database/scenarios/"+name, "r") as read_file:
         scenario = json.load(read_file)
     return scenario
+
+
+def refreshScenarioList():
+    "Funkcja aktualizująca listę scenariuszy"
+    global scenarioList
+    scenarioList = {}
+    for scenario in os.listdir("database/scenarios/"):
+        currentScenario = loadFromDatabase(scenario)
+        scenarioList.update(currentScenario)
 
 
 if __name__ == '__main__':
