@@ -3,7 +3,7 @@ body {
     text-align: center;
 }
 
-h2, h3, p {
+h1, h2, h3, p {
     margin: 2%;
 }
 
@@ -26,19 +26,23 @@ a:hover {
     display: inline-block;
     background-color: lightsalmon;
     width: 60%;
-    padding: 2%;
+    padding: 3%;
     border-radius: 10px;
     margin: 1%;
 }
 
 .block {
-    margin-top: 4%;
-    margin-bottom: 4%;
+    padding: 3%;
+    border-bottom: black dotted 5px;
 }
 
 .deleteButton {
     background-color: lightcoral;
     border-color: darkred;
+}
+
+.board p {
+    margin: 2.7%;
 }
 
 select {

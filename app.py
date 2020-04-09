@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import json
 import os
-import example
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,9 +42,6 @@ def start():
 
     session['scenarioPath'] = []
     refreshScenarioList()
-
-    #saveToDatabase("0.json", example.data)
-    #session['scenario'] = loadFromDatabase("0.json")
 
     scenarioId = request.args.get('scenarioId')
     refreshSession(scenarioId)
@@ -124,13 +120,13 @@ def edit():
         deleteElement('keyWord')
 
     if request.args.get('createOptionalText'):
-        createElement('optionalTexts', {'text': '', 'conditionalQuestionId': '0'})
+        createElement('optionalTexts', {'text': '', 'conditionalQuestionId': '', 'exclusionQuestionId': ''})
 
     if request.args.get('deleteOptionalText'):
         deleteElement('optionalText')
 
     if request.args.get('createAnswer'):
-        createElement('answers', {'text': '', 'questionId': '0', 'conditionalQuestionId': ''})
+        createElement('answers', {'text': '', 'questionId': '0', 'conditionalQuestionId': '', 'exclusionQuestionId': ''})
 
     if request.args.get('deleteAnswer'):
         deleteElement('answer')
@@ -147,6 +143,7 @@ def edit():
 
 
 def createElement(element , pattern):
+    "Funkcja stwarzająca dany element"
     if session['scenario']['questions'][session['questionId']][element] == {}:
         key = '0'
     else:
@@ -156,22 +153,26 @@ def createElement(element , pattern):
     saveToDatabase(session['scenario']['id'] + '.json', scenario)
 
 def deleteElement(element):
+    "Funkcja usuwająca dany element"
     del session['scenario']['questions'][session['questionId']][element+'s'][request.args.get(element+'Id')]
     scenario = {session['scenario']['id']: session['scenario']}
     saveToDatabase(session['scenario']['id'] + '.json', scenario)
 
 
 def updateQuestion():
+    "Funkcja aktualizująca dane pytania"
     session['scenario']['questions'][session['questionId']]['text'] = request.form['text']
     for key in session['scenario']['questions'][session['questionId']]['keyWords']:
         session['scenario']['questions'][session['questionId']]['keyWords'][key] = request.form['keyWord' + key]
     for key in session['scenario']['questions'][session['questionId']]['optionalTexts']:
         session['scenario']['questions'][session['questionId']]['optionalTexts'][key]['text'] = request.form['optionalText' + key]
         session['scenario']['questions'][session['questionId']]['optionalTexts'][key]['conditionalQuestionId'] = request.form['optionalTextConditionalQuestionId' + key]
+        session['scenario']['questions'][session['questionId']]['optionalTexts'][key]['exclusionQuestionId'] = request.form['optionalTextExclusionQuestionId' + key]
     for key in session['scenario']['questions'][session['questionId']]['answers']:
         session['scenario']['questions'][session['questionId']]['answers'][key]['text'] = request.form['answerText' + key]
         session['scenario']['questions'][session['questionId']]['answers'][key]['questionId'] = request.form['answerQuestionId' + key]
         session['scenario']['questions'][session['questionId']]['answers'][key]['conditionalQuestionId'] = request.form['answerConditionalQuestionId' + key]
+        session['scenario']['questions'][session['questionId']]['answers'][key]['exclusionQuestionId'] = request.form['answerExclusionQuestionId' + key]
     scenario = {session['scenario']['id']: session['scenario']}
     saveToDatabase(session['scenario']['id'] + '.json', scenario)
 
@@ -191,6 +192,7 @@ def loadFromDatabase(name):
 
 
 def refreshSession(scenarioId=None):
+    "Funkcja odświeżająca sesję"
     if scenarioId != None and scenarioId in scenarioList.keys():
         session['scenario'] = scenarioList[scenarioId]
     elif session['scenario'] != None:

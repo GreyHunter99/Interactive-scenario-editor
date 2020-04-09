@@ -8,19 +8,20 @@
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
     <p><a href="{{ url_for('list') }}">Lista scenariuszy</a></p>
     <div class="board">
-        <h2>{{ session['scenario']['name'] }}</h2>
-        <h3>{{ session['scenario']['questions'][questionId]['text'] }}</h3>
+        <h1>{{ session['scenario']['name'] }}</h1>
+        <h2>{{ session['scenario']['questions'][questionId]['text'] }}</h2>
         {% if session['scenario']['questions'][questionId]['optionalTexts'] != [] %}
             {% for optionalText in session['scenario']['questions'][questionId]['optionalTexts'].values() %}
-                {% if optionalText['conditionalQuestionId'] in session['scenarioPath'] %}
+                {% if (optionalText['conditionalQuestionId'] == '' or optionalText['conditionalQuestionId'] in session['scenarioPath']) and (optionalText['exclusionQuestionId'] == '' or optionalText['exclusionQuestionId'] not in session['scenarioPath']) %}
                     <h3>{{ optionalText['text'] }}</h3>
                 {% endif %}
             {% endfor %}
         {% endif %}
         {% for answer in session['scenario']['questions'][questionId]['answers'].values() %}
-            {% if answer['conditionalQuestionId'] == '' or answer['conditionalQuestionId'] in session['scenarioPath'] %}
+            {% if (answer['conditionalQuestionId'] == '' or answer['conditionalQuestionId'] in session['scenarioPath']) and (answer['exclusionQuestionId'] == '' or answer['exclusionQuestionId'] not in session['scenarioPath']) %}
                 <p><a href="{{ url_for('question', questionId = answer['questionId']) }}">{{ answer['text'] }}</a></p>
             {% endif %}
         {% endfor %}
+        <h3>Odwiedzone pytania: {{ session['scenarioPath'] }}</h3>
     </div>
 {% endblock %}

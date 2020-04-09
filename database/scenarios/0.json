@@ -14,12 +14,14 @@
                     "0": {
                         "text": "Poni\u017cej 1000 m n.p.m.",
                         "questionId": "1",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "1": {
                         "text": "Powy\u017cej 1000 m n.p.m.",
                         "questionId": "2",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -31,7 +33,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "3",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -43,7 +46,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "3",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -55,12 +59,14 @@
                     "0": {
                         "text": "Tak",
                         "questionId": "7",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "1": {
                         "text": "Nie",
                         "questionId": "10",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -68,19 +74,22 @@
                 "text": "Rodzaj akwenu?",
                 "keyWords": {
                     "0": "Morze",
-                    "1": "Ocean"
+                    "1": "Ocean",
+                    "2": "Jezioro"
                 },
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "Jezioro",
                         "questionId": "5",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "1": {
                         "text": "Morze",
                         "questionId": "6",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -92,7 +101,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "3",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -104,7 +114,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "3",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -119,12 +130,14 @@
                     "0": {
                         "text": "Miasto",
                         "questionId": "8",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "1": {
                         "text": "Wie\u015b",
                         "questionId": "9",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -136,7 +149,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "10",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -148,7 +162,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "10",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -160,12 +175,14 @@
                     "0": {
                         "text": "Tak",
                         "questionId": "11",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "1": {
                         "text": "Nie",
                         "questionId": "15",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -177,7 +194,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "12",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -189,12 +207,14 @@
                     "0": {
                         "text": "Tak",
                         "questionId": "13",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "1": {
                         "text": "Nie",
                         "questionId": "14",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -206,7 +226,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "15",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -218,7 +239,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "15",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -230,17 +252,20 @@
                     "0": {
                         "text": "1 dzie\u0144",
                         "questionId": "16",
-                        "conditionalQuestionId": "7"
+                        "conditionalQuestionId": "7",
+                        "exclusionQuestionId": "4"
                     },
                     "1": {
                         "text": "2-4 dni",
                         "questionId": "17",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "2": {
                         "text": "1 tydzie\u0144",
                         "questionId": "18",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -252,7 +277,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "19",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -264,7 +290,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "19",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -276,7 +303,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "19",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -288,12 +316,14 @@
                     "0": {
                         "text": "Ciep\u0142y",
                         "questionId": "20",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     },
                     "1": {
                         "text": "Ch\u0142odny",
                         "questionId": "21",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -303,14 +333,16 @@
                 "optionalTexts": {
                     "0": {
                         "text": "Pami\u0119taj o stroju k\u0105pielowym.",
-                        "conditionalQuestionId": "4"
+                        "conditionalQuestionId": "4",
+                        "exclusionQuestionId": ""
                     }
                 },
                 "answers": {
                     "0": {
                         "text": "Dalej",
                         "questionId": "22",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
@@ -320,14 +352,16 @@
                 "optionalTexts": {
                     "0": {
                         "text": "Wybierz odpowiednie obuwie do klimatu.",
-                        "conditionalQuestionId": "0"
+                        "conditionalQuestionId": "0",
+                        "exclusionQuestionId": ""
                     }
                 },
                 "answers": {
                     "0": {
                         "text": "Dalej",
                         "questionId": "22",
-                        "conditionalQuestionId": ""
+                        "conditionalQuestionId": "",
+                        "exclusionQuestionId": ""
                     }
                 }
             },
