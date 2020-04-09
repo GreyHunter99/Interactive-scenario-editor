@@ -10,15 +10,15 @@
     <div class="board">
         <h2>{{ session['scenario']['name'] }}</h2>
         <h3>{{ session['scenario']['questions'][questionId]['text'] }}</h3>
-        {% if session['scenario']['questions'][questionId]['optionalText'] != [] %}
-            {% for text in session['scenario']['questions'][questionId]['optionalText'].values() %}
-                {% if session['startingQuestionId'] == text['conditionalQuestionId'] %}
-                    <h3>{{ text['text'] }}</h3>
+        {% if session['scenario']['questions'][questionId]['optionalTexts'] != [] %}
+            {% for optionalText in session['scenario']['questions'][questionId]['optionalTexts'].values() %}
+                {% if optionalText['conditionalQuestionId'] in session['scenarioPath'] %}
+                    <h3>{{ optionalText['text'] }}</h3>
                 {% endif %}
             {% endfor %}
         {% endif %}
         {% for answer in session['scenario']['questions'][questionId]['answers'].values() %}
-            {% if answer['conditionalQuestionId'] == '' or session['startingQuestionId'] == answer['conditionalQuestionId'] %}
+            {% if answer['conditionalQuestionId'] == '' or answer['conditionalQuestionId'] in session['scenarioPath'] %}
                 <p><a href="{{ url_for('question', questionId = answer['questionId']) }}">{{ answer['text'] }}</a></p>
             {% endif %}
         {% endfor %}
