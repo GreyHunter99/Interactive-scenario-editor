@@ -22,6 +22,10 @@
                 <p><a href="{{ url_for('question', questionId = answer['questionId']) }}">{{ answer['text'] }}</a></p>
             {% endif %}
         {% endfor %}
-        <h3>Odwiedzone pytania: {{ session['scenarioPath'] }}</h3>
+        <h3>Odwiedzone pytania:
+        {% for question in session['scenarioPath'] %}
+            {{ question }},
+        {% endfor %}
+        </h3>
     </div>
 {% endblock %}

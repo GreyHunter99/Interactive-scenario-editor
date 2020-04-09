@@ -17,6 +17,12 @@
             <p><input name='startingQuestion' type="text"></p>
             <p><input type="submit" value="Rozpocznij scenariusz"></p>
         </form>
-        <h3>Obecne słowa kluczowe: Góry, Morze, Ocean, Miasto, Wieś</h3>
+        <h3>Obecne słowa kluczowe:
+        {% for question in session['scenario']['questions'] %}
+            {% for keyWord in session['scenario']['questions'][question]['keyWords'].values() %}
+                {{ keyWord }},
+            {% endfor %}
+        {% endfor %}
+        </h3>
     </div>
 {% endblock %}
