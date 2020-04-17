@@ -46,15 +46,15 @@ a:hover {
     font-size: large;
 }
 
-.text p, .text ul{
+.text p, .text ul {
     margin: auto;
 }
 
-.text h2{
-    margin: 0 2% 1% 2%
+.text h2 {
+    margin: 0 2% 1% 2%;
 }
 
-.text h3{
+.text h3 {
     margin: 3% 1% 1% 1%;
 }
 
