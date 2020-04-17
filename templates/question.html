@@ -13,7 +13,7 @@
         {% if session['scenario']['questions'][questionId]['optionalTexts'] != [] %}
             {% for optionalText in session['scenario']['questions'][questionId]['optionalTexts'].values() %}
                 {% if (optionalText['conditionalQuestionId'] == '' or optionalText['conditionalQuestionId'] in session['scenarioPath']) and (optionalText['exclusionQuestionId'] == '' or optionalText['exclusionQuestionId'] not in session['scenarioPath']) %}
-                    <h3>{{ optionalText['text'] }}</h3>
+                    <h2>{{ optionalText['text'] }}</h2>
                 {% endif %}
             {% endfor %}
         {% endif %}

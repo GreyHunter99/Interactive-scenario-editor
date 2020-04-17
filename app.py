@@ -12,8 +12,6 @@ scenarioList = {}
 
 @app.route('/')
 def menu():
-    refreshScenarioList()
-
     return render_template('menu.html')
 
 
@@ -36,8 +34,6 @@ def list():
 
 @app.route('/start', methods=['GET', 'POST'])
 def start():
-    global scenarioList
-
     if request.method == 'POST':
         for question in session['scenario']['questions']:
             for keyWord in session['scenario']['questions'][question]['keyWords'].values():
@@ -46,7 +42,6 @@ def start():
         return render_template('start.html', noKeyWords=True)
 
     session['scenarioPath'] = []
-    refreshScenarioList()
 
     scenarioId = request.args.get('scenarioId')
     refreshSession(scenarioId)
@@ -71,7 +66,6 @@ def question():
 @app.route('/editScenario', methods=['GET', 'POST'])
 def editScenario():
     global scenarioList
-    refreshScenarioList()
 
     scenarioId = request.args.get('scenarioId')
 
@@ -102,8 +96,6 @@ def editScenario():
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
-    global scenarioList
-    refreshScenarioList()
     questionId = request.args.get('questionId')
 
     refreshSession()
@@ -198,6 +190,7 @@ def loadFromDatabase(name):
 
 def refreshSession(scenarioId=None):
     "Funkcja odświeżająca sesję"
+    global scenarioList
     if scenarioId != None and scenarioId in scenarioList.keys():
         session['scenario'] = scenarioList[scenarioId]
     elif session['scenario'] != None:
@@ -210,7 +203,9 @@ def refreshScenarioList():
     "Funkcja aktualizująca listę scenariuszy"
     global scenarioList
     scenarioList = {}
-    for scenario in os.listdir(PROJECT_ROOT+"/database/scenarios/"):
+    catalog = os.listdir(PROJECT_ROOT + "/database/scenarios/")
+    catalog.sort(key=lambda x: int(x.split(".")[0]))
+    for scenario in catalog:
         currentScenario = loadFromDatabase(scenario)
         scenarioList.update(currentScenario)
 
