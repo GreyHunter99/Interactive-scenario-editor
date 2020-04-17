@@ -17,6 +17,11 @@ def menu():
     return render_template('menu.html')
 
 
+@app.route('/gamebooks')
+def gamebooks():
+    return render_template('gamebooks.html')
+
+
 @app.route('/list')
 def list():
     global scenarioList

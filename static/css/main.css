@@ -31,18 +31,36 @@ a:hover {
     margin: 1%;
 }
 
+.board p {
+    margin: 2.7%;
+}
+
 .block {
     padding: 3%;
     border-bottom: black dotted 5px;
 }
 
+.text {
+    text-align: left;
+    margin: 0;
+    font-size: large;
+}
+
+.text p, .text ul{
+    margin: auto;
+}
+
+.text h2{
+    margin: 0 2% 1% 2%
+}
+
+.text h3{
+    margin: 3% 1% 1% 1%;
+}
+
 .deleteButton {
     background-color: lightcoral;
     border-color: darkred;
-}
-
-.board p {
-    margin: 2.7%;
 }
 
 select {
