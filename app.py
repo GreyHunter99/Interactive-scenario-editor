@@ -34,9 +34,11 @@ def list():
 
 @app.route('/start', methods=['GET', 'POST'])
 def start():
+    global scenarioList
+
     if request.method == 'POST':
-        for question in session['scenario']['questions']:
-            for keyWord in session['scenario']['questions'][question]['keyWords'].values():
+        for question in scenarioList[session['scenarioId']]['questions']:
+            for keyWord in scenarioList[session['scenarioId']]['questions'][question]['keyWords'].values():
                 if keyWord.lower() in request.form['startingQuestion'].lower():
                     return redirect(url_for('question', questionId=question))
         return render_template('start.html', noKeyWords=True)
@@ -46,21 +48,22 @@ def start():
     scenarioId = request.args.get('scenarioId')
     refreshSession(scenarioId)
 
-    return render_template('start.html')
+    return render_template('start.html', scenarioList=scenarioList)
 
 
 @app.route('/question')
 def question():
+    global scenarioList
     questionId = request.args.get('questionId')
 
-    if questionId != None and questionId in session['scenario']['questions'].keys():
+    if questionId != None and questionId in scenarioList[session['scenarioId']]['questions'].keys():
         scenarioPath = session['scenarioPath']
         scenarioPath.append(questionId)
         session['scenarioPath'] = scenarioPath
     else:
         return redirect(url_for('menu'))
 
-    return render_template('question.html', questionId=questionId)
+    return render_template('question.html', scenarioList=scenarioList, questionId=questionId)
 
 
 @app.route('/editScenario', methods=['GET', 'POST'])
@@ -74,40 +77,43 @@ def editScenario():
             key = '0'
         else:
             key = str(int(max(scenarioList, key=int))+1)
-        scenario = {key: {'id': key, 'name': '', 'startingQuestion': '', 'questions': {}}}
+        scenarioList[key] = {'id': key, 'name': '', 'startingQuestion': '', 'questions': {}}
+        scenario = {key: scenarioList[key]}
         saveToDatabase(key+'.json', scenario)
         scenarioId = key
 
     refreshSession(scenarioId)
 
     if request.args.get('deleteQuestion'):
-        del session['scenario']['questions'][request.args.get('questionId')]
-        scenario = {session['scenario']['id']: session['scenario']}
-        saveToDatabase(session['scenario']['id'] + '.json', scenario)
+        del scenarioList[session['scenarioId']]['questions'][request.args.get('questionId')]
+        scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
+        saveToDatabase(session['scenarioId'] + '.json', scenario)
 
     if request.method == 'POST':
-        session['scenario']['name'] = request.form['name']
-        session['scenario']['startingQuestion'] = request.form['startingQuestion']
-        scenario = {session['scenario']['id']: session['scenario']}
-        saveToDatabase(session['scenario']['id'] + '.json', scenario)
+        scenarioList[session['scenarioId']]['name'] = request.form['name']
+        scenarioList[session['scenarioId']]['startingQuestion'] = request.form['startingQuestion']
+        scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
+        saveToDatabase(session['scenarioId'] + '.json', scenario)
 
-    return render_template('editScenario.html')
+    return render_template('editScenario.html', scenarioList=scenarioList)
 
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
+    global scenarioList
+
     questionId = request.args.get('questionId')
 
     refreshSession()
 
     if request.args.get('createQuestion'):
-        if session['scenario']['questions'] == {}:
+        if scenarioList[session['scenarioId']]['questions'] == {}:
             key = '0'
         else:
-            key = str(int(max(session['scenario']['questions'], key=int)) + 1)
-        session['scenario']['questions'][key] = {'text': '', 'keyWords': {}, 'optionalTexts': {}, 'answers': {}}
-        scenario = {session['scenario']['id']: session['scenario']}
-        saveToDatabase(session['scenario']['id'] + '.json', scenario)
+            key = str(int(max(scenarioList[session['scenarioId']]['questions'], key=int)) + 1)
+        scenarioList[session['scenarioId']]['questions'][key] = {'text': '', 'keyWords': {}, 'optionalTexts': {}, 'answers': {}}
+        scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
+        saveToDatabase(session['scenarioId'] + '.json', scenario)
         questionId = key
 
     if request.args.get('createKeyWord'):
@@ -136,49 +142,51 @@ def edit():
     if request.method == 'POST':
         updateQuestion()
 
-    return render_template('edit.html', questionId=session['questionId'])
+    return render_template('edit.html', scenarioList=scenarioList, questionId=session['questionId'])
 
 
 def createElement(element , pattern):
     "Funkcja stwarzająca dany element"
-    if session['scenario']['questions'][session['questionId']][element] == {}:
+    global scenarioList
+    if scenarioList[session['scenarioId']]['questions'][session['questionId']][element] == {}:
         key = '0'
     else:
-        key = str(int(max(session['scenario']['questions'][session['questionId']][element], key=int)) + 1)
-    session['scenario']['questions'][session['questionId']][element][key] = pattern
-    scenario = {session['scenario']['id']: session['scenario']}
-    saveToDatabase(session['scenario']['id'] + '.json', scenario)
+        key = str(int(max(scenarioList[session['scenarioId']]['questions'][session['questionId']][element], key=int)) + 1)
+    scenarioList[session['scenarioId']]['questions'][session['questionId']][element][key] = pattern
+    scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
+    saveToDatabase(session['scenarioId'] + '.json', scenario)
 
 def deleteElement(element):
     "Funkcja usuwająca dany element"
-    del session['scenario']['questions'][session['questionId']][element+'s'][request.args.get(element+'Id')]
-    scenario = {session['scenario']['id']: session['scenario']}
-    saveToDatabase(session['scenario']['id'] + '.json', scenario)
+    global scenarioList
+    del scenarioList[session['scenarioId']]['questions'][session['questionId']][element+'s'][request.args.get(element+'Id')]
+    scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
+    saveToDatabase(session['scenarioId'] + '.json', scenario)
 
 
 def updateQuestion():
     "Funkcja aktualizująca dane pytania"
-    session['scenario']['questions'][session['questionId']]['text'] = request.form['text']
-    for key in session['scenario']['questions'][session['questionId']]['keyWords']:
-        session['scenario']['questions'][session['questionId']]['keyWords'][key] = request.form['keyWord' + key]
-    for key in session['scenario']['questions'][session['questionId']]['optionalTexts']:
-        session['scenario']['questions'][session['questionId']]['optionalTexts'][key]['text'] = request.form['optionalText' + key]
-        session['scenario']['questions'][session['questionId']]['optionalTexts'][key]['conditionalQuestionId'] = request.form['optionalTextConditionalQuestionId' + key]
-        session['scenario']['questions'][session['questionId']]['optionalTexts'][key]['exclusionQuestionId'] = request.form['optionalTextExclusionQuestionId' + key]
-    for key in session['scenario']['questions'][session['questionId']]['answers']:
-        session['scenario']['questions'][session['questionId']]['answers'][key]['text'] = request.form['answerText' + key]
-        session['scenario']['questions'][session['questionId']]['answers'][key]['questionId'] = request.form['answerQuestionId' + key]
-        session['scenario']['questions'][session['questionId']]['answers'][key]['conditionalQuestionId'] = request.form['answerConditionalQuestionId' + key]
-        session['scenario']['questions'][session['questionId']]['answers'][key]['exclusionQuestionId'] = request.form['answerExclusionQuestionId' + key]
-    scenario = {session['scenario']['id']: session['scenario']}
-    saveToDatabase(session['scenario']['id'] + '.json', scenario)
+    global scenarioList
+    scenarioList[session['scenarioId']]['questions'][session['questionId']]['text'] = request.form['text']
+    for key in scenarioList[session['scenarioId']]['questions'][session['questionId']]['keyWords']:
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['keyWords'][key] = request.form['keyWord' + key]
+    for key in scenarioList[session['scenarioId']]['questions'][session['questionId']]['optionalTexts']:
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['optionalTexts'][key]['text'] = request.form['optionalText' + key]
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['optionalTexts'][key]['conditionalQuestionId'] = request.form['optionalTextConditionalQuestionId' + key]
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['optionalTexts'][key]['exclusionQuestionId'] = request.form['optionalTextExclusionQuestionId' + key]
+    for key in scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers']:
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers'][key]['text'] = request.form['answerText' + key]
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers'][key]['questionId'] = request.form['answerQuestionId' + key]
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers'][key]['conditionalQuestionId'] = request.form['answerConditionalQuestionId' + key]
+        scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers'][key]['exclusionQuestionId'] = request.form['answerExclusionQuestionId' + key]
+    scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
+    saveToDatabase(session['scenarioId'] + '.json', scenario)
 
 
 def saveToDatabase(name, scenario):
     "Funkcja zapisująca scenariusz do bazy"
     with open(PROJECT_ROOT+"/database/scenarios/"+name, "w") as write_file:
         json.dump(scenario, write_file, indent=4)
-    refreshScenarioList()
 
 
 def loadFromDatabase(name):
@@ -189,13 +197,11 @@ def loadFromDatabase(name):
 
 
 def refreshSession(scenarioId=None):
-    "Funkcja odświeżająca sesję"
+    "Funkcja sprawdzająca poprawność id scenariusza"
     global scenarioList
     if scenarioId != None and scenarioId in scenarioList.keys():
-        session['scenario'] = scenarioList[scenarioId]
-    elif session['scenario'] != None:
-        session['scenario'] = scenarioList[session['scenario']['id']]
-    else:
+        session['scenarioId'] = scenarioId
+    elif session['scenarioId'] == None:
         return redirect(url_for('menu'))
 
 
