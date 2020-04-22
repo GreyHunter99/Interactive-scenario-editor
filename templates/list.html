@@ -6,7 +6,6 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <p><a href="{{ url_for('editScenario', createScenario=True) }}">Stwórz scenariusz</a></p>
     <div class="board">
         {% for key in scenarioList %}
             <p><a href="{{ url_for('start', scenarioId=key) }}">{{ scenarioList[key]["name"] }}</a></p>

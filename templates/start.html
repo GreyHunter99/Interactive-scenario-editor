@@ -24,5 +24,6 @@
             {% endfor %}
         {% endfor %}
         </h3>
+        <p><a href="{{ url_for('userProfile', userId=scenarioList[session['scenarioId']]['user']) }}">Profil twórcy</a></p>
     </div>
 {% endblock %}

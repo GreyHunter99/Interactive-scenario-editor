@@ -6,7 +6,7 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <p><a href="{{ url_for('list') }}">Lista scenariuszy</a></p>
+    <p><a href="{{ url_for('userProfile') }}">Mój profil</a></p>
     <div class="board">
         <form action="{{ url_for('editScenario') }}" method="post">
             <h1>Nazwa scenariusza:</h1><p><input name='name' type="text" value="{{ scenarioList[session['scenarioId']]['name'] }}"></p>
@@ -15,7 +15,7 @@
         </form>
         <p>
             <a href="{{ url_for('edit', createQuestion=True) }}">Dodaj pytanie</a>
-            <a class="deleteButton" href="{{ url_for('myProfile', deleteScenario=True, scenarioId=session['scenarioId']) }}">Usuń scenariusz</a>
+            <a class="deleteButton" href="{{ url_for('userProfile', deleteScenario=True, scenarioId=session['scenarioId']) }}">Usuń scenariusz</a>
         </p>
         <p>
             <a href="{{ url_for('start') }}">Test scenariusza</a>

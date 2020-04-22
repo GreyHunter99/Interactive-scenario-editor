@@ -30,11 +30,11 @@ def login():
         for user in userList:
             if userList[user]['username'] == request.form['username']:
                 if userList[user]['password'] == request.form['password']:
-                    session['user'] = user
+                    session['userId'] = user
                     return redirect(url_for('menu'))
                 return render_template('login.html', wrongPassword=True)
         return render_template('login.html', wrongUsername=True)
-    elif session.get('user'):
+    elif session.get('userId'):
         return redirect(url_for('menu'))
 
     return render_template('login.html')
@@ -55,10 +55,10 @@ def register():
         userList[key] = {'id': key, 'username': request.form['username'], 'password': request.form['password'], 'description': '', 'isAdmin': False}
         user = {key: userList[key]}
         saveToDatabase(key+'.json', user, 'users')
-        session['user'] = key
+        session['userId'] = key
         refreshList('users')
         return redirect(url_for('menu'))
-    elif session.get('user'):
+    elif session.get('userId'):
         return redirect(url_for('menu'))
 
     return render_template('register.html')
@@ -66,28 +66,45 @@ def register():
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
+    session.pop('userId', None)
     return redirect(url_for('menu'))
 
 
-@app.route('/myProfile')
-def myProfile():
-    global scenarioList
-    if session.get('user') == None:
+@app.route('/userProfile', methods=['GET', 'POST'])
+def userProfile():
+    global scenarioList, userList
+    refreshList('users')
+    userId = request.args.get('userId')
+
+    if userId != None and userId in userList:
+        pass
+    elif session.get('userId'):
+        userId = session['userId']
+    else:
         return redirect(url_for('menu'))
 
-    if request.args.get('deleteScenario') and request.args.get('scenarioId') and scenarioList[request.args.get('scenarioId')]['user'] == session['user']:
+    if request.args.get('deleteScenario') and request.args.get('scenarioId') and (scenarioList[request.args.get('scenarioId')]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] == True):
         os.remove(PROJECT_ROOT+"/database/scenarios/"+request.args.get('scenarioId')+".json")
         del scenarioList[request.args.get('scenarioId')]
     refreshList('scenarios')
 
-    return render_template('myProfile.html', scenarioList=scenarioList)
+    if request.method == 'POST' and (userId == session['userId'] or userList[session['userId']]['isAdmin'] == True):
+        for user in userList:
+            if userList[user]['username'] == request.form['username'] and user != userId:
+                return render_template('userProfile.html', scenarioList=scenarioList, userList=userList, userId=userId, usernameTaken=True)
+        userList[userId]['username'] = request.form['username']
+        userList[userId]['description'] = request.form['description']
+        user = {userId: userList[userId]}
+        saveToDatabase(userId + '.json', user, 'users')
+
+    return render_template('userProfile.html', scenarioList=scenarioList, userList=userList, userId=userId)
 
 
 @app.route('/list')
 def list():
     global scenarioList
     refreshList('scenarios')
+    refreshList('users')
     return render_template('list.html', scenarioList=scenarioList)
 
 
@@ -135,7 +152,7 @@ def question():
 def editScenario():
     global scenarioList
 
-    if session.get('user') == None:
+    if session.get('userId') == None:
         return redirect(url_for('menu'))
 
     scenarioId = request.args.get('scenarioId')
@@ -145,13 +162,13 @@ def editScenario():
             key = '0'
         else:
             key = str(int(max(scenarioList, key=int))+1)
-        scenarioList[key] = {'id': key, 'name': '', 'user': session['user'], 'startingQuestion': '', 'questions': {}}
+        scenarioList[key] = {'id': key, 'name': '', 'user': session['userId'], 'startingQuestion': '', 'questions': {}}
         scenario = {key: scenarioList[key]}
         saveToDatabase(key+'.json', scenario, 'scenarios')
         scenarioId = key
 
     if scenarioId != None:
-        if scenarioId in scenarioList and scenarioList[scenarioId]['user'] == session['user']:
+        if scenarioId in scenarioList and (scenarioList[scenarioId]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] == True):
             session['scenarioId'] = scenarioId
         else:
             return redirect(url_for('menu'))
@@ -176,7 +193,7 @@ def editScenario():
 def edit():
     global scenarioList
 
-    if session.get('user') == None:
+    if session.get('userId') == None:
         return redirect(url_for('menu'))
 
     questionId = request.args.get('questionId')
