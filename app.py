@@ -8,16 +8,61 @@ app = Flask(__name__)
 app.secret_key = 'extra secret key'
 
 scenarioList = {}
+userList = {}
 
 
 @app.route('/')
 def menu():
+    refreshList('users')
     return render_template('menu.html')
 
 
 @app.route('/gamebooks')
 def gamebooks():
     return render_template('gamebooks.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    global userList
+    refreshList('users')
+    if request.method == 'POST':
+        for user in userList:
+            if userList[user]['username'] == request.form['username']:
+                if userList[user]['password'] == request.form['password']:
+                    session['user'] = user
+                    return redirect(url_for('menu'))
+                return render_template('login.html', wrongPassword=True)
+            return render_template('login.html', wrongUsername=True)
+    return render_template('login.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    global userList
+    refreshList('users')
+    if request.method == 'POST':
+        for user in userList:
+            if userList[user]['username'] == request.form['username']:
+                return render_template('register.html', usernameTaken=True)
+        if userList == {}:
+            key = '0'
+        else:
+            key = str(int(max(userList, key=int))+1)
+        userList[key] = {'id': key, 'username': request.form['username'], 'password': request.form['password'], 'description': '', 'isAdmin': False}
+        user = {key: userList[key]}
+        saveToDatabase(key+'.json', user, 'users')
+        session['user'] = key
+        refreshList('users')
+        return redirect(url_for('menu'))
+
+    return render_template('register.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('menu'))
 
 
 @app.route('/list')
@@ -27,7 +72,7 @@ def list():
     if request.args.get('deleteScenario'):
         os.remove(PROJECT_ROOT+"/database/scenarios/"+request.args.get('scenarioId')+".json")
 
-    refreshScenarioList()
+    refreshList('scenarios')
 
     return render_template('list.html', scenarioList=scenarioList)
 
@@ -77,9 +122,9 @@ def editScenario():
             key = '0'
         else:
             key = str(int(max(scenarioList, key=int))+1)
-        scenarioList[key] = {'id': key, 'name': '', 'startingQuestion': '', 'questions': {}}
+        scenarioList[key] = {'id': key, 'name': '', 'userId': session['user'], 'startingQuestion': '', 'questions': {}}
         scenario = {key: scenarioList[key]}
-        saveToDatabase(key+'.json', scenario)
+        saveToDatabase(key+'.json', scenario, 'scenarios')
         scenarioId = key
 
     refreshSession(scenarioId)
@@ -87,13 +132,13 @@ def editScenario():
     if request.args.get('deleteQuestion'):
         del scenarioList[session['scenarioId']]['questions'][request.args.get('questionId')]
         scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
-        saveToDatabase(session['scenarioId'] + '.json', scenario)
+        saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
 
     if request.method == 'POST':
         scenarioList[session['scenarioId']]['name'] = request.form['name']
         scenarioList[session['scenarioId']]['startingQuestion'] = request.form['startingQuestion']
         scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
-        saveToDatabase(session['scenarioId'] + '.json', scenario)
+        saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
 
     return render_template('editScenario.html', scenarioList=scenarioList)
 
@@ -113,7 +158,7 @@ def edit():
             key = str(int(max(scenarioList[session['scenarioId']]['questions'], key=int)) + 1)
         scenarioList[session['scenarioId']]['questions'][key] = {'text': '', 'keyWords': {}, 'optionalTexts': {}, 'answers': {}}
         scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
-        saveToDatabase(session['scenarioId'] + '.json', scenario)
+        saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
         questionId = key
 
     if request.args.get('createKeyWord'):
@@ -154,14 +199,14 @@ def createElement(element , pattern):
         key = str(int(max(scenarioList[session['scenarioId']]['questions'][session['questionId']][element], key=int)) + 1)
     scenarioList[session['scenarioId']]['questions'][session['questionId']][element][key] = pattern
     scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
-    saveToDatabase(session['scenarioId'] + '.json', scenario)
+    saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
 
 def deleteElement(element):
     "Funkcja usuwająca dany element"
     global scenarioList
     del scenarioList[session['scenarioId']]['questions'][session['questionId']][element+'s'][request.args.get(element+'Id')]
     scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
-    saveToDatabase(session['scenarioId'] + '.json', scenario)
+    saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
 
 
 def updateQuestion():
@@ -180,20 +225,20 @@ def updateQuestion():
         scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers'][key]['conditionalQuestionId'] = request.form['answerConditionalQuestionId' + key]
         scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers'][key]['exclusionQuestionId'] = request.form['answerExclusionQuestionId' + key]
     scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
-    saveToDatabase(session['scenarioId'] + '.json', scenario)
+    saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
 
 
-def saveToDatabase(name, scenario):
-    "Funkcja zapisująca scenariusz do bazy"
-    with open(PROJECT_ROOT+"/database/scenarios/"+name, "w") as write_file:
-        json.dump(scenario, write_file, indent=4)
+def saveToDatabase(name, data, catalog):
+    "Funkcja zapisująca dane do bazy"
+    with open(PROJECT_ROOT+"/database/"+catalog+"/"+name, "w") as write_file:
+        json.dump(data, write_file, indent=4)
 
 
-def loadFromDatabase(name):
-    "Funkcja wczytująca scenariusz z bazy"
-    with open(PROJECT_ROOT+"/database/scenarios/"+name, "r") as read_file:
-        scenario = json.load(read_file)
-    return scenario
+def loadFromDatabase(name, catalog):
+    "Funkcja wczytująca dane z bazy"
+    with open(PROJECT_ROOT+"/database/"+catalog+"/"+name, "r") as read_file:
+        data = json.load(read_file)
+    return data
 
 
 def refreshSession(scenarioId=None):
@@ -205,15 +250,20 @@ def refreshSession(scenarioId=None):
         return redirect(url_for('menu'))
 
 
-def refreshScenarioList():
+def refreshList(catalog):
     "Funkcja aktualizująca listę scenariuszy"
-    global scenarioList
-    scenarioList = {}
-    catalog = os.listdir(PROJECT_ROOT + "/database/scenarios/")
-    catalog.sort(key=lambda x: int(x.split(".")[0]))
-    for scenario in catalog:
-        currentScenario = loadFromDatabase(scenario)
-        scenarioList.update(currentScenario)
+    global scenarioList, userList
+    if catalog == 'users':
+        userList = {}
+        list = userList
+    else:
+        scenarioList = {}
+        list = scenarioList
+    folder = os.listdir(PROJECT_ROOT + "/database/"+catalog+"/")
+    folder.sort(key=lambda x: int(x.split(".")[0]))
+    for file in folder:
+        currentFile = loadFromDatabase(file, catalog)
+        list.update(currentFile)
 
 
 if __name__ == '__main__':

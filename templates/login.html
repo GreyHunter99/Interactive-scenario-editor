@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
+    {% if wrongUsername == True %}
+        <h2>Zła nazwa użytkownika</h2>
+    {% elif wrongPassword == True %}
+        <h2>Złe hasło</h2>
+    {% endif %}
+    <form action="{{ url_for('login') }}" method="post">
+            <h1>Nazwa użytkownika:</h1><p><input name='username' type="text" required="required"></p>
+            <h1>Hasło:</h1><p><input name='password' type="password" required="required"></p>
+            <p><input type="submit" value="Zaloguj się"></p>
+    </form>
+{% endblock %}

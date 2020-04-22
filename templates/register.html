@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
+    {% if usernameTaken == True %}
+        <h2>Nazwa użytkownika zajęta</h2>
+    {% endif %}
+    <form action="{{ url_for('register') }}" method="post">
+            <h1>Nazwa użytkownika:</h1><p><input name='username' type="text" required="required"></p>
+            <h1>Hasło:</h1><p><input name='password' type="password" required="required"></p>
+            <p><input type="submit" value="Zarejestruj się"></p>
+    </form>
+{% endblock %}
