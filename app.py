@@ -33,7 +33,10 @@ def login():
                     session['user'] = user
                     return redirect(url_for('menu'))
                 return render_template('login.html', wrongPassword=True)
-            return render_template('login.html', wrongUsername=True)
+        return render_template('login.html', wrongUsername=True)
+    elif session.get('user'):
+        return redirect(url_for('menu'))
+
     return render_template('login.html')
 
 
@@ -55,6 +58,8 @@ def register():
         session['user'] = key
         refreshList('users')
         return redirect(url_for('menu'))
+    elif session.get('user'):
+        return redirect(url_for('menu'))
 
     return render_template('register.html')
 
@@ -65,15 +70,20 @@ def logout():
     return redirect(url_for('menu'))
 
 
+@app.route('/myProfile')
+def myProfile():
+    global scenarioList
+    if request.args.get('deleteScenario') and request.args.get('scenarioId') and scenarioList[request.args.get('scenarioId')]['user'] == session['user']:
+        os.remove(PROJECT_ROOT+"/database/scenarios/"+request.args.get('scenarioId')+".json")
+        del scenarioList[request.args.get('scenarioId')]
+    refreshList('scenarios')
+    return render_template('myProfile.html', scenarioList=scenarioList)
+
+
 @app.route('/list')
 def list():
     global scenarioList
-
-    if request.args.get('deleteScenario'):
-        os.remove(PROJECT_ROOT+"/database/scenarios/"+request.args.get('scenarioId')+".json")
-
     refreshList('scenarios')
-
     return render_template('list.html', scenarioList=scenarioList)
 
 
@@ -91,7 +101,13 @@ def start():
     session['scenarioPath'] = []
 
     scenarioId = request.args.get('scenarioId')
-    refreshSession(scenarioId)
+    if scenarioId != None:
+        if scenarioId in scenarioList.keys():
+            session['scenarioId'] = scenarioId
+        else:
+            return redirect(url_for('menu'))
+    elif session.get('scenarioId') == None:
+        return redirect(url_for('menu'))
 
     return render_template('start.html', scenarioList=scenarioList)
 
@@ -122,12 +138,18 @@ def editScenario():
             key = '0'
         else:
             key = str(int(max(scenarioList, key=int))+1)
-        scenarioList[key] = {'id': key, 'name': '', 'userId': session['user'], 'startingQuestion': '', 'questions': {}}
+        scenarioList[key] = {'id': key, 'name': '', 'user': session['user'], 'startingQuestion': '', 'questions': {}}
         scenario = {key: scenarioList[key]}
         saveToDatabase(key+'.json', scenario, 'scenarios')
         scenarioId = key
 
-    refreshSession(scenarioId)
+    if scenarioId != None:
+        if scenarioId in scenarioList.keys():
+            session['scenarioId'] = scenarioId
+        else:
+            return redirect(url_for('menu'))
+    elif session.get('scenarioId') == None:
+        return redirect(url_for('menu'))
 
     if request.args.get('deleteQuestion'):
         del scenarioList[session['scenarioId']]['questions'][request.args.get('questionId')]
@@ -149,7 +171,8 @@ def edit():
 
     questionId = request.args.get('questionId')
 
-    refreshSession()
+    if session.get('scenarioId') == None:
+        return redirect(url_for('menu'))
 
     if request.args.get('createQuestion'):
         if scenarioList[session['scenarioId']]['questions'] == {}:
@@ -181,7 +204,7 @@ def edit():
 
     if questionId != None:
         session['questionId'] = questionId
-    elif session['questionId'] == None:
+    elif session.get('questionId') == None:
         return redirect(url_for('menu'))
 
     if request.method == 'POST':
@@ -239,15 +262,6 @@ def loadFromDatabase(name, catalog):
     with open(PROJECT_ROOT+"/database/"+catalog+"/"+name, "r") as read_file:
         data = json.load(read_file)
     return data
-
-
-def refreshSession(scenarioId=None):
-    "Funkcja sprawdzająca poprawność id scenariusza"
-    global scenarioList
-    if scenarioId != None and scenarioId in scenarioList.keys():
-        session['scenarioId'] = scenarioId
-    elif session['scenarioId'] == None:
-        return redirect(url_for('menu'))
 
 
 def refreshList(catalog):

@@ -7,10 +7,9 @@
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
     <p><a href="{{ url_for('editScenario', createScenario=True) }}">Stwórz scenariusz</a></p>
-    {% for key in scenarioList %}
-        <p><a href="{{ url_for('start', scenarioId=key) }}">{{ scenarioList[key]["name"] }}</a>
-            <a href="{{ url_for('editScenario', scenarioId=key) }}">Edycja</a>
-            <a class="deleteButton" href="{{ url_for('list', deleteScenario=True, scenarioId=key) }}">Usuń</a>
-        </p>
-    {% endfor %}
+    <div class="board">
+        {% for key in scenarioList %}
+            <p><a href="{{ url_for('start', scenarioId=key) }}">{{ scenarioList[key]["name"] }}</a></p>
+        {% endfor %}
+    </div>
 {% endblock %}

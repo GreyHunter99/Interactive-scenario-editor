@@ -2,7 +2,7 @@
     "1": {
         "id": "1",
         "name": "Scenariusz Podr\u00f3\u017cy (kopia)",
-        "userId": "1",
+        "user": "1",
         "startingQuestion": "Jaki jest cel podr\u00f3\u017cy?",
         "questions": {
             "0": {
