@@ -73,10 +73,14 @@ def logout():
 @app.route('/myProfile')
 def myProfile():
     global scenarioList
+    if session.get('user') == None:
+        return redirect(url_for('menu'))
+
     if request.args.get('deleteScenario') and request.args.get('scenarioId') and scenarioList[request.args.get('scenarioId')]['user'] == session['user']:
         os.remove(PROJECT_ROOT+"/database/scenarios/"+request.args.get('scenarioId')+".json")
         del scenarioList[request.args.get('scenarioId')]
     refreshList('scenarios')
+
     return render_template('myProfile.html', scenarioList=scenarioList)
 
 
@@ -102,7 +106,7 @@ def start():
 
     scenarioId = request.args.get('scenarioId')
     if scenarioId != None:
-        if scenarioId in scenarioList.keys():
+        if scenarioId in scenarioList:
             session['scenarioId'] = scenarioId
         else:
             return redirect(url_for('menu'))
@@ -117,7 +121,7 @@ def question():
     global scenarioList
     questionId = request.args.get('questionId')
 
-    if questionId != None and questionId in scenarioList[session['scenarioId']]['questions'].keys():
+    if questionId != None and questionId in scenarioList[session['scenarioId']]['questions']:
         scenarioPath = session['scenarioPath']
         scenarioPath.append(questionId)
         session['scenarioPath'] = scenarioPath
@@ -130,6 +134,9 @@ def question():
 @app.route('/editScenario', methods=['GET', 'POST'])
 def editScenario():
     global scenarioList
+
+    if session.get('user') == None:
+        return redirect(url_for('menu'))
 
     scenarioId = request.args.get('scenarioId')
 
@@ -144,7 +151,7 @@ def editScenario():
         scenarioId = key
 
     if scenarioId != None:
-        if scenarioId in scenarioList.keys():
+        if scenarioId in scenarioList and scenarioList[scenarioId]['user'] == session['user']:
             session['scenarioId'] = scenarioId
         else:
             return redirect(url_for('menu'))
@@ -169,6 +176,9 @@ def editScenario():
 def edit():
     global scenarioList
 
+    if session.get('user') == None:
+        return redirect(url_for('menu'))
+
     questionId = request.args.get('questionId')
 
     if session.get('scenarioId') == None:
@@ -184,28 +194,26 @@ def edit():
         saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
         questionId = key
 
+    if questionId != None:
+        if questionId in scenarioList[session['scenarioId']]['questions']:
+            session['questionId'] = questionId
+        else:
+            return redirect(url_for('editScenario'))
+    elif session.get('questionId') == None:
+        return redirect(url_for('menu'))
+
     if request.args.get('createKeyWord'):
         createElement('keyWords', '')
-
-    if request.args.get('deleteKeyWord'):
-        deleteElement('keyWord')
 
     if request.args.get('createOptionalText'):
         createElement('optionalTexts', {'text': '', 'conditionalQuestionId': '', 'exclusionQuestionId': ''})
 
-    if request.args.get('deleteOptionalText'):
-        deleteElement('optionalText')
-
     if request.args.get('createAnswer'):
         createElement('answers', {'text': '', 'questionId': '0', 'conditionalQuestionId': '', 'exclusionQuestionId': ''})
 
-    if request.args.get('deleteAnswer'):
-        deleteElement('answer')
-
-    if questionId != None:
-        session['questionId'] = questionId
-    elif session.get('questionId') == None:
-        return redirect(url_for('menu'))
+    deleteElement('optionalText')
+    deleteElement('keyWord')
+    deleteElement('answer')
 
     if request.method == 'POST':
         updateQuestion()
@@ -227,9 +235,10 @@ def createElement(element , pattern):
 def deleteElement(element):
     "Funkcja usuwająca dany element"
     global scenarioList
-    del scenarioList[session['scenarioId']]['questions'][session['questionId']][element+'s'][request.args.get(element+'Id')]
-    scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
-    saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
+    if request.args.get(element+'Id') and request.args.get(element+'Id') in scenarioList[session['scenarioId']]['questions'][session['questionId']][element+'s']:
+        del scenarioList[session['scenarioId']]['questions'][session['questionId']][element+'s'][request.args.get(element+'Id')]
+        scenario = {session['scenarioId']: scenarioList[session['scenarioId']]}
+        saveToDatabase(session['scenarioId'] + '.json', scenario, 'scenarios')
 
 
 def updateQuestion():
