@@ -9,9 +9,13 @@
     {% if usernameTaken == True %}
         <h2>Nazwa użytkownika zajęta</h2>
     {% endif %}
+    {% if wrongPasswords == True %}
+        <h2>Hasła są różne</h2>
+    {% endif %}
     <form action="{{ url_for('register') }}" method="post">
             <h1>Nazwa użytkownika:</h1><p><input name='username' type="text" required="required"></p>
             <h1>Hasło:</h1><p><input name='password' type="password" required="required"></p>
+            <h1>Powtórz hasło:</h1><p><input name='repeatPassword' type="password" required="required"></p>
             <p><input type="submit" value="Zarejestruj się"></p>
     </form>
 {% endblock %}

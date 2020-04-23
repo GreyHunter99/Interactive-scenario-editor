@@ -13,11 +13,11 @@
                 <h1>Treść pytania:</h1>
                 <p><input name='text' type="text" value="{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}"></p>
                 <p>
-                    <a href="{{ url_for('edit', createKeyWord=True) }}">Dodaj słowo kluczowe</a>
-                    <a href="{{ url_for('edit', createOptionalText=True) }}">Dodaj tekst opcjonalny</a>
+                    <a href="{{ url_for('edit', keyWord=True) }}">Dodaj słowo kluczowe</a>
+                    <a href="{{ url_for('edit', optionalText=True) }}">Dodaj tekst opcjonalny</a>
                 </p>
                 <p>
-                    <a href="{{ url_for('edit', createAnswer=True) }}">Dodaj odpowiedź</a>
+                    <a href="{{ url_for('edit', answer=True) }}">Dodaj odpowiedź</a>
                     <a class="deleteButton" href="{{ url_for('editScenario', deleteQuestion=True, questionId=session['questionId']) }}">Usuń pytanie</a>
                 </p>
             </div>

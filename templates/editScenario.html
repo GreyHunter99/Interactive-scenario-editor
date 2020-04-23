@@ -15,7 +15,7 @@
         </form>
         <p>
             <a href="{{ url_for('edit', createQuestion=True) }}">Dodaj pytanie</a>
-            <a class="deleteButton" href="{{ url_for('userProfile', deleteScenario=True, scenarioId=session['scenarioId']) }}">Usuń scenariusz</a>
+            <a class="deleteButton" href="{{ url_for('userProfile', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a>
         </p>
         <p>
             <a href="{{ url_for('start') }}">Test scenariusza</a>
@@ -26,7 +26,7 @@
             <h2>{{ scenarioList[session['scenarioId']]['questions'][key]['text'] }}</h2>
             <p>
                 <a href="{{ url_for('edit', questionId=key) }}">Edytuj</a>
-                <a class="deleteButton" href="{{ url_for('editScenario', deleteQuestion=True, questionId=key) }}">Usuń</a>
+                <a class="deleteButton" href="{{ url_for('editScenario', questionId=key) }}">Usuń</a>
             </p>
         </div>
     {% endfor %}
