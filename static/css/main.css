@@ -58,11 +58,6 @@ a:hover {
     margin: 3% 1% 1% 1%;
 }
 
-.deleteButton {
-    background-color: lightcoral;
-    border-color: darkred;
-}
-
 select {
     width: 70%;
     padding: 0.2%;
@@ -81,7 +76,7 @@ input[type=text], input[type=password] {
     font-size: medium;
 }
 
-input[type=submit] {
+input[type=submit], button {
     background-color: skyblue;
     padding: 0.5%;
     border: 4px solid royalblue;
@@ -91,6 +86,11 @@ input[type=submit] {
     font-weight: bold;
 }
 
-select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, input[type=submit]:hover {
+select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, input[type=submit]:hover, button:hover {
     background-color: yellow;
+}
+
+.deleteButton {
+    background-color: lightcoral;
+    border-color: darkred;
 }

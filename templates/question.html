@@ -6,7 +6,9 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <p><a href="{{ url_for('list') }}">Lista scenariuszy</a></p>
+    <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
+    <p><a href="{{ url_for('edit') }}">Edytuj pytanie</a></p>
+    <p><a href="{{ url_for('start', scenarioId=session['scenerioId']) }}">Reset scenariusza</a></p>
     <div class="board">
         <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
         <h2>{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}</h2>

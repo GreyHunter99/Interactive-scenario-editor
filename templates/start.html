@@ -6,7 +6,8 @@
 
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <p><a href="{{ url_for('list') }}">Lista scenariuszy</a></p>
+    <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
+    <p><a href="{{ url_for('editScenario') }}">Edytuj scenariusz</a></p>
     <div class="board">
         <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
         {% if noKeyWords == True %}
@@ -24,6 +25,8 @@
             {% endfor %}
         {% endfor %}
         </h3>
-        <p><a href="{{ url_for('userProfile', userId=scenarioList[session['scenarioId']]['user']) }}">Profil twórcy</a></p>
+        {% if scenarioList[session['scenarioId']]['user'] in userList %}
+            <p><a href="{{ url_for('userProfile', userId=scenarioList[session['scenarioId']]['user']) }}">Profil twórcy</a></p>
+        {% endif %}
     </div>
 {% endblock %}

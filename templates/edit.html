@@ -18,7 +18,7 @@
                 </p>
                 <p>
                     <a href="{{ url_for('edit', answer=True) }}">Dodaj odpowiedź</a>
-                    <a class="deleteButton" href="{{ url_for('editScenario', deleteQuestion=True, questionId=session['questionId']) }}">Usuń pytanie</a>
+                    <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=session['questionId']) }}">Usuń pytanie</a>
                 </p>
             </div>
             {% if scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'] != {} %}
@@ -26,7 +26,7 @@
                     <h1>Słowa kluczowe:</h1>
                     {% for keyWordKey, keyWord in scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'].items() %}
                         <p><input name='keyWord{{ keyWordKey }}' type="text" value="{{ keyWord }}"></p>
-                        <p><a class="deleteButton" href="{{ url_for('edit', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('delete', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -50,7 +50,7 @@
                                 <option value="{{ questionKey }}"{% if scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'][optionalTextKey]['exclusionQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
                             {% endfor %}
                         </select></p>
-                        <p><a class="deleteButton" href="{{ url_for('edit', optionalTextId=optionalTextKey) }}">Usuń tekst opcjonalny</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('delete', optionalTextId=optionalTextKey) }}">Usuń tekst opcjonalny</a></p>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -80,7 +80,7 @@
                                 <option value="{{ questionKey }}"{% if scenarioList[session['scenarioId']]['questions'][questionId]['answers'][answerKey]['exclusionQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
                             {% endfor %}
                         </select></p>
-                        <p><a class="deleteButton" href="{{ url_for('edit', answerId=answerKey) }}">Usuń odpowiedź</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('delete', answerId=answerKey) }}">Usuń odpowiedź</a></p>
                     {% endfor %}
                 </div>
             {% endif %}
