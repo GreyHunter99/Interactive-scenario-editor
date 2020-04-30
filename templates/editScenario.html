@@ -5,12 +5,13 @@
 {% endblock %}
 
 {% block body %}
-    <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
-    <p><a href="{{ url_for('userProfile') }}">Mój profil</a></p>
     <div class="board">
         <form action="{{ url_for('editScenario') }}" method="post">
             <h1>Nazwa scenariusza:</h1><p><input name='name' type="text" value="{{ scenarioList[session['scenarioId']]['name'] }}"></p>
             <h1>Pytanie startowe:</h1><p><input name='startingQuestion' type="text" value="{{ scenarioList[session['scenarioId']]['startingQuestion'] }}"></p>
+            <h2>Możliwość cofania:<input type="checkbox" name="goBack" value="true" {% if scenarioList[session['scenarioId']]['goBack'] %}checked{% endif %}></h2>
+            <h2>Scenariusz publiczny:<input type="checkbox" name="publicView" value="true" {% if scenarioList[session['scenarioId']]['publicView'] %}checked{% endif %}></h2>
+            <h2>Wszyscy mogą edytować:<input type="checkbox" name="publicEdit" value="true" {% if scenarioList[session['scenarioId']]['publicEdit'] %}checked{% endif %}></h2>
             <p><input type="submit" value="Zatwierdź zmiany"></p>
         </form>
         <p>

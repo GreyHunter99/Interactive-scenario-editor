@@ -5,13 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
-    <p><a href="{{ url_for('start', scenarioId=session['scenarioId']) }}">Reset scenariusza</a></p>
-    {% if session.get('userId') and (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
-        <p><a href="{{ url_for('edit') }}">Edytuj pytanie</a></p>
-    {% endif %}
     <div class="board">
+        <p><a href="{{ url_for('start', scenarioId=session['scenarioId']) }}">Reset scenariusza</a>
+            <a href="{{ url_for('question', goBack=True) }}">Cofnij</a></p>
         <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
         <h2>{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}</h2>
         {% if scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'] != [] %}
@@ -31,5 +28,8 @@
             {{ question }},
         {% endfor %}
         </h3>
+        {% if session.get('userId') and (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+            <p><a href="{{ url_for('edit', questionId=questionId) }}">Edytuj pytanie</a></p>
+        {% endif %}
     </div>
 {% endblock %}

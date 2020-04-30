@@ -86,6 +86,12 @@ input[type=submit], button {
     font-weight: bold;
 }
 
+input[type=checkbox] {
+    cursor: pointer;
+    transform: scale(2);
+    margin: 1.2%;
+}
+
 select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, input[type=submit]:hover, button:hover {
     background-color: yellow;
 }

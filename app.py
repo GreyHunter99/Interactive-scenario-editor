@@ -220,12 +220,12 @@ def start():
     global scenarioList, userList
 
     session['scenarioPath'] = []
-    session.pop('questionId', None)
 
     scenarioId = request.args.get('scenarioId')
     if scenarioId:
         if scenarioId in scenarioList:
             session['scenarioId'] = scenarioId
+            session.pop('questionId', None)
         else:
             return redirect(url_for('menu'))
     elif not session.get('scenarioId') or session['scenarioId'] not in scenarioList:
@@ -246,30 +246,36 @@ def question():
     global scenarioList, userList
 
     if not session.get('scenarioId') or session['scenarioId'] not in scenarioList:
-        return redirect(url_for('scenarios'))
+        return redirect(url_for('start'))
 
     questionId = request.args.get('questionId')
 
     if questionId and questionId in scenarioList[session['scenarioId']]['questions']:
         if not session['scenarioPath']:
             if request.args.get('keyWord') and request.args.get('keyWord') in scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'].values():
-                session['questionId'] = questionId
                 scenarioPath = session['scenarioPath']
                 scenarioPath.append(questionId)
                 session['scenarioPath'] = scenarioPath
         else:
             for answer in scenarioList[session['scenarioId']]['questions'][session['scenarioPath'][-1]]['answers'].values():
                 if answer['questionId'] == questionId:
-                    session['questionId'] = questionId
                     scenarioPath = session['scenarioPath']
                     scenarioPath.append(questionId)
                     session['scenarioPath'] = scenarioPath
                     break
         return redirect(url_for('question'))
-    elif not session.get('questionId') or session['questionId'] not in scenarioList[session['scenarioId']]['questions']:
-        return redirect(url_for('menu'))
 
-    return render_template('question.html', scenarioList=scenarioList, userList=userList , questionId=session['questionId'])
+    if request.args.get('goBack') and scenarioList[session['scenarioId']]['goBack'] and session['scenarioPath']:
+        scenarioPath = session['scenarioPath']
+        scenarioPath.pop()
+        session['scenarioPath'] = scenarioPath
+
+    if session['scenarioPath'] and session['scenarioPath'][-1] in scenarioList[session['scenarioId']]['questions']:
+         currentQuestion = session['scenarioPath'][-1]
+    else:
+        return redirect(url_for('start'))
+
+    return render_template('question.html', scenarioList=scenarioList, userList=userList, questionId=currentQuestion)
 
 
 @app.route('/editScenario', methods=['GET', 'POST'])
@@ -287,7 +293,7 @@ def editScenario():
             key = '0'
         else:
             key = str(int(max(scenarioList, key=int)) + 1)
-        scenarioList[key] = {'id': key, 'name': '', 'user': userId, 'startingQuestion': '', 'questions': {}}
+        scenarioList[key] = {'id': key, 'name': '', 'user': userId, 'startingQuestion': '', 'goBack': False, 'publicView': False, 'publicEdit': False, 'questions': {}}
         saveToDatabase(key + '.json', {key: scenarioList[key]}, 'scenarios')
         scenarioId = key
 
@@ -304,6 +310,18 @@ def editScenario():
     if request.method == 'POST' and request.form.get('name') and request.form.get('startingQuestion'):
         scenarioList[session['scenarioId']]['name'] = request.form['name']
         scenarioList[session['scenarioId']]['startingQuestion'] = request.form['startingQuestion']
+        if request.form.get('goBack'):
+            scenarioList[session['scenarioId']]['goBack'] = True
+        else:
+            scenarioList[session['scenarioId']]['goBack'] = False
+        if request.form.get('publicView'):
+            scenarioList[session['scenarioId']]['publicView'] = True
+        else:
+            scenarioList[session['scenarioId']]['publicView'] = False
+        if request.form.get('publicEdit'):
+            scenarioList[session['scenarioId']]['publicEdit'] = True
+        else:
+            scenarioList[session['scenarioId']]['publicEdit'] = False
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenarioList[session['scenarioId']]}, 'scenarios')
 
     return render_template('editScenario.html', scenarioList=scenarioList)
@@ -353,6 +371,7 @@ def edit():
     if questionId:
         if questionId in scenarioList[session['scenarioId']]['questions']:
             session['questionId'] = questionId
+            session['scenarioPath'] = []
         else:
             return redirect(url_for('editScenario'))
     elif not session.get('questionId') or session['questionId'] not in scenarioList[session['scenarioId']]['questions']:
