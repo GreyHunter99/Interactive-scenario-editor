@@ -15,14 +15,14 @@
             <p><a href="{{ url_for('logout') }}">Wyloguj się</a></p>
         {% endif %}
         <p>
-        {% if url_for(request.endpoint) != '/' %}
+        {% if request.path != '/' %}
             <a href="{{ url_for('menu') }}">Menu główne</a>
         {% endif %}
         {% if session.get('userId') and (request.path != '/userProfile' or (request.args.get('userId') and request.args.get('userId') != session['userId'])) %}
             <a href="{{ url_for('userProfile') }}">Mój profil</a>
         {% endif %}
         </p>
-        {% if session.get('scenarioPath') and url_for(request.endpoint) != '/question' %}
+        {% if session.get('scenarioPath') and request.path != '/question' %}
             <p><a href="{{ url_for('question') }}">Wznów scenariusz</a></p>
         {% endif %}
         {% block body %}{% endblock %}

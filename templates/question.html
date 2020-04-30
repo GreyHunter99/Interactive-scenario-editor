@@ -7,7 +7,7 @@
 {% block body %}
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
     <div class="board">
-        <p><a href="{{ url_for('start', scenarioId=session['scenarioId']) }}">Reset scenariusza</a>
+        <p><a href="{{ url_for('start') }}">Reset scenariusza</a>
             {% if scenarioList[session['scenarioId']]['goBack'] %}<a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
         <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
         <h2>{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}</h2>

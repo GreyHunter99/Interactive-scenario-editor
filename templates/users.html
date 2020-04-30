@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="board">
+        {% for key in userList %}
+            <p><a href="{{ url_for('userProfile', userId=key) }}">{{ userList[key]["username"] }}</a></p>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -26,7 +26,8 @@ userList = createList('users')
 
 @app.route('/')
 def menu():
-    return render_template('menu.html')
+    global userList
+    return render_template('menu.html', userList=userList)
 
 
 @app.route('/gamebooks')
@@ -102,18 +103,18 @@ def changePassword():
     if not userId or not session.get('userId') or (userId != session['userId'] and not userList[session['userId']]['isAdmin']):
         return redirect(url_for('menu'))
 
-    if request.method == 'POST' and request.form.get('oldPassword') and request.form.get('newPassword') and request.form.get('repeatNewPassword'):
-        if request.form['oldPassword'] == userList[userId]['password']:
+    if request.method == 'POST' and request.form.get('newPassword') and request.form.get('repeatNewPassword') and ((userList[session['userId']]['isAdmin'] and userId != session['userId']) or request.form.get('oldPassword')):
+        if (userList[session['userId']]['isAdmin'] and userId != session['userId']) or request.form['oldPassword'] == userList[userId]['password']:
             if request.form['newPassword'] == request.form['repeatNewPassword']:
                 userList[userId]['password'] = request.form['newPassword']
                 saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
                 return redirect(url_for('userProfile', userId=userId))
             else:
-                return render_template('changePassword.html', userId=userId, wrongNewPasswords=True)
+                return render_template('changePassword.html', userList=userList, userId=userId, wrongNewPasswords=True)
         else:
-            return render_template('changePassword.html', userId=userId, wrongOldPassword=True)
+            return render_template('changePassword.html', userList=userList, userId=userId, wrongOldPassword=True)
 
-    return render_template('changePassword.html', userId=userId)
+    return render_template('changePassword.html', userList=userList, userId=userId)
 
 
 @app.route('/grantAdmin')
@@ -131,6 +132,16 @@ def grantAdmin():
     saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
 
     return redirect(url_for('userProfile', userId=userId))
+
+
+@app.route('/users')
+def users():
+    global userList
+
+    if not session.get('userId') or not userList[session['userId']]['isAdmin']:
+        return redirect(url_for('menu'))
+
+    return render_template('users.html', userList=userList)
 
 
 @app.route('/deleteUser', methods=['GET', 'POST'])
@@ -236,7 +247,7 @@ def start():
             for keyWord in scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'].values():
                 if keyWord.lower() in request.form['startingQuestion'].lower():
                     return redirect(url_for('question', questionId=questionId, keyWord=keyWord))
-        return render_template('start.html', scenarioList=scenarioList, noKeyWords=True)
+        return render_template('start.html', scenarioList=scenarioList, userList=userList, noKeyWords=True)
 
     return render_template('start.html', scenarioList=scenarioList, userList=userList)
 
@@ -314,14 +325,15 @@ def editScenario():
             scenarioList[session['scenarioId']]['goBack'] = True
         else:
             scenarioList[session['scenarioId']]['goBack'] = False
-        if request.form.get('publicView'):
-            scenarioList[session['scenarioId']]['publicView'] = True
-        else:
-            scenarioList[session['scenarioId']]['publicView'] = False
-        if request.form.get('publicEdit'):
-            scenarioList[session['scenarioId']]['publicEdit'] = True
-        else:
-            scenarioList[session['scenarioId']]['publicEdit'] = False
+        if scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin']:
+            if request.form.get('publicView'):
+                scenarioList[session['scenarioId']]['publicView'] = True
+            else:
+                scenarioList[session['scenarioId']]['publicView'] = False
+            if request.form.get('publicEdit'):
+                scenarioList[session['scenarioId']]['publicEdit'] = True
+            else:
+                scenarioList[session['scenarioId']]['publicEdit'] = False
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenarioList[session['scenarioId']]}, 'scenarios')
 
     return render_template('editScenario.html', scenarioList=scenarioList, userList=userList)

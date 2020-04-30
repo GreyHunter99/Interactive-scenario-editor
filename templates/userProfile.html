@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+    {% if session.get('userId') and userList[session['userId']]['isAdmin'] %}
+        <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
+    {% endif %}
     <div class="board">
     {% if usernameTaken %}
         <h2>Nazwa użytkownika zajęta</h2>
@@ -40,9 +43,9 @@
         {% for key in scenarioList %}
             {% if scenarioList[key]['user'] == userId and (scenarioList[key]['publicView'] or (session.get('userId') and (scenarioList[key]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])))%}
                 <p><a href="{{ url_for('start', scenarioId=key) }}">{{ scenarioList[key]["name"] }}</a>
-                    {% if session.get('userId') and ((scenarioList[session['scenarioId']]['publicView'] and scenarioList[session['scenarioId']]['publicEdit']) or (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
+                    {% if session.get('userId') and ((scenarioList[key]['publicView'] and scenarioList[key]['publicEdit']) or (scenarioList[key]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
                         <a href="{{ url_for('editScenario', scenarioId=key) }}">Edycja</a>
-                        {% if session.get('userId') and (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin']) %}
+                        {% if session.get('userId') and (scenarioList[key]['user'] == session['userId'] or userList[session['userId']]['isAdmin']) %}
                             <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń</a>
                         {% endif %}
                     {% endif %}
