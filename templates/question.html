@@ -7,8 +7,10 @@
 {% block body %}
     <p><a href="{{ url_for('menu') }}">Menu główne</a></p>
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
-    <p><a href="{{ url_for('edit') }}">Edytuj pytanie</a></p>
-    <p><a href="{{ url_for('start', scenarioId=session['scenerioId']) }}">Reset scenariusza</a></p>
+    <p><a href="{{ url_for('start', scenarioId=session['scenarioId']) }}">Reset scenariusza</a></p>
+    {% if session.get('userId') and (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+        <p><a href="{{ url_for('edit') }}">Edytuj pytanie</a></p>
+    {% endif %}
     <div class="board">
         <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
         <h2>{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}</h2>

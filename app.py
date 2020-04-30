@@ -45,11 +45,14 @@ def login():
     if session.get('userId'):
         return redirect(url_for('menu'))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form.get('username') and request.form.get('password'):
         for user in userList:
             if userList[user]['username'] == request.form['username']:
                 if userList[user]['password'] == request.form['password']:
                     session['userId'] = user
+                    session.pop('scenarioId', None)
+                    session.pop('questionId', None)
+                    session.pop('scenarioPath', None)
                     return redirect(url_for('menu'))
                 return render_template('login.html', wrongPassword=True)
         return render_template('login.html', wrongUsername=True)
@@ -63,7 +66,7 @@ def register():
     if session.get('userId'):
         return redirect(url_for('menu'))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form.get('username') and request.form.get('password') and request.form.get('repeatPassword'):
         for user in userList:
             if userList[user]['username'] == request.form['username']:
                 return render_template('register.html', usernameTaken=True)
@@ -76,6 +79,9 @@ def register():
         userList[key] = {'id': key, 'username': request.form['username'], 'password': request.form['password'], 'description': '', 'isAdmin': False}
         saveToDatabase(key + '.json', {key: userList[key]}, 'users')
         session['userId'] = key
+        session.pop('scenarioId', None)
+        session.pop('questionId', None)
+        session.pop('scenarioPath', None)
         return redirect(url_for('menu'))
 
     return render_template('register.html')
@@ -83,7 +89,7 @@ def register():
 
 @app.route('/logout')
 def logout():
-    session.pop('userId', None)
+    session.clear()
     return redirect(url_for('menu'))
 
 
@@ -96,7 +102,7 @@ def changePassword():
     if not userId or not session.get('userId') or (userId != session['userId'] and userList[session['userId']]['isAdmin'] is False):
         return redirect(url_for('menu'))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form.get('oldPassword') and request.form.get('newPassword') and request.form.get('repeatNewPassword'):
         if request.form['oldPassword'] == userList[userId]['password']:
             if request.form['newPassword'] == request.form['repeatNewPassword']:
                 userList[userId]['password'] = request.form['newPassword']
@@ -136,7 +142,7 @@ def deleteUser():
     if not session.get('userId') or not userId or userId not in userList or (userId != session['userId'] and userList[session['userId']]['isAdmin'] is False):
         return redirect(url_for('menu'))
 
-    if request.args.get('confirmDelete'):
+    if request.args.get('confirmDelete') and request.method == 'POST' and request.form.get('deleteUserScenarios'):
         isAdmin = userList[session['userId']]['isAdmin']
         for scenarioId in list(scenarioList):
             if scenarioList[scenarioId]['user'] == userId:
@@ -171,7 +177,7 @@ def userProfile():
     else:
         return redirect(url_for('menu'))
 
-    if request.method == 'POST' and (userId == session['userId'] or userList[session['userId']]['isAdmin'] is True):
+    if request.method == 'POST' and request.form.get('username') and request.form.get('description') and (userId == session['userId'] or userList[session['userId']]['isAdmin'] is True):
         for user in userList:
             if userList[user]['username'] == request.form['username'] and user != userId:
                 return render_template('userProfile.html', scenarioList=scenarioList, userList=userList, userId=userId, usernameTaken=True)
@@ -213,14 +219,8 @@ def scenarios():
 def start():
     global scenarioList, userList
 
-    if request.method == 'POST':
-        for questionId in scenarioList[session['scenarioId']]['questions']:
-            for keyWord in scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'].values():
-                if keyWord.lower() in request.form['startingQuestion'].lower():
-                    return redirect(url_for('question', questionId=questionId))
-        return render_template('start.html', scenarioList=scenarioList, noKeyWords=True)
-
     session['scenarioPath'] = []
+    session.pop('questionId', None)
 
     scenarioId = request.args.get('scenarioId')
     if scenarioId:
@@ -228,25 +228,48 @@ def start():
             session['scenarioId'] = scenarioId
         else:
             return redirect(url_for('menu'))
-    elif not session.get('scenarioId'):
-        return redirect(url_for('menu'))
+    elif not session.get('scenarioId') or session['scenarioId'] not in scenarioList:
+        return redirect(url_for('scenarios'))
+
+    if request.method == 'POST' and request.form.get('startingQuestion'):
+        for questionId in scenarioList[session['scenarioId']]['questions']:
+            for keyWord in scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'].values():
+                if keyWord.lower() in request.form['startingQuestion'].lower():
+                    return redirect(url_for('question', questionId=questionId, keyWord=keyWord))
+        return render_template('start.html', scenarioList=scenarioList, noKeyWords=True)
 
     return render_template('start.html', scenarioList=scenarioList, userList=userList)
 
 
 @app.route('/question')
 def question():
-    global scenarioList
+    global scenarioList, userList
+
+    if not session.get('scenarioId') or session['scenarioId'] not in scenarioList:
+        return redirect(url_for('scenarios'))
+
     questionId = request.args.get('questionId')
 
     if questionId and questionId in scenarioList[session['scenarioId']]['questions']:
-        scenarioPath = session['scenarioPath']
-        scenarioPath.append(questionId)
-        session['scenarioPath'] = scenarioPath
-    else:
+        if not session['scenarioPath']:
+            if request.args.get('keyWord') and request.args.get('keyWord') in scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'].values():
+                session['questionId'] = questionId
+                scenarioPath = session['scenarioPath']
+                scenarioPath.append(questionId)
+                session['scenarioPath'] = scenarioPath
+        else:
+            for answer in scenarioList[session['scenarioId']]['questions'][session['scenarioPath'][-1]]['answers'].values():
+                if answer['questionId'] == questionId:
+                    session['questionId'] = questionId
+                    scenarioPath = session['scenarioPath']
+                    scenarioPath.append(questionId)
+                    session['scenarioPath'] = scenarioPath
+                    break
+        return redirect(url_for('question'))
+    elif not session.get('questionId') or session['questionId'] not in scenarioList[session['scenarioId']]['questions']:
         return redirect(url_for('menu'))
 
-    return render_template('question.html', scenarioList=scenarioList, questionId=questionId)
+    return render_template('question.html', scenarioList=scenarioList, userList=userList , questionId=session['questionId'])
 
 
 @app.route('/editScenario', methods=['GET', 'POST'])
@@ -271,12 +294,14 @@ def editScenario():
     if scenarioId:
         if scenarioId in scenarioList and (scenarioList[scenarioId]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] is True):
             session['scenarioId'] = scenarioId
+            session['scenarioPath'] = []
+            session.pop('questionId', None)
         else:
             return redirect(url_for('menu'))
-    elif not session.get('scenarioId') or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
-        return redirect(url_for('menu'))
+    elif not session.get('scenarioId') or session['scenarioId'] not in scenarioList or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
+        return redirect(url_for('userProfile'))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form.get('name') and request.form.get('startingQuestion'):
         scenarioList[session['scenarioId']]['name'] = request.form['name']
         scenarioList[session['scenarioId']]['startingQuestion'] = request.form['startingQuestion']
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenarioList[session['scenarioId']]}, 'scenarios')
@@ -288,7 +313,7 @@ def editScenario():
 def deleteQuestion():
     global scenarioList, userList
 
-    if not session.get('userId') or not session.get('scenarioId') or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
+    if not session.get('userId') or not session.get('scenarioId') or session['scenarioId'] not in scenarioList or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
         return redirect(url_for('menu'))
 
     questionId = request.args.get('questionId')
@@ -311,7 +336,7 @@ def deleteQuestion():
 def edit():
     global scenarioList, userList
 
-    if not session.get('userId') or not session.get('scenarioId') or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
+    if not session.get('userId') or not session.get('scenarioId') or session['scenarioId'] not in scenarioList or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
         return redirect(url_for('menu'))
 
     questionId = request.args.get('questionId')
@@ -330,14 +355,14 @@ def edit():
             session['questionId'] = questionId
         else:
             return redirect(url_for('editScenario'))
-    elif not session.get('questionId'):
-        return redirect(url_for('menu'))
+    elif not session.get('questionId') or session['questionId'] not in scenarioList[session['scenarioId']]['questions']:
+        return redirect(url_for('editScenario'))
 
     createElement('keyWord', '')
     createElement('optionalText', {'text': '', 'conditionalQuestionId': '', 'exclusionQuestionId': ''})
     createElement('answer', {'text': '', 'questionId': '0', 'conditionalQuestionId': '', 'exclusionQuestionId': ''})
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form.get('text'):
         updateQuestion()
 
     return render_template('edit.html', scenarioList=scenarioList, questionId=session['questionId'])
@@ -347,7 +372,7 @@ def edit():
 def delete():
     global scenarioList, userList
 
-    if not session.get('userId') or not session.get('scenarioId') or not session.get('questionId') or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
+    if not session.get('userId') or not session.get('scenarioId') or session['scenarioId'] not in scenarioList or not session.get('questionId') or session['questionId'] not in scenarioList[session['scenarioId']]['questions'] or (scenarioList[session['scenarioId']]['user'] != session['userId'] and userList[session['userId']]['isAdmin'] is False):
         return redirect(url_for('menu'))
 
     if request.args.get('confirmDelete'):
