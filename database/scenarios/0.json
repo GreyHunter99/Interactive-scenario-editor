@@ -4,8 +4,8 @@
         "name": "Scenariusz Podr\u00f3\u017cy",
         "user": "1",
         "startingQuestion": "Jaki jest cel podr\u00f3\u017cy?",
-        "goBack": false,
-        "publicView": false,
+        "goBack": true,
+        "publicView": true,
         "publicEdit": false,
         "questions": {
             "0": {

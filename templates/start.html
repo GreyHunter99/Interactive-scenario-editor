@@ -8,7 +8,7 @@
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
     <div class="board">
         <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
-        {% if noKeyWords == True %}
+        {% if noKeyWords %}
             <h3>Nie znaleziono słów kluczowych. Spróbuj jeszcze raz.</h3>
         {% endif %}
         <h2>{{ scenarioList[session['scenarioId']]['startingQuestion'] }}</h2>
@@ -26,7 +26,7 @@
         {% if scenarioList[session['scenarioId']]['user'] in userList %}
             <p><a href="{{ url_for('userProfile', userId=scenarioList[session['scenarioId']]['user']) }}">Profil twórcy</a></p>
         {% endif %}
-        {% if session.get('userId') and (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+        {% if session.get('userId') and ((scenarioList[session['scenarioId']]['publicView'] and scenarioList[session['scenarioId']]['publicEdit']) or (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
             <p><a href="{{ url_for('editScenario') }}">Edytuj scenariusz</a></p>
         {% endif %}
     </div>

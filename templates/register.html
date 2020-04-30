@@ -5,10 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    {% if usernameTaken == True %}
+    {% if usernameTaken %}
         <h2>Nazwa użytkownika zajęta</h2>
     {% endif %}
-    {% if wrongPasswords == True %}
+    {% if wrongPasswords %}
         <h2>Hasła są różne</h2>
     {% endif %}
     <form action="{{ url_for('register') }}" method="post">

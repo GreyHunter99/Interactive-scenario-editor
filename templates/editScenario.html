@@ -16,7 +16,9 @@
         </form>
         <p>
             <a href="{{ url_for('edit', createQuestion=True) }}">Dodaj pytanie</a>
-            <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a>
+            {% if scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] %}
+                <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a>
+            {% endif %}
         </p>
         <p>
             <a href="{{ url_for('start') }}">Test scenariusza</a>

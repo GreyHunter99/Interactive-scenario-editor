@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block body %}
-    {% if wrongUsername == True %}
+    {% if wrongUsername %}
         <h2>Zła nazwa użytkownika</h2>
-    {% elif wrongPassword == True %}
+    {% elif wrongPassword  %}
         <h2>Złe hasło</h2>
     {% endif %}
     <form action="{{ url_for('login') }}" method="post">

@@ -4,8 +4,8 @@
         "name": "budowa_\u0142odzi",
         "user": "2",
         "startingQuestion": "czy masz do\u015bwiadczenie w obr\u00f3bce drewna",
-        "goBack": false,
-        "publicView": false,
+        "goBack": true,
+        "publicView": true,
         "publicEdit": false,
         "questions": {}
     }

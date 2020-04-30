@@ -8,7 +8,7 @@
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
     <div class="board">
         <p><a href="{{ url_for('start', scenarioId=session['scenarioId']) }}">Reset scenariusza</a>
-            <a href="{{ url_for('question', goBack=True) }}">Cofnij</a></p>
+            {% if scenarioList[session['scenarioId']]['goBack'] %}<a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
         <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
         <h2>{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}</h2>
         {% if scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'] != [] %}
@@ -28,7 +28,7 @@
             {{ question }},
         {% endfor %}
         </h3>
-        {% if session.get('userId') and (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+        {% if session.get('userId') and ((scenarioList[session['scenarioId']]['publicView'] and scenarioList[session['scenarioId']]['publicEdit']) or (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
             <p><a href="{{ url_for('edit', questionId=questionId) }}">Edytuj pytanie</a></p>
         {% endif %}
     </div>

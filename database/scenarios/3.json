@@ -4,8 +4,8 @@
         "name": "Budowa_\u0142odzi",
         "user": "2",
         "startingQuestion": "Co chcesz zbudowa\u0107?",
-        "goBack": false,
-        "publicView": false,
+        "goBack": true,
+        "publicView": true,
         "publicEdit": false,
         "questions": {
             "0": {

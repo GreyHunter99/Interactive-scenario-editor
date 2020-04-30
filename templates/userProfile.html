@@ -6,10 +6,10 @@
 
 {% block body %}
     <div class="board">
-    {% if usernameTaken == True %}
+    {% if usernameTaken %}
         <h2>Nazwa użytkownika zajęta</h2>
     {% endif %}
-    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin']) %}
         <form action="{{ url_for('userProfile', userId=userId) }}" method="post">
             <h1>Nazwa użytkownika:</h1><p><input name='username' type="text" required="required" value="{{ userList[userId]['username'] }}"></p>
             <h1>Opis profilu:</h1><p><input name='description' type="text" value="{{ userList[userId]['description'] }}"></p>
@@ -22,27 +22,29 @@
             <h3>{{ userList[userId]['description'] }}</h3>
         {% endif %}
     {% endif %}
-    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin']) %}
         <p><a href="{{ url_for('changePassword', userId=userId) }}">Zmień hasło</a></p>
     {% endif %}
-    {% if session.get('userId') and userList[session['userId']]['isAdmin'] == True and userId != session.get('userId') %}
-        <p><a href="{{ url_for('grantAdmin', userId=userId) }}">{% if userList[userId]['isAdmin'] == False %}Nadaj uprawnienia admina{% else %}Odbierz uprawnienia admina{% endif %}</a></p>
+    {% if session.get('userId') and userList[session['userId']]['isAdmin'] and userId != session.get('userId') %}
+        <p><a href="{{ url_for('grantAdmin', userId=userId) }}">{% if not userList[userId]['isAdmin'] %}Nadaj uprawnienia admina{% else %}Odbierz uprawnienia admina{% endif %}</a></p>
     {% endif %}
-    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin']) %}
         <p><a class="deleteButton" href="{{ url_for('deleteUser', userId=userId) }}">Usuń konto</a></p>
     {% endif %}
     </div>
     <div class="board">
-    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin']) %}
         <p><a href="{{ url_for('editScenario', userId=userId) }}">Stwórz scenariusz</a></p>
     {% endif %}
         <h1>Scenariusze użytkownika:</h1>
         {% for key in scenarioList %}
-            {% if scenarioList[key]['user'] == userId %}
+            {% if scenarioList[key]['user'] == userId and (scenarioList[key]['publicView'] or (session.get('userId') and (scenarioList[key]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])))%}
                 <p><a href="{{ url_for('start', scenarioId=key) }}">{{ scenarioList[key]["name"] }}</a>
-                    {% if session.get('userId') and (userId == session['userId'] or userList[session['userId']]['isAdmin'] == True) %}
+                    {% if session.get('userId') and ((scenarioList[session['scenarioId']]['publicView'] and scenarioList[session['scenarioId']]['publicEdit']) or (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
                         <a href="{{ url_for('editScenario', scenarioId=key) }}">Edycja</a>
-                        <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń</a>
+                        {% if session.get('userId') and (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin']) %}
+                            <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń</a>
+                        {% endif %}
                     {% endif %}
                 </p>
             {% endif %}
