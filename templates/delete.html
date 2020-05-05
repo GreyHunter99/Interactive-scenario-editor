@@ -8,7 +8,7 @@
     <div class="board">
         <h2>USUWANIE ELEMENTU:</h2>
         {% if elementName == 'user' %}
-            <h3>Użytkownik: {{ userList[elementId]['username'] }}</h3>
+            <h3>Użytkownik: {{ userName }}</h3>
             <h3>UWAGA!<br>Scenariusze użytkownika NIE zostaną usunięte automatycznie!<br>
                 Jeśli ich nie usuniesz pozostaną one w bazie jako scenariusze bez twórcy.</h3>
             <form action="{{ url_for('deleteUser', confirmDelete=True, userId=elementId) }}" method="post">
@@ -21,19 +21,19 @@
                     <button class="deleteButton" type="submit">Usuń konto</button></p>
             </form>
         {% elif elementName == 'scenario' %}
-            <h3>Scenariusz: {{ scenarioList[elementId]['name'] }}</h3>
-            <p><a href="{{ url_for('userProfile', userId=scenarioList[elementId]['user']) }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteScenario', confirmDelete=True, scenarioId=elementId) }}">Usuń</a></p>
+            <h3>Scenariusz: {{ scenarioName }}</h3>
+            <p><a href="{{ url_for('userProfile', userId=scenarioOwner) }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteScenario', confirmDelete=True, scenarioId=elementId) }}">Usuń</a></p>
         {% elif elementName == 'question' %}
-            <h3>Pytanie: {{ scenarioList[session['scenarioId']]['questions'][elementId]['text'] }}</h3>
+            <h3>Pytanie: {{ questionText }}</h3>
             <p><a href="{{ url_for('editScenario') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteQuestion', confirmDelete=True, questionId=elementId) }}">Usuń</a></p>
         {% elif elementName == 'optionalText' %}
-            <h3>Tekst opcjonalny: {{ scenarioList[session['scenarioId']]['questions'][session['questionId']]['optionalTexts'][elementId]['text'] }}</h3>
+            <h3>Tekst opcjonalny: {{ elementText }}</h3>
             <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete=True, optionalTextId=elementId) }}">Usuń</a></p>
         {% elif elementName == 'keyWord' %}
-            <h3>Słowo kluczowe: {{ scenarioList[session['scenarioId']]['questions'][session['questionId']]['keyWords'][elementId] }}</h3>
+            <h3>Słowo kluczowe: {{ elementText }}</h3>
             <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete=True, keyWordId=elementId) }}">Usuń</a></p>
         {% elif elementName == 'answer' %}
-            <h3>Odpowiedź: {{ scenarioList[session['scenarioId']]['questions'][session['questionId']]['answers'][elementId]['text'] }}</h3>
+            <h3>Odpowiedź: {{ elementText }}</h3>
             <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete=True, answerId=elementId) }}">Usuń</a></p>
         {% endif %}
     </div>

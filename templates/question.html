@@ -8,27 +8,23 @@
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
     <div class="board">
         <p><a href="{{ url_for('start') }}">Reset scenariusza</a>
-            {% if scenarioList[session['scenarioId']]['goBack'] %}<a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
-        <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
-        <h2>{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}</h2>
-        {% if scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'] != [] %}
-            {% for optionalText in scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'].values() %}
-                {% if (optionalText['conditionalQuestionId'] == '' or optionalText['conditionalQuestionId'] in session['scenarioPath']) and (optionalText['exclusionQuestionId'] == '' or optionalText['exclusionQuestionId'] not in session['scenarioPath']) %}
-                    <h2>{{ optionalText['text'] }}</h2>
-                {% endif %}
+            {% if scenario['goBack'] %}<a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
+        <h1>{{ scenario['name'] }}</h1>
+        <h2>{{ scenario['questions'][questionId]['text'] }}</h2>
+        {% if scenario['questions'][questionId]['optionalTexts'] != [] %}
+            {% for optionalText in scenario['questions'][questionId]['optionalTexts'].values() %}
+                <h2>{{ optionalText['text'] }}</h2>
             {% endfor %}
         {% endif %}
-        {% for answer in scenarioList[session['scenarioId']]['questions'][questionId]['answers'].values() %}
-            {% if (answer['conditionalQuestionId'] == '' or answer['conditionalQuestionId'] in session['scenarioPath']) and (answer['exclusionQuestionId'] == '' or answer['exclusionQuestionId'] not in session['scenarioPath']) %}
-                <p><a href="{{ url_for('question', questionId = answer['questionId']) }}">{{ answer['text'] }}</a></p>
-            {% endif %}
+        {% for answerKey, answer in scenario['questions'][questionId]['answers'].items() %}
+            <p><a href="{{ url_for('question', questionId = answer['questionId'], answerId = answerKey) }}">{{ answer['text'] }}</a></p>
         {% endfor %}
         <h3>Odwiedzone pytania:
         {% for question in session['scenarioPath'] %}
             {{ question }},
         {% endfor %}
         </h3>
-        {% if session.get('userId') and ((scenarioList[session['scenarioId']]['publicView'] and scenarioList[session['scenarioId']]['publicEdit']) or (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
+        {% if isGranted %}
             <p><a href="{{ url_for('edit', questionId=questionId) }}">Edytuj pytanie</a></p>
         {% endif %}
     </div>

@@ -6,9 +6,19 @@
 
 {% block body %}
     <div class="board">
-        {% for key in scenarioList %}
-            {% if scenarioList[key]['publicView'] or (session.get('userId') and (scenarioList[key]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
-                <p><a href="{{ url_for('start', scenarioId=key) }}">{{ scenarioList[key]["name"] }}</a></p>
+        {% if publicScenarioList['publicScenarios'] %}
+            <h2>Scenariusze publiczne:</h2>
+        {% endif %}
+        {% for key in publicScenarioList['publicScenarios'] %}
+            <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicScenarios'][key] }}</a></p>
+        {% endfor %}
+        {% if publicScenarioList['publicEditScenarios'] %}
+            <h2>Scenariusze publiczne do edycji dla wszystkich:</h2>
+        {% endif %}
+        {% for key in publicScenarioList['publicEditScenarios'] %}
+            <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicEditScenarios'][key] }}</a>
+            {% if session.get('userId') %}
+                    <a href="{{ url_for('editScenario', scenarioId=key) }}">Edycja</a></p>
             {% endif %}
         {% endfor %}
     </div>

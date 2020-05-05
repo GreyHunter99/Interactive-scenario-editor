@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    {% if session.get('userId') and userList[session['userId']]['isAdmin'] %}
+    {% if isAdmin %}
         <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
     {% endif %}
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>

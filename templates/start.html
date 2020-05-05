@@ -7,26 +7,26 @@
 {% block body %}
     <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
     <div class="board">
-        <h1>{{ scenarioList[session['scenarioId']]['name'] }}</h1>
+        <h1>{{ scenario['name'] }}</h1>
         {% if noKeyWords %}
             <h3>Nie znaleziono słów kluczowych. Spróbuj jeszcze raz.</h3>
         {% endif %}
-        <h2>{{ scenarioList[session['scenarioId']]['startingQuestion'] }}</h2>
+        <h2>{{ scenario['startingQuestion'] }}</h2>
         <form action="{{ url_for('start') }}" method="post">
-            <p><input name='startingQuestion' type="text"></p>
+            <p><input name='startingAnswer' type="text"></p>
             <p><input type="submit" value="Rozpocznij scenariusz"></p>
         </form>
         <h3>Obecne słowa kluczowe:
-        {% for question in scenarioList[session['scenarioId']]['questions'] %}
-            {% for keyWord in scenarioList[session['scenarioId']]['questions'][question]['keyWords'].values() %}
+        {% for question in scenario['questions'] %}
+            {% for keyWord in scenario['questions'][question]['keyWords'].values() %}
                 {{ keyWord }},
             {% endfor %}
         {% endfor %}
         </h3>
-        {% if scenarioList[session['scenarioId']]['user'] in userList %}
-            <p><a href="{{ url_for('userProfile', userId=scenarioList[session['scenarioId']]['user']) }}">Profil twórcy</a></p>
+        {% if ownerExists %}
+            <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
         {% endif %}
-        {% if session.get('userId') and ((scenarioList[session['scenarioId']]['publicView'] and scenarioList[session['scenarioId']]['publicEdit']) or (scenarioList[session['scenarioId']]['user'] == session['userId'] or userList[session['userId']]['isAdmin'])) %}
+        {% if isGranted %}
             <p><a href="{{ url_for('editScenario') }}">Edytuj scenariusz</a></p>
         {% endif %}
     </div>

@@ -10,7 +10,7 @@
         <form action="{{ url_for('edit') }}" method="post">
             <div class="block">
                 <h1>Treść pytania:</h1>
-                <p><input name='text' type="text" value="{{ scenarioList[session['scenarioId']]['questions'][questionId]['text'] }}"></p>
+                <p><input name='text' type="text" required="required" value="{{ scenario['questions'][questionId]['text'] }}"></p>
                 <p>
                     <a href="{{ url_for('edit', keyWord=True) }}">Dodaj słowo kluczowe</a>
                     <a href="{{ url_for('edit', optionalText=True) }}">Dodaj tekst opcjonalny</a>
@@ -20,63 +20,63 @@
                     <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=session['questionId']) }}">Usuń pytanie</a>
                 </p>
             </div>
-            {% if scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'] != {} %}
+            {% if scenario['questions'][questionId]['keyWords'] != {} %}
                 <div class="block">
                     <h1>Słowa kluczowe:</h1>
-                    {% for keyWordKey, keyWord in scenarioList[session['scenarioId']]['questions'][questionId]['keyWords'].items() %}
-                        <p><input name='keyWord{{ keyWordKey }}' type="text" value="{{ keyWord }}"></p>
+                    {% for keyWordKey, keyWord in scenario['questions'][questionId]['keyWords'].items() %}
+                        <p><input name='keyWord{{ keyWordKey }}' type="text" required="required" value="{{ keyWord }}"></p>
                         <p><a class="deleteButton" href="{{ url_for('delete', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
                     {% endfor %}
                 </div>
             {% endif %}
-            {% if scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'] != {} %}
+            {% if scenario['questions'][questionId]['optionalTexts'] != {} %}
                 <div class="block">
                     <h1>Tekst opcjonalny:</h1>
-                    {% for optionalTextKey, optionalText in scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'].items() %}
+                    {% for optionalTextKey, optionalText in scenario['questions'][questionId]['optionalTexts'].items() %}
                         <h2>Treść tekstu {{ optionalTextKey|int + 1 }} :</h2>
-                        <p><input name='optionalText{{ optionalTextKey }}' type="text" value="{{ optionalText['text'] }}"></p>
+                        <p><input name='optionalText{{ optionalTextKey }}' type="text" required="required" value="{{ optionalText['text'] }}"></p>
                         <h3>Pytanie warunkowe:</h3>
                         <p><select name="optionalTextConditionalQuestionId{{ optionalTextKey }}">
                             <option value="" selected="selected">Żadne</option>
-                            {% for questionKey, question in scenarioList[session['scenarioId']]['questions'].items() %}
-                                <option value="{{ questionKey }}"{% if scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'][optionalTextKey]['conditionalQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                            {% for questionKey, question in scenario['questions'].items() %}
+                                <option value="{{ questionKey }}"{% if scenario['questions'][questionId]['optionalTexts'][optionalTextKey]['conditionalQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
                             {% endfor %}
                         </select></p>
                         <h3>Pytanie wykluczające:</h3>
                         <p><select name="optionalTextExclusionQuestionId{{ optionalTextKey }}">
                             <option value="" selected="selected">Żadne</option>
-                            {% for questionKey, question in scenarioList[session['scenarioId']]['questions'].items() %}
-                                <option value="{{ questionKey }}"{% if scenarioList[session['scenarioId']]['questions'][questionId]['optionalTexts'][optionalTextKey]['exclusionQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                            {% for questionKey, question in scenario['questions'].items() %}
+                                <option value="{{ questionKey }}"{% if scenario['questions'][questionId]['optionalTexts'][optionalTextKey]['exclusionQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
                             {% endfor %}
                         </select></p>
                         <p><a class="deleteButton" href="{{ url_for('delete', optionalTextId=optionalTextKey) }}">Usuń tekst opcjonalny</a></p>
                     {% endfor %}
                 </div>
             {% endif %}
-            {% if scenarioList[session['scenarioId']]['questions'][questionId]['answers'] != {} %}
+            {% if scenario['questions'][questionId]['answers'] != {} %}
                 <div class="block">
                     <h1>Odpowiedzi:</h1>
-                    {% for answerKey, answer in scenarioList[session['scenarioId']]['questions'][questionId]['answers'].items() %}
+                    {% for answerKey, answer in scenario['questions'][questionId]['answers'].items() %}
                         <h2>Treść odpowiedzi {{ answerKey|int + 1 }} :</h2>
-                        <p><input name='answerText{{ answerKey }}' type="text" value="{{ answer['text'] }}"></p>
+                        <p><input name='answerText{{ answerKey }}' type="text" required="required" value="{{ answer['text'] }}"></p>
                         <h3>Pytanie docelowe:</h3>
                         <p><select name="answerQuestionId{{ answerKey }}">
-                            {% for questionKey, question in scenarioList[session['scenarioId']]['questions'].items() %}
-                                <option value="{{ questionKey }}"{% if scenarioList[session['scenarioId']]['questions'][questionId]['answers'][answerKey]['questionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                            {% for questionKey, question in scenario['questions'].items() %}
+                                <option value="{{ questionKey }}"{% if scenario['questions'][questionId]['answers'][answerKey]['questionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
                             {% endfor %}
                         </select></p>
                         <h3>Pytanie warunkowe:</h3>
                         <p><select name="answerConditionalQuestionId{{ answerKey }}">
                             <option value="" selected="selected">Żadne</option>
-                            {% for questionKey, question in scenarioList[session['scenarioId']]['questions'].items() %}
-                                <option value="{{ questionKey }}"{% if scenarioList[session['scenarioId']]['questions'][questionId]['answers'][answerKey]['conditionalQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                            {% for questionKey, question in scenario['questions'].items() %}
+                                <option value="{{ questionKey }}"{% if scenario['questions'][questionId]['answers'][answerKey]['conditionalQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
                             {% endfor %}
                         </select></p>
                         <h3>Pytanie wykluczające:</h3>
                         <p><select name="answerExclusionQuestionId{{ answerKey }}">
                             <option value="" selected="selected">Żadne</option>
-                            {% for questionKey, question in scenarioList[session['scenarioId']]['questions'].items() %}
-                                <option value="{{ questionKey }}"{% if scenarioList[session['scenarioId']]['questions'][questionId]['answers'][answerKey]['exclusionQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                            {% for questionKey, question in scenario['questions'].items() %}
+                                <option value="{{ questionKey }}"{% if scenario['questions'][questionId]['answers'][answerKey]['exclusionQuestionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
                             {% endfor %}
                         </select></p>
                         <p><a class="deleteButton" href="{{ url_for('delete', answerId=answerKey) }}">Usuń odpowiedź</a></p>
