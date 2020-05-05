@@ -304,8 +304,6 @@ def start():
     if session.get('userId') and session['userId'] not in userList:
         return redirect(url_for('logout'))
 
-    session['scenarioPath'] = []
-
     scenarioId = request.args.get('scenarioId')
 
     if scenarioId:
@@ -323,6 +321,8 @@ def start():
     else:
         return redirect(url_for('scenarios'))
 
+    session['scenarioPath'] = []
+
     if session.get('userId') and ((scenario['publicView'] and scenario['publicEdit']) or scenario['user'] == session['userId'] or userList[session['userId']]['isAdmin']):
         isGranted = True
     else:
@@ -338,7 +338,7 @@ def start():
             for keyWord in scenario['questions'][questionId]['keyWords'].values():
                 if keyWord.lower() in request.form['startingAnswer'].lower():
                     scenarioPath = session['scenarioPath']
-                    scenarioPath.append({'question': questionId, 'answer': request.form.get('startingAnswer')})
+                    scenarioPath.append({'question': questionId, 'startingAnswer': request.form.get('startingAnswer')})
                     session['scenarioPath'] = scenarioPath
                     return redirect(url_for('question'))
         return render_template('start.html', scenario=scenario, isGranted=isGranted, ownerExists=ownerExists, noKeyWords=True)
@@ -368,13 +368,14 @@ def question():
         if answerId in answers:
             answer = answers[answerId]
             if answer['questionId'] == questionId:
-                condition = False
-                noExclusion = False
-                if answer['conditionalQuestionId'] == "":
-                    condition = True
-                if answer['exclusionQuestionId'] == "":
+                condition = True
+                noExclusion = True
+                if answer['conditionalQuestionId']:
+                    condition = False
+                if answer['exclusionQuestionId']:
+                    noExclusion = False
+                if not condition or not noExclusion:
                     noExclusion = True
-                if not condition and not noExclusion:
                     for record in session['scenarioPath']:
                         if answer['exclusionQuestionId'] == record['question']:
                             noExclusion = False
@@ -383,7 +384,8 @@ def question():
                             condition = True
                 if condition and noExclusion:
                     scenarioPath = session['scenarioPath']
-                    scenarioPath.append({'question': questionId, 'answer': answerId})
+                    scenarioPath.append({'question': questionId})
+                    scenarioPath[-2]['answer'] = answerId
                     session['scenarioPath'] = scenarioPath
         return redirect(url_for('question'))
 
@@ -402,7 +404,60 @@ def question():
     else:
         isGranted = False
 
-    return render_template('question.html', scenario=scenario, questionId=currentQuestion, isGranted=isGranted)
+    answers = dict(scenario['questions'][session['scenarioPath'][-1]['question']]['answers'])
+    for answerId in list(answers):
+        condition = True
+        noExclusion = True
+        if answers[answerId]['conditionalQuestionId']:
+            condition = False
+        if answers[answerId]['exclusionQuestionId']:
+            noExclusion = False
+        if not condition or not noExclusion:
+            noExclusion = True
+            for record in session['scenarioPath']:
+                if answers[answerId]['exclusionQuestionId'] == record['question']:
+                    noExclusion = False
+                    break
+                if not condition and answers[answerId]['conditionalQuestionId'] == record['question']:
+                    condition = True
+        if not condition or not noExclusion:
+            del answers[answerId]
+
+    optionalTexts = dict(scenario['questions'][session['scenarioPath'][-1]['question']]['optionalTexts'])
+    for optionalTextId in list(optionalTexts):
+        condition = True
+        noExclusion = True
+        if optionalTexts[optionalTextId]['conditionalQuestionId']:
+            condition = False
+        if optionalTexts[optionalTextId]['exclusionQuestionId']:
+            noExclusion = False
+        if not condition or not noExclusion:
+            noExclusion = True
+            for record in session['scenarioPath']:
+                if optionalTexts[optionalTextId]['exclusionQuestionId'] == record['question']:
+                    noExclusion = False
+                    break
+                if not condition and optionalTexts[optionalTextId]['conditionalQuestionId'] == record['question']:
+                    condition = True
+        if not condition or not noExclusion:
+            del optionalTexts[optionalTextId]
+
+    return render_template('question.html', scenario=scenario, answers=answers, optionalTexts=optionalTexts, questionId=currentQuestion, isGranted=isGranted)
+
+
+@app.route('/currentStory')
+def currentStory():
+    global scenarioList, userList
+
+    if session.get('userId') and session['userId'] not in userList:
+        return redirect(url_for('logout'))
+
+    if not session.get('scenarioPath'):
+        return redirect(url_for('menu'))
+
+    scenario = scenarioList[session['scenarioId']]
+
+    return render_template('currentStory.html', scenario=scenario)
 
 
 @app.route('/editScenario', methods=['GET', 'POST'])
