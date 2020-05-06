@@ -11,13 +11,13 @@
     </div>
     <div class="board">
         <h2>{{ scenario['startingQuestion'] }}</h2>
-        <h3>{{ session['scenarioPath'][0]['startingAnswer'] }}</h3>
+        <h3>{{ session['startingAnswer'] }}</h3>
     </div>
     {% for record in session['scenarioPath'] %}
         <div class="board">
-            <h2>{{ scenario['questions'][record['question']]['text'] }}</h2>
-            {% if record['answer'] %}
-                <h3>{{ scenario['questions'][record['question']]['answers'][record['answer']]['text'] }}</h3>
+            <h2>{{ scenario['questions'][record.split("-")[0]]['text'] }}</h2>
+            {% if "-" in record %}
+                <h3>{{ scenario['questions'][record.split("-")[0]]['answers'][record.split("-")[1]]['text'] }}</h3>
             {% endif %}
         </div>
     {% endfor %}

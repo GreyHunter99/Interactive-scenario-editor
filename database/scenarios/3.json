@@ -22,20 +22,20 @@
                     "0": {
                         "text": "Tak",
                         "questionId": "2",
-                        "conditionalAnswerId": "",
-                        "exclusionAnswerId": ""
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     },
                     "1": {
                         "text": "S\u0142abo",
                         "questionId": "3",
-                        "conditionalAnswerId": "",
-                        "exclusionAnswerId": ""
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     },
                     "2": {
                         "text": "Nie",
                         "questionId": "5",
-                        "conditionalAnswerId": "",
-                        "exclusionAnswerId": ""
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     }
                 }
             },
@@ -47,14 +47,14 @@
                     "0": {
                         "text": "Tak",
                         "questionId": "6",
-                        "conditionalAnswerId": "",
-                        "exclusionAnswerId": ""
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     },
                     "1": {
                         "text": "Nie",
                         "questionId": "7",
-                        "conditionalAnswerId": "",
-                        "exclusionAnswerId": ""
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     }
                 }
             },
@@ -66,8 +66,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "1",
-                        "conditionalAnswerId": "",
-                        "exclusionAnswerId": ""
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     }
                 }
             },
@@ -79,8 +79,8 @@
                     "0": {
                         "text": "Dalej",
                         "questionId": "1",
-                        "conditionalAnswerId": "",
-                        "exclusionAnswerId": ""
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     }
                 }
             },
