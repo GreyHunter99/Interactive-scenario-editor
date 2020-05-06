@@ -598,6 +598,18 @@ def edit():
     createElement('optionalText', {'text': 'Tekst Opcjonalny', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
     createElement('answer', {'text': 'Odpowiedź', 'questionId': '0', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
 
+    if request.args.get('elements') and request.args.get('requirements') and request.args.get('elementId'):
+        if request.args.get('requirementId'):
+            deleteRequirement('optionalTexts', 'conditionalAnswers', scenario)
+            deleteRequirement('optionalTexts', 'exclusionAnswers', scenario)
+            deleteRequirement('answers', 'conditionalAnswers', scenario)
+            deleteRequirement('answers', 'exclusionAnswers', scenario)
+        else:
+            createRequirement('optionalTexts', 'conditionalAnswers', scenario)
+            createRequirement('optionalTexts', 'exclusionAnswers', scenario)
+            createRequirement('answers', 'conditionalAnswers', scenario)
+            createRequirement('answers', 'exclusionAnswers', scenario)
+
     if request.method == 'POST' and request.form.get('text'):
         updateQuestion(scenario)
 
@@ -662,20 +674,41 @@ def deleteElement(element, scenario):
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
+def createRequirement(elements, requirements, scenario):
+    "Funkcja stwarzająca wymaganie do danego elementu"
+    if request.args.get('elements') == elements and request.args.get('requirements') == requirements:
+        if request.args.get('elementId') in scenario['questions'][session['questionId']][elements]:
+            scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements].append("0-0")
+            saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
+
+
+def deleteRequirement(elements, requirements, scenario):
+    "Funkcja usuwająca wymaganie do danego elementu"
+    if request.args.get('elements') == elements and request.args.get('requirements') == requirements:
+        if request.args.get('elementId') in scenario['questions'][session['questionId']][elements]:
+            if int(request.args.get('requirementId')) < len(scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements]):
+                del scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements][int(request.args.get('requirementId'))]
+                saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
+
+
 def updateQuestion(scenario):
     "Funkcja aktualizująca dane pytania"
     scenario['questions'][session['questionId']]['text'] = request.form['text']
-    for key in scenario['questions'][session['questionId']]['keyWords']:
-        scenario['questions'][session['questionId']]['keyWords'][key] = request.form['keyWord' + key]
-    for key in scenario['questions'][session['questionId']]['optionalTexts']:
-        scenario['questions'][session['questionId']]['optionalTexts'][key]['text'] = request.form['optionalText' + key]
-        scenario['questions'][session['questionId']]['optionalTexts'][key]['conditionalAnswers'][0] = request.form['optionalTextConditionalAnswers' + key]
-        scenario['questions'][session['questionId']]['optionalTexts'][key]['exclusionAnswers'][0] = request.form['optionalTextExclusionAnswers' + key]
-    for key in scenario['questions'][session['questionId']]['answers']:
-        scenario['questions'][session['questionId']]['answers'][key]['text'] = request.form['answerText' + key]
-        scenario['questions'][session['questionId']]['answers'][key]['questionId'] = request.form['answerQuestionId' + key]
-        scenario['questions'][session['questionId']]['answers'][key]['conditionalAnswers'][0] = request.form['answerConditionalAnswers' + key]
-        scenario['questions'][session['questionId']]['answers'][key]['exclusionAnswers'][0] = request.form['answerExclusionAnswers' + key]
+    for keyWordKey in scenario['questions'][session['questionId']]['keyWords']:
+        scenario['questions'][session['questionId']]['keyWords'][keyWordKey] = request.form['keyWord' + keyWordKey]
+    for optionalTextKey, optionalText in scenario['questions'][session['questionId']]['optionalTexts'].items():
+        optionalText['text'] = request.form['optionalText' + optionalTextKey]
+        for requirementKey in range(len(optionalText['conditionalAnswers'])):
+            optionalText['conditionalAnswers'][requirementKey] = request.form['optionalText' + optionalTextKey + 'ConditionalAnswers' + str(requirementKey)]
+        for requirementKey in range(len(optionalText['exclusionAnswers'])):
+            optionalText['exclusionAnswers'][requirementKey] = request.form['optionalText' + optionalTextKey + 'ExclusionAnswers' + str(requirementKey)]
+    for answerKey, answer in scenario['questions'][session['questionId']]['answers'].items():
+        answer['text'] = request.form['answerText' + answerKey]
+        answer['questionId'] = request.form['answerQuestionId' + answerKey]
+        for requirementKey in range(len(answer['conditionalAnswers'])):
+            answer['conditionalAnswers'][requirementKey] = request.form['answer' + answerKey + 'ConditionalAnswers' + str(requirementKey)]
+        for requirementKey in range(len(answer['exclusionAnswers'])):
+            answer['exclusionAnswers'][requirementKey] = request.form['answer' + answerKey + 'ExclusionAnswers' + str(requirementKey)]
     saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
