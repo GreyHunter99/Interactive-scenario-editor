@@ -256,8 +256,12 @@
                     "0": {
                         "text": "1 dzie\u0144",
                         "questionId": "16",
-                        "conditionalAnswers": ["7-0"],
-                        "exclusionAnswers": ["4-0"]
+                        "conditionalAnswers": [
+                            "7-0"
+                        ],
+                        "exclusionAnswers": [
+                            "4-0"
+                        ]
                     },
                     "1": {
                         "text": "2-4 dni",
@@ -337,7 +341,9 @@
                 "optionalTexts": {
                     "0": {
                         "text": "Pami\u0119taj o stroju k\u0105pielowym.",
-                        "conditionalAnswers": ["4-0"],
+                        "conditionalAnswers": [
+                            "4-0"
+                        ],
                         "exclusionAnswers": []
                     }
                 },
@@ -356,7 +362,9 @@
                 "optionalTexts": {
                     "0": {
                         "text": "Wybierz odpowiednie obuwie do klimatu.",
-                        "conditionalAnswers": ["0-0"],
+                        "conditionalAnswers": [
+                            "0-0"
+                        ],
                         "exclusionAnswers": []
                     }
                 },
