@@ -338,7 +338,7 @@ def start():
             for keyWord in scenario['questions'][questionId]['keyWords'].values():
                 if keyWord.lower() in request.form['startingAnswer'].lower():
                     scenarioPath = session['scenarioPath']
-                    scenarioPath.append({'question': questionId, 'startingAnswer': request.form.get('startingAnswer')})
+                    scenarioPath.append({'question': questionId, 'answer': "", 'startingAnswer': request.form.get('startingAnswer')})
                     session['scenarioPath'] = scenarioPath
                     return redirect(url_for('question'))
         return render_template('start.html', scenario=scenario, isGranted=isGranted, ownerExists=ownerExists, noKeyWords=True)
@@ -370,21 +370,21 @@ def question():
             if answer['questionId'] == questionId:
                 condition = True
                 noExclusion = True
-                if answer['conditionalQuestionId']:
+                if answer['conditionalAnswerId']:
                     condition = False
-                if answer['exclusionQuestionId']:
+                if answer['exclusionAnswerId']:
                     noExclusion = False
                 if not condition or not noExclusion:
                     noExclusion = True
                     for record in session['scenarioPath']:
-                        if answer['exclusionQuestionId'] == record['question']:
+                        if answer['exclusionAnswerId'] == record['question']+"-"+record['answer']:
                             noExclusion = False
                             break
-                        if not condition and answer['conditionalQuestionId'] == record['question']:
+                        if not condition and answer['conditionalAnswerId'] == record['question']+"-"+record['answer']:
                             condition = True
                 if condition and noExclusion:
                     scenarioPath = session['scenarioPath']
-                    scenarioPath.append({'question': questionId})
+                    scenarioPath.append({'question': questionId, 'answer': ""})
                     scenarioPath[-2]['answer'] = answerId
                     session['scenarioPath'] = scenarioPath
         return redirect(url_for('question'))
@@ -408,17 +408,17 @@ def question():
     for answerId in list(answers):
         condition = True
         noExclusion = True
-        if answers[answerId]['conditionalQuestionId']:
+        if answers[answerId]['conditionalAnswerId']:
             condition = False
-        if answers[answerId]['exclusionQuestionId']:
+        if answers[answerId]['exclusionAnswerId']:
             noExclusion = False
         if not condition or not noExclusion:
             noExclusion = True
             for record in session['scenarioPath']:
-                if answers[answerId]['exclusionQuestionId'] == record['question']:
+                if record['answer'] and answers[answerId]['exclusionAnswerId'] == record['question']+"-"+record['answer']:
                     noExclusion = False
                     break
-                if not condition and answers[answerId]['conditionalQuestionId'] == record['question']:
+                if record['answer'] and not condition and answers[answerId]['conditionalAnswerId'] == record['question']+"-"+record['answer']:
                     condition = True
         if not condition or not noExclusion:
             del answers[answerId]
@@ -427,17 +427,17 @@ def question():
     for optionalTextId in list(optionalTexts):
         condition = True
         noExclusion = True
-        if optionalTexts[optionalTextId]['conditionalQuestionId']:
+        if optionalTexts[optionalTextId]['conditionalAnswerId']:
             condition = False
-        if optionalTexts[optionalTextId]['exclusionQuestionId']:
+        if optionalTexts[optionalTextId]['exclusionAnswerId']:
             noExclusion = False
         if not condition or not noExclusion:
             noExclusion = True
             for record in session['scenarioPath']:
-                if optionalTexts[optionalTextId]['exclusionQuestionId'] == record['question']:
+                if optionalTexts[optionalTextId]['exclusionAnswerId'] == record['question']+"-"+record['answer']:
                     noExclusion = False
                     break
-                if not condition and optionalTexts[optionalTextId]['conditionalQuestionId'] == record['question']:
+                if not condition and optionalTexts[optionalTextId]['conditionalAnswerId'] == record['question']+"-"+record['answer']:
                     condition = True
         if not condition or not noExclusion:
             del optionalTexts[optionalTextId]
@@ -590,8 +590,8 @@ def edit():
         return redirect(url_for('editScenario'))
 
     createElement('keyWord', 'Słowo kluczowe', scenario)
-    createElement('optionalText', {'text': 'Tekst Opcjonalny', 'conditionalQuestionId': '', 'exclusionQuestionId': ''}, scenario)
-    createElement('answer', {'text': 'Odpowiedź', 'questionId': '0', 'conditionalQuestionId': '', 'exclusionQuestionId': ''}, scenario)
+    createElement('optionalText', {'text': 'Tekst Opcjonalny', 'conditionalAnswerId': '', 'exclusionAnswerId': ''}, scenario)
+    createElement('answer', {'text': 'Odpowiedź', 'questionId': '0', 'conditionalAnswerId': '', 'exclusionAnswerId': ''}, scenario)
 
     if request.method == 'POST' and request.form.get('text'):
         updateQuestion(scenario)
@@ -664,13 +664,13 @@ def updateQuestion(scenario):
         scenario['questions'][session['questionId']]['keyWords'][key] = request.form['keyWord' + key]
     for key in scenario['questions'][session['questionId']]['optionalTexts']:
         scenario['questions'][session['questionId']]['optionalTexts'][key]['text'] = request.form['optionalText' + key]
-        scenario['questions'][session['questionId']]['optionalTexts'][key]['conditionalQuestionId'] = request.form['optionalTextConditionalQuestionId' + key]
-        scenario['questions'][session['questionId']]['optionalTexts'][key]['exclusionQuestionId'] = request.form['optionalTextExclusionQuestionId' + key]
+        scenario['questions'][session['questionId']]['optionalTexts'][key]['conditionalAnswerId'] = request.form['optionalTextConditionalAnswerId' + key]
+        scenario['questions'][session['questionId']]['optionalTexts'][key]['exclusionAnswerId'] = request.form['optionalTextExclusionAnswerId' + key]
     for key in scenario['questions'][session['questionId']]['answers']:
         scenario['questions'][session['questionId']]['answers'][key]['text'] = request.form['answerText' + key]
         scenario['questions'][session['questionId']]['answers'][key]['questionId'] = request.form['answerQuestionId' + key]
-        scenario['questions'][session['questionId']]['answers'][key]['conditionalQuestionId'] = request.form['answerConditionalQuestionId' + key]
-        scenario['questions'][session['questionId']]['answers'][key]['exclusionQuestionId'] = request.form['answerExclusionQuestionId' + key]
+        scenario['questions'][session['questionId']]['answers'][key]['conditionalAnswerId'] = request.form['answerConditionalAnswerId' + key]
+        scenario['questions'][session['questionId']]['answers'][key]['exclusionAnswerId'] = request.form['answerExclusionAnswerId' + key]
     saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
