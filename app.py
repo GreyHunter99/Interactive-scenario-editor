@@ -26,17 +26,10 @@ userList = createList('users')
 
 @app.route('/')
 def menu():
-    global userList
+    if noUserInDatabase():
+        return noUserInDatabase()
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
-
-    if session.get('userId') and userList[session['userId']]['isAdmin']:
-        isAdmin = True
-    else:
-        isAdmin = False
-
-    return render_template('menu.html', isAdmin=isAdmin)
+    return render_template('menu.html', isGranted=isGranted())
 
 
 @app.route('/gamebooks')
@@ -107,15 +100,15 @@ def logout():
 def changePassword():
     global userList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     userId = request.args.get('userId')
 
-    if not userId or not session.get('userId') or (userId != session['userId'] and not userList[session['userId']]['isAdmin']):
+    if not userId or (not isGranted(userId=userId) and not isGranted()):
         return redirect(url_for('menu'))
 
-    if userList[session['userId']]['isAdmin'] and userId != session['userId']:
+    if isGranted() and not isGranted(userId=userId):
         noOldPassword = True
     else:
         noOldPassword = False
@@ -138,12 +131,12 @@ def changePassword():
 def grantAdmin():
     global userList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     userId = request.args.get('userId')
 
-    if not userId or not session.get('userId') or not userList[session['userId']]['isAdmin'] or userId == session.get('userId'):
+    if not userId or not isGranted() or isGranted(userId=userId):
         return redirect(url_for('menu'))
 
     if not userList[userId]['isAdmin']:
@@ -159,10 +152,10 @@ def grantAdmin():
 def users():
     global userList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
-    if not session.get('userId') or not userList[session['userId']]['isAdmin']:
+    if not isGranted():
         return redirect(url_for('menu'))
 
     return render_template('users.html', userList=userList)
@@ -172,16 +165,16 @@ def users():
 def deleteUser():
     global scenarioList, userList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     userId = request.args.get('userId')
 
-    if not session.get('userId') or not userId or userId not in userList or (userId != session['userId'] and not userList[session['userId']]['isAdmin']):
+    if not userId or userId not in userList or (not isGranted(userId=userId) and not isGranted()):
         return redirect(url_for('menu'))
 
     if request.args.get('confirmDelete') and request.method == 'POST' and request.form.get('deleteUserScenarios'):
-        isAdmin = userList[session['userId']]['isAdmin']
+        userIsAdmin = isGranted()
         for scenarioId in list(scenarioList):
             if scenarioList[scenarioId]['user'] == userId:
                 if request.form['deleteUserScenarios'] == 'Tak':
@@ -192,24 +185,22 @@ def deleteUser():
                     saveToDatabase(scenarioId + '.json', {scenarioId: scenarioList[scenarioId]}, 'scenarios')
         del userList[userId]
         os.remove(PROJECT_ROOT + "/database/users/" + userId + ".json")
-        if isAdmin:
+        if userIsAdmin:
             return redirect(url_for('menu'))
         else:
             return redirect(url_for('logout'))
 
-    elementName = 'user'
-    elementId = userId
-    userName = userList[userId]['username']
+    elementData = {'name': 'user', 'id': userId, 'username': userList[userId]['username']}
 
-    return render_template('delete.html', userName=userName, elementName=elementName, elementId=elementId)
+    return render_template('delete.html', elementData=elementData)
 
 
 @app.route('/userProfile', methods=['GET', 'POST'])
 def userProfile():
     global scenarioList, userList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     userId = request.args.get('userId')
 
@@ -219,16 +210,6 @@ def userProfile():
         userId = session['userId']
     else:
         return redirect(url_for('menu'))
-
-    if session.get('userId') and userList[session['userId']]['isAdmin']:
-        isAdmin = True
-    else:
-        isAdmin = False
-
-    if session.get('userId') and userId == session['userId']:
-        isGranted = True
-    else:
-        isGranted = False
 
     userData = dict(userList[userId])
     del userData['password']
@@ -243,43 +224,42 @@ def userProfile():
             else:
                 userScenarioList['publicScenarios'][key] = scenario['name']
 
-    if request.method == 'POST' and request.form.get('username') and request.form.get('description') is not None and (isGranted or isAdmin):
+    if request.method == 'POST' and request.form.get('username') and request.form.get('description') is not None and (isGranted(userId=userId) or isGranted()):
         for user in userList:
             if userList[user]['username'] == request.form['username'] and user != userId:
-                return render_template('userProfile.html', isAdmin=isAdmin, isGranted=isGranted, userScenarioList=userScenarioList, userData=userData, usernameTaken=True)
+                return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userData=userData, usernameTaken=True)
         userList[userId]['username'] = request.form['username']
         userList[userId]['description'] = request.form['description']
         saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
+        userData = dict(userList[userId])
+        del userData['password']
 
-    return render_template('userProfile.html', isAdmin=isAdmin, isGranted=isGranted, userScenarioList=userScenarioList, userData=userData)
+    return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userData=userData)
 
 
 @app.route('/deleteScenario')
 def deleteScenario():
-    global scenarioList, userList
+    global scenarioList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     scenarioId = request.args.get('scenarioId')
 
-    if not session.get('userId') or not scenarioId or scenarioId not in scenarioList or (scenarioList[scenarioId]['user'] != session['userId'] and not userList[session['userId']]['isAdmin']):
+    if not scenarioId or scenarioId not in scenarioList or not isGranted(scenario=scenarioList[scenarioId]):
         return redirect(url_for('menu'))
 
     scenario = scenarioList[scenarioId]
 
     if request.args.get('confirmDelete'):
         userId = scenario['user']
-        del scenario
+        del scenarioList[scenarioId]
         os.remove(PROJECT_ROOT + "/database/scenarios/" + scenarioId + ".json")
         return redirect(url_for('userProfile', userId=userId))
 
-    elementName = 'scenario'
-    elementId = scenarioId
-    scenarioName = scenario['name']
-    scenarioOwner = scenario['user']
+    elementData = {'name': 'scenario', 'id': scenarioId, 'scenarioName': scenario['name'], 'scenarioOwner': scenario['user']}
 
-    return render_template('delete.html', scenarioName=scenarioName, scenarioOwner=scenarioOwner, elementName=elementName, elementId=elementId)
+    return render_template('delete.html', elementData=elementData)
 
 
 @app.route('/scenarios')
@@ -301,33 +281,26 @@ def scenarios():
 def start():
     global scenarioList, userList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     scenarioId = request.args.get('scenarioId')
 
     if scenarioId:
         if scenarioId in scenarioList:
-            scenario = scenarioList[scenarioId]
-            if scenario['publicView'] or (session.get('userId') and (scenario['user'] == session['userId'] or userList[session['userId']]['isAdmin'])):
+            if scenarioList[scenarioId]['publicView'] or isGranted(scenario=scenarioList[scenarioId]):
                 session['scenarioId'] = scenarioId
                 session.pop('questionId', None)
+            else:
+                return redirect(url_for('menu'))
         else:
             return redirect(url_for('menu'))
-    elif session.get('scenarioId') and session['scenarioId'] in scenarioList:
-        scenario = scenarioList[session['scenarioId']]
-        if not scenario['publicView'] and (not session.get('userId') or (scenario['user'] != session['userId'] and not userList[session['userId']]['isAdmin'])):
-            return redirect(url_for('scenarios'))
-    else:
-        return redirect(url_for('scenarios'))
+    elif checkScenarioSession(story='scenarios'):
+        return checkScenarioSession(story='scenarios')
+    scenario = scenarioList[session['scenarioId']]
 
     session['scenarioPath'] = []
     session.pop('startingAnswer', None)
-
-    if session.get('userId') and ((scenario['publicView'] and scenario['publicEdit']) or scenario['user'] == session['userId'] or userList[session['userId']]['isAdmin']):
-        isGranted = True
-    else:
-        isGranted = False
 
     if scenario['user'] in userList:
         ownerExists = True
@@ -343,24 +316,21 @@ def start():
                     session['scenarioPath'] = scenarioPath
                     session['startingAnswer'] = request.form['startingAnswer']
                     return redirect(url_for('question'))
-        return render_template('start.html', scenario=scenario, isGranted=isGranted, ownerExists=ownerExists, noKeyWords=True)
+        return render_template('start.html', scenario=scenario, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists, noKeyWords=True)
 
-    return render_template('start.html', scenario=scenario, isGranted=isGranted, ownerExists=ownerExists)
+    return render_template('start.html', scenario=scenario, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists)
 
 
 @app.route('/question')
 def question():
-    global scenarioList, userList
+    global scenarioList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
-    if session.get('scenarioId') and session['scenarioId'] in scenarioList:
-        scenario = scenarioList[session['scenarioId']]
-        if not scenario['publicView'] and (not session.get('userId') or (scenario['user'] != session['userId'] and not userList[session['userId']]['isAdmin'])):
-            return redirect(url_for('start'))
-    else:
-        return redirect(url_for('start'))
+    if checkScenarioSession(story='start'):
+        return checkScenarioSession(story='start')
+    scenario = scenarioList[session['scenarioId']]
 
     questionId = request.args.get('questionId')
     answerId = request.args.get('answerId')
@@ -370,21 +340,7 @@ def question():
         if answerId in answers:
             answer = answers[answerId]
             if answer['questionId'] == questionId:
-                condition = True
-                noExclusion = True
-                if answer['conditionalAnswers']:
-                    condition = False
-                if answer['exclusionAnswers']:
-                    noExclusion = False
-                if not condition or not noExclusion:
-                    noExclusion = True
-                    for record in session['scenarioPath']:
-                        if record in answer['exclusionAnswers']:
-                            noExclusion = False
-                            break
-                        if not condition and record in answer['conditionalAnswers']:
-                            condition = True
-                if condition and noExclusion:
+                if checkRequirements(answer):
                     scenarioPath = session['scenarioPath']
                     scenarioPath.append(questionId)
                     scenarioPath[-2] += "-"+answerId
@@ -397,64 +353,32 @@ def question():
         if session['scenarioPath']:
             scenarioPath[-1] = scenarioPath[-1].split("-")[0]
         session['scenarioPath'] = scenarioPath
+        return redirect(url_for('question'))
 
     if session['scenarioPath'] and session['scenarioPath'][-1].split("-")[0] in scenario['questions']:
-         currentQuestion = session['scenarioPath'][-1].split("-")[0]
+        currentQuestion = session['scenarioPath'][-1].split("-")[0]
     else:
         return redirect(url_for('start'))
 
-    if session.get('userId') and ((scenario['publicView'] and scenario['publicEdit']) or scenario['user'] == session['userId'] or userList[session['userId']]['isAdmin']):
-        isGranted = True
-    else:
-        isGranted = False
-
     answers = dict(scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['answers'])
     for answerId in list(answers):
-        condition = True
-        noExclusion = True
-        if answers[answerId]['conditionalAnswers']:
-            condition = False
-        if answers[answerId]['exclusionAnswers']:
-            noExclusion = False
-        if not condition or not noExclusion:
-            noExclusion = True
-            for record in session['scenarioPath']:
-                if record in answers[answerId]['exclusionAnswers']:
-                    noExclusion = False
-                    break
-                if not condition and record in answers[answerId]['conditionalAnswers']:
-                    condition = True
-        if not condition or not noExclusion:
+        if not checkRequirements(answers[answerId]):
             del answers[answerId]
 
     optionalTexts = dict(scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['optionalTexts'])
     for optionalTextId in list(optionalTexts):
-        condition = True
-        noExclusion = True
-        if optionalTexts[optionalTextId]['conditionalAnswers']:
-            condition = False
-        if optionalTexts[optionalTextId]['exclusionAnswers']:
-            noExclusion = False
-        if not condition or not noExclusion:
-            noExclusion = True
-            for record in session['scenarioPath']:
-                if record in optionalTexts[optionalTextId]['exclusionAnswers']:
-                    noExclusion = False
-                    break
-                if not condition and record in optionalTexts[optionalTextId]['conditionalAnswers']:
-                    condition = True
-        if not condition or not noExclusion:
+        if not checkRequirements(optionalTexts[optionalTextId]):
             del optionalTexts[optionalTextId]
 
-    return render_template('question.html', scenario=scenario, answers=answers, optionalTexts=optionalTexts, questionId=currentQuestion, isGranted=isGranted)
+    return render_template('question.html', scenario=scenario, answers=answers, optionalTexts=optionalTexts, questionId=currentQuestion, isGranted=isGranted(scenario=scenario, publicEdit=True))
 
 
 @app.route('/currentStory')
 def currentStory():
-    global scenarioList, userList
+    global scenarioList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     if not session.get('scenarioPath'):
         return redirect(url_for('menu'))
@@ -466,34 +390,32 @@ def currentStory():
 
 @app.route('/editScenario', methods=['GET', 'POST'])
 def editScenario():
-    global scenarioList, userList
+    global scenarioList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
     if not session.get('userId'):
         return redirect(url_for('menu'))
-    elif userList[session['userId']]['isAdmin']:
-        isAdmin = True
-    else:
-        isAdmin = False
 
     scenarioId = request.args.get('scenarioId')
     userId = request.args.get('userId')
 
-    if userId and (userId == session['userId'] or isAdmin):
-        if scenarioList == {}:
-            key = '0'
+    if userId:
+        if isGranted(userId=userId) or isGranted():
+            if scenarioList == {}:
+                key = '0'
+            else:
+                key = str(int(max(scenarioList, key=int)) + 1)
+            scenarioList[key] = {'id': key, 'name': 'Nazwa scenariusza', 'user': userId, 'startingQuestion': 'Pytanie startowe', 'goBack': False, 'publicView': False, 'publicEdit': False, 'questions': {}}
+            saveToDatabase(key + '.json', {key: scenarioList[key]}, 'scenarios')
+            scenarioId = key
         else:
-            key = str(int(max(scenarioList, key=int)) + 1)
-        scenarioList[key] = {'id': key, 'name': 'Nazwa scenariusza', 'user': userId, 'startingQuestion': 'Pytanie startowe', 'goBack': False, 'publicView': False, 'publicEdit': False, 'questions': {}}
-        saveToDatabase(key + '.json', {key: scenarioList[key]}, 'scenarios')
-        scenarioId = key
+            return redirect(url_for('userProfile'))
 
     if scenarioId:
         if scenarioId in scenarioList:
-            scenario = scenarioList[scenarioId]
-            if (scenario['publicView'] and scenario['publicEdit']) or scenario['user'] == session['userId'] or isAdmin:
+            if isGranted(scenario=scenarioList[scenarioId], publicEdit=True):
                 session['scenarioId'] = scenarioId
                 session['scenarioPath'] = []
                 session.pop('startingAnswer', None)
@@ -502,12 +424,9 @@ def editScenario():
                 return redirect(url_for('menu'))
         else:
             return redirect(url_for('menu'))
-    elif session.get('scenarioId') and session['scenarioId'] in scenarioList:
-        scenario = scenarioList[session['scenarioId']]
-        if (not scenario['publicView'] or not scenario['publicEdit']) and scenario['user'] != session['userId'] and not isAdmin:
-            return redirect(url_for('menu'))
-    else:
-        return redirect(url_for('menu'))
+    elif checkScenarioSession():
+        return checkScenarioSession()
+    scenario = scenarioList[session['scenarioId']]
 
     if request.method == 'POST' and request.form.get('name') and request.form.get('startingQuestion'):
         scenario['name'] = request.form['name']
@@ -516,7 +435,7 @@ def editScenario():
             scenario['goBack'] = True
         else:
             scenario['goBack'] = False
-        if scenario['user'] == session['userId'] or isAdmin:
+        if isGranted(scenario=scenario):
             if request.form.get('publicView'):
                 scenario['publicView'] = True
             else:
@@ -527,22 +446,19 @@ def editScenario():
                 scenario['publicEdit'] = False
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
-    return render_template('editScenario.html', scenario=scenario, isAdmin=isAdmin)
+    return render_template('editScenario.html', scenario=scenario, isGranted=isGranted(scenario=scenario))
 
 
 @app.route('/deleteQuestion')
 def deleteQuestion():
-    global scenarioList, userList
+    global scenarioList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
-    if session.get('userId') and session.get('scenarioId') and session['scenarioId'] in scenarioList:
-        scenario = scenarioList[session['scenarioId']]
-        if (not scenario['publicView'] or not scenario['publicEdit']) and scenario['user'] != session['userId'] and not userList[session['userId']]['isAdmin']:
-            return redirect(url_for('menu'))
-    else:
-        return redirect(url_for('menu'))
+    if checkScenarioSession():
+        return checkScenarioSession()
+    scenario = scenarioList[session['scenarioId']]
 
     questionId = request.args.get('questionId')
 
@@ -554,26 +470,21 @@ def deleteQuestion():
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
         return redirect(url_for('editScenario'))
 
-    elementName = 'question'
-    elementId = questionId
-    questionText = scenario['questions'][questionId]['text']
+    elementData = {'name': 'question', 'id': questionId, 'questionText': scenario['questions'][questionId]['text']}
 
-    return render_template('delete.html', elementName=elementName, elementId=elementId, questionText=questionText)
+    return render_template('delete.html', elementData=elementData)
 
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
-    global scenarioList, userList
+    global scenarioList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
-    if session.get('userId') and session.get('scenarioId') and session['scenarioId'] in scenarioList:
-        scenario = scenarioList[session['scenarioId']]
-        if (not scenario['publicView'] or not scenario['publicEdit']) and scenario['user'] != session['userId'] and not userList[session['userId']]['isAdmin']:
-            return redirect(url_for('menu'))
-    else:
-        return redirect(url_for('menu'))
+    if checkScenarioSession():
+        return checkScenarioSession()
+    scenario = scenarioList[session['scenarioId']]
 
     questionId = request.args.get('questionId')
 
@@ -600,15 +511,9 @@ def edit():
 
     if request.args.get('elements') and request.args.get('requirements') and request.args.get('elementId'):
         if request.args.get('requirementId'):
-            deleteRequirement('optionalTexts', 'conditionalAnswers', scenario)
-            deleteRequirement('optionalTexts', 'exclusionAnswers', scenario)
-            deleteRequirement('answers', 'conditionalAnswers', scenario)
-            deleteRequirement('answers', 'exclusionAnswers', scenario)
+            deleteRequirement(request.args.get('elements'), request.args.get('requirements'), scenario)
         else:
-            createRequirement('optionalTexts', 'conditionalAnswers', scenario)
-            createRequirement('optionalTexts', 'exclusionAnswers', scenario)
-            createRequirement('answers', 'conditionalAnswers', scenario)
-            createRequirement('answers', 'exclusionAnswers', scenario)
+            createRequirement(request.args.get('elements'), request.args.get('requirements'), scenario)
 
     if request.method == 'POST' and request.form.get('text'):
         updateQuestion(scenario)
@@ -618,42 +523,34 @@ def edit():
 
 @app.route('/delete')
 def delete():
-    global scenarioList, userList
+    global scenarioList
 
-    if session.get('userId') and session['userId'] not in userList:
-        return redirect(url_for('logout'))
+    if noUserInDatabase():
+        return noUserInDatabase()
 
-    if session.get('userId') and session.get('scenarioId') and session['scenarioId'] in scenarioList and session.get('questionId'):
-        scenario = scenarioList[session['scenarioId']]
-        if session['questionId'] not in scenario['questions'] or ((not scenario['publicView'] or not scenario['publicEdit']) and scenario['user'] != session['userId'] and not userList[session['userId']]['isAdmin']):
-            return redirect(url_for('menu'))
-    else:
+    if checkScenarioSession():
+        return checkScenarioSession()
+    scenario = scenarioList[session['scenarioId']]
+
+    if not session.get('questionId') or session['questionId'] not in scenario['questions']:
         return redirect(url_for('menu'))
 
     if request.args.get('confirmDelete'):
-        deleteElement('optionalText', scenario)
-        deleteElement('keyWord', scenario)
-        deleteElement('answer', scenario)
+        deleteElement(request.args.get('confirmDelete'), scenario)
         return redirect(url_for('edit'))
 
-    question = scenario['questions'][session['questionId']]
+    editedQuestion = scenario['questions'][session['questionId']]
 
-    if request.args.get('optionalTextId') and request.args.get('optionalTextId') in question['optionalTexts']:
-        elementName = 'optionalText'
-        elementId = request.args.get('optionalTextId')
-        elementText = question['optionalTexts'][elementId]['text']
-    elif request.args.get('keyWordId') and request.args.get('keyWordId') in question['keyWords']:
-        elementName = 'keyWord'
-        elementId = request.args.get('keyWordId')
-        elementText = question['keyWords'][elementId]
-    elif request.args.get('answerId') and request.args.get('answerId') in question['answers']:
-        elementName = 'answer'
-        elementId = request.args.get('answerId')
-        elementText = question['answers'][elementId]['text']
+    if request.args.get('optionalTextId') and request.args.get('optionalTextId') in editedQuestion['optionalTexts']:
+        elementData = {'name': 'optionalText', 'id': request.args.get('optionalTextId'), 'text': editedQuestion['optionalTexts'][request.args.get('optionalTextId')]['text']}
+    elif request.args.get('keyWordId') and request.args.get('keyWordId') in editedQuestion['keyWords']:
+        elementData = {'name': 'keyWord', 'id': request.args.get('keyWordId'), 'text': editedQuestion['keyWords'][request.args.get('keyWordId')]}
+    elif request.args.get('answerId') and request.args.get('answerId') in editedQuestion['answers']:
+        elementData = {'name': 'answer', 'id': request.args.get('answerId'), 'text': editedQuestion['answers'][request.args.get('answerId')]['text']}
     else:
         return redirect(url_for('edit'))
 
-    return render_template('delete.html', elementName=elementName, elementId=elementId, elementText=elementText)
+    return render_template('delete.html', elementData=elementData)
 
 
 def createElement(element, pattern, scenario):
@@ -669,14 +566,15 @@ def createElement(element, pattern, scenario):
 
 def deleteElement(element, scenario):
     "Funkcja usuwająca dany element"
-    if request.args.get(element + 'Id') and request.args.get(element + 'Id') in scenario['questions'][session['questionId']][element + 's']:
-        del scenario['questions'][session['questionId']][element + 's'][request.args.get(element + 'Id')]
-        saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
+    if element == 'optionalText' or element == 'keyWord' or element == 'answer':
+        if request.args.get(element + 'Id') and request.args.get(element + 'Id') in scenario['questions'][session['questionId']][element + 's']:
+            del scenario['questions'][session['questionId']][element + 's'][request.args.get(element + 'Id')]
+            saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
 def createRequirement(elements, requirements, scenario):
     "Funkcja stwarzająca wymaganie do danego elementu"
-    if request.args.get('elements') == elements and request.args.get('requirements') == requirements:
+    if (elements == 'optionalTexts' or elements == 'answers') and (requirements == 'conditionalAnswers' or requirements == 'exclusionAnswers'):
         if request.args.get('elementId') in scenario['questions'][session['questionId']][elements]:
             scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements].append("0-0")
             saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
@@ -684,7 +582,7 @@ def createRequirement(elements, requirements, scenario):
 
 def deleteRequirement(elements, requirements, scenario):
     "Funkcja usuwająca wymaganie do danego elementu"
-    if request.args.get('elements') == elements and request.args.get('requirements') == requirements:
+    if (elements == 'optionalTexts' or elements == 'answers') and (requirements == 'conditionalAnswers' or requirements == 'exclusionAnswers'):
         if request.args.get('elementId') in scenario['questions'][session['questionId']][elements]:
             if int(request.args.get('requirementId')) < len(scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements]):
                 del scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements][int(request.args.get('requirementId'))]
@@ -710,6 +608,67 @@ def updateQuestion(scenario):
         for requirementKey in range(len(answer['exclusionAnswers'])):
             answer['exclusionAnswers'][requirementKey] = request.form['answer' + answerKey + 'ExclusionAnswers' + str(requirementKey)]
     saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
+
+
+def checkRequirements(element):
+    "Funkcja sprawdzająca wymagania danego elementu"
+    condition = True
+    noExclusion = True
+    if element['conditionalAnswers']:
+        condition = False
+    if element['exclusionAnswers']:
+        noExclusion = False
+    if not condition or not noExclusion:
+        noExclusion = True
+        for record in session['scenarioPath']:
+            if record in element['exclusionAnswers']:
+                noExclusion = False
+                break
+            if not condition and record in element['conditionalAnswers']:
+                condition = True
+    if condition and noExclusion:
+        return True
+
+
+def noUserInDatabase():
+    "Funkcja sprawdzająca czy zalogowany użytkownik znajduje się w bazie"
+    global userList
+    if session.get('userId') and session['userId'] not in userList:
+        return redirect(url_for('logout'))
+
+
+def checkScenarioSession(story=None):
+    "Funkcja sprawdzająca zmienną sesyjną przechowująca id scenariusza"
+    global scenarioList
+    if session.get('scenarioId') and session['scenarioId'] in scenarioList:
+        if story:
+            if not scenarioList[session['scenarioId']]['publicView'] and not isGranted(scenario=scenarioList[session['scenarioId']]):
+                return redirect(url_for(story))
+        else:
+            if not isGranted(scenario=scenarioList[session['scenarioId']], publicEdit=True):
+                return redirect(url_for('menu'))
+    elif story:
+        return redirect(url_for(story))
+    else:
+        return redirect(url_for('menu'))
+
+
+def isGranted(scenario=None, userId=None, publicEdit=None):
+    "Funkcja zwracająca rolę zalogowanego użytkownika"
+    global userList
+    if session.get('userId'):
+        if userId:
+            if userId == session['userId']:
+                return 'profileOwner'
+        else:
+            if userList[session['userId']]['isAdmin']:
+                return 'admin'
+            if scenario:
+                if scenario['user'] == session['userId']:
+                    return 'owner'
+                if publicEdit:
+                    if scenario['publicView'] and scenario['publicEdit']:
+                        return 'granted'
 
 
 def saveToDatabase(name, data, catalog):

@@ -7,34 +7,34 @@
 {% block body %}
     <div class="board">
         <h2>USUWANIE ELEMENTU:</h2>
-        {% if elementName == 'user' %}
-            <h3>Użytkownik: {{ userName }}</h3>
+        {% if elementData['name'] == 'user' %}
+            <h3>Użytkownik: {{ elementData['username'] }}</h3>
             <h3>UWAGA!<br>Scenariusze użytkownika NIE zostaną usunięte automatycznie!<br>
                 Jeśli ich nie usuniesz pozostaną one w bazie jako scenariusze bez twórcy.</h3>
-            <form action="{{ url_for('deleteUser', confirmDelete=True, userId=elementId) }}" method="post">
+            <form action="{{ url_for('deleteUser', confirmDelete=True, userId=elementData['id']) }}" method="post">
                 <h3>Czy chcesz również usunąć wszystkie swoje scenariusze?</h3>
                 <p><select name="deleteUserScenarios">
                     <option value="Nie" selected="selected">NIE</option>
                     <option value="Tak">TAK</option>
                 </select></p>
-                <p><a href="{{ url_for('userProfile', userId=elementId) }}">Anuluj</a>
+                <p><a href="{{ url_for('userProfile', userId=elementData['id']) }}">Anuluj</a>
                     <button class="deleteButton" type="submit">Usuń konto</button></p>
             </form>
-        {% elif elementName == 'scenario' %}
-            <h3>Scenariusz: {{ scenarioName }}</h3>
-            <p><a href="{{ url_for('userProfile', userId=scenarioOwner) }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteScenario', confirmDelete=True, scenarioId=elementId) }}">Usuń</a></p>
-        {% elif elementName == 'question' %}
-            <h3>Pytanie: {{ questionText }}</h3>
-            <p><a href="{{ url_for('editScenario') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteQuestion', confirmDelete=True, questionId=elementId) }}">Usuń</a></p>
-        {% elif elementName == 'optionalText' %}
-            <h3>Tekst opcjonalny: {{ elementText }}</h3>
-            <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete=True, optionalTextId=elementId) }}">Usuń</a></p>
-        {% elif elementName == 'keyWord' %}
-            <h3>Słowo kluczowe: {{ elementText }}</h3>
-            <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete=True, keyWordId=elementId) }}">Usuń</a></p>
-        {% elif elementName == 'answer' %}
-            <h3>Odpowiedź: {{ elementText }}</h3>
-            <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete=True, answerId=elementId) }}">Usuń</a></p>
+        {% elif elementData['name'] == 'scenario' %}
+            <h3>Scenariusz: {{ elementData['scenarioName'] }}</h3>
+            <p><a href="{{ url_for('userProfile', userId=elementData['scenarioOwner']) }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteScenario', confirmDelete=True, scenarioId=elementData['id']) }}">Usuń</a></p>
+        {% elif elementData['name'] == 'question' %}
+            <h3>Pytanie: {{ elementData['questionText'] }}</h3>
+            <p><a href="{{ url_for('editScenario') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteQuestion', confirmDelete=True, questionId=elementData['id']) }}">Usuń</a></p>
+        {% elif elementData['name'] == 'optionalText' %}
+            <h3>Tekst opcjonalny: {{ elementData['text'] }}</h3>
+            <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete='optionalText', optionalTextId=elementData['id']) }}">Usuń</a></p>
+        {% elif elementData['name'] == 'keyWord' %}
+            <h3>Słowo kluczowe: {{ elementData['text'] }}</h3>
+            <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete='keyWord', keyWordId=elementData['id']) }}">Usuń</a></p>
+        {% elif elementData['name'] == 'answer' %}
+            <h3>Odpowiedź: {{ elementData['text'] }}</h3>
+            <p><a href="{{ url_for('edit') }}">Anuluj</a><a class="deleteButton" href="{{ url_for('delete', confirmDelete='answer', answerId=elementData['id']) }}">Usuń</a></p>
         {% endif %}
     </div>
 {% endblock %}
