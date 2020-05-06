@@ -27,7 +27,7 @@
         </p>
     </div>
     {% for key in scenario['questions'].keys() %}
-        <div class="board">
+        <div class="board" id="question{{ key }}">
             <h2>{{ scenario['questions'][key]['text'] }}</h2>
             <p>
                 <a href="{{ url_for('edit', questionId=key) }}">Edytuj</a>

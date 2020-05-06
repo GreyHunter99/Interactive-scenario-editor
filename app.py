@@ -509,11 +509,12 @@ def edit():
     createElement('optionalText', {'text': 'Tekst Opcjonalny', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
     createElement('answer', {'text': 'Odpowiedź', 'questionId': '0', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
 
-    if request.args.get('elements') and request.args.get('requirements') and request.args.get('elementId'):
-        if request.args.get('requirementId'):
-            deleteRequirement(request.args.get('elements'), request.args.get('requirements'), scenario)
+    if request.args.get('requirement'):
+        requirement = request.args.get('requirement').split("-")
+        if len(requirement) > 4:
+            deleteRequirement(requirement, scenario)
         else:
-            createRequirement(request.args.get('elements'), request.args.get('requirements'), scenario)
+            createRequirement(requirement, scenario)
 
     if request.method == 'POST' and request.form.get('text'):
         updateQuestion(scenario)
@@ -572,20 +573,20 @@ def deleteElement(element, scenario):
             saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
-def createRequirement(elements, requirements, scenario):
+def createRequirement(requirement, scenario):
     "Funkcja stwarzająca wymaganie do danego elementu"
-    if (elements == 'optionalTexts' or elements == 'answers') and (requirements == 'conditionalAnswers' or requirements == 'exclusionAnswers'):
-        if request.args.get('elementId') in scenario['questions'][session['questionId']][elements]:
-            scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements].append("0-0")
+    if (requirement[0] == 'optionalTexts' or requirement[0] == 'answers') and (requirement[1] == 'conditionalAnswers' or requirement[1] == 'exclusionAnswers'):
+        if requirement[2] in scenario['questions'][session['questionId']][requirement[0]]:
+            scenario['questions'][session['questionId']][requirement[0]][requirement[2]][requirement[1]].append("0-0")
             saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
-def deleteRequirement(elements, requirements, scenario):
+def deleteRequirement(requirement, scenario):
     "Funkcja usuwająca wymaganie do danego elementu"
-    if (elements == 'optionalTexts' or elements == 'answers') and (requirements == 'conditionalAnswers' or requirements == 'exclusionAnswers'):
-        if request.args.get('elementId') in scenario['questions'][session['questionId']][elements]:
-            if int(request.args.get('requirementId')) < len(scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements]):
-                del scenario['questions'][session['questionId']][elements][request.args.get('elementId')][requirements][int(request.args.get('requirementId'))]
+    if (requirement[0] == 'optionalTexts' or requirement[0] == 'answers') and (requirement[1] == 'conditionalAnswers' or requirement[1] == 'exclusionAnswers'):
+        if requirement[2] in scenario['questions'][session['questionId']][requirement[0]]:
+            if requirement[3].isdigit() and int(requirement[3]) < len(scenario['questions'][session['questionId']][requirement[0]][requirement[2]][requirement[1]]):
+                del scenario['questions'][session['questionId']][requirement[0]][requirement[2]][requirement[1]][int(requirement[3])]
                 saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
