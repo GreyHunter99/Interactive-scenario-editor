@@ -9,13 +9,18 @@
         <h2>USUWANIE ELEMENTU:</h2>
         {% if elementData['name'] == 'user' %}
             <h3>Użytkownik: {{ elementData['username'] }}</h3>
-            <h3>UWAGA!<br>Scenariusze użytkownika NIE zostaną usunięte automatycznie!<br>
-                Jeśli ich nie usuniesz pozostaną one w bazie jako scenariusze bez twórcy.</h3>
+            <h3>UWAGA!<br>Scenariusze i historie użytkownika NIE zostaną usunięte automatycznie!<br>
+                Jeśli ich nie usuniesz pozostaną one w bazie jako scenariusze i historie bez twórcy.</h3>
             <form action="{{ url_for('deleteUser', confirmDelete=True, userId=elementData['id']) }}" method="post">
-                <h3>Czy chcesz również usunąć wszystkie swoje scenariusze?</h3>
+                <h3>Czy chcesz również usunąć wszystkie SCENARIUSZE użytkownika?</h3>
                 <p><select name="deleteUserScenarios">
-                    <option value="Nie" selected="selected">NIE</option>
-                    <option value="Tak">TAK</option>
+                    <option value="No" selected="selected">NIE</option>
+                    <option value="Yes">TAK</option>
+                </select></p>
+                <h3>Czy chcesz również usunąć wszystkie HISTORIE użytkownika?</h3>
+                <p><select name="deleteUserStories">
+                    <option value="No" selected="selected">NIE</option>
+                    <option value="Yes">TAK</option>
                 </select></p>
                 <p><a href="{{ url_for('userProfile', userId=elementData['id']) }}">Anuluj</a>
                     <button class="deleteButton" type="submit">Usuń konto</button></p>
@@ -23,6 +28,9 @@
         {% elif elementData['name'] == 'scenario' %}
             <h3>Scenariusz: {{ elementData['scenarioName'] }}</h3>
             <p><a href="{{ url_for('userProfile', userId=elementData['scenarioOwner']) }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteScenario', confirmDelete=True, scenarioId=elementData['id']) }}">Usuń</a></p>
+        {% elif elementData['name'] == 'story' %}
+            <h3>Historia: {{ elementData['storyName'] }}</h3>
+            <p><a href="{{ url_for('userProfile', userId=elementData['storyOwner']) }}">Anuluj</a><a class="deleteButton" href="{{ url_for('userStory', confirmDelete=True, storyId=elementData['id']) }}">Usuń</a></p>
         {% elif elementData['name'] == 'question' %}
             <h3>Pytanie: {{ elementData['questionText'] }}</h3>
             <p><a href="{{ url_for('editScenario', _anchor=elementData['name']+elementData['id']) }}">Anuluj</a><a class="deleteButton" href="{{ url_for('deleteQuestion', confirmDelete=True, questionId=elementData['id']) }}">Usuń</a></p>

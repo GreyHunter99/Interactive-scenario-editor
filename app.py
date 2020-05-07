@@ -22,6 +22,7 @@ def createList(catalog):
 
 scenarioList = createList('scenarios')
 userList = createList('users')
+storyList = createList('stories')
 
 
 @app.route('/')
@@ -52,10 +53,8 @@ def login():
         for user in userList:
             if userList[user]['username'] == request.form['username']:
                 if userList[user]['password'] == request.form['password']:
+                    session.clear()
                     session['userId'] = user
-                    session.pop('scenarioId', None)
-                    session.pop('questionId', None)
-                    session.pop('scenarioPath', None)
                     return redirect(url_for('menu'))
                 return render_template('login.html', wrongPassword=True)
         return render_template('login.html', wrongUsername=True)
@@ -81,10 +80,8 @@ def register():
             key = str(int(max(userList, key=int)) + 1)
         userList[key] = {'id': key, 'username': request.form['username'], 'password': request.form['password'], 'description': '', 'isAdmin': False}
         saveToDatabase(key + '.json', {key: userList[key]}, 'users')
+        session.clear()
         session['userId'] = key
-        session.pop('scenarioId', None)
-        session.pop('questionId', None)
-        session.pop('scenarioPath', None)
         return redirect(url_for('menu'))
 
     return render_template('register.html')
@@ -163,7 +160,7 @@ def users():
 
 @app.route('/deleteUser', methods=['GET', 'POST'])
 def deleteUser():
-    global scenarioList, userList
+    global scenarioList, userList, storyList
 
     if noUserInDatabase():
         return noUserInDatabase()
@@ -177,12 +174,29 @@ def deleteUser():
         userIsAdmin = isGranted()
         for scenarioId in list(scenarioList):
             if scenarioList[scenarioId]['user'] == userId:
-                if request.form['deleteUserScenarios'] == 'Tak':
+                if request.form['deleteUserScenarios'] == 'Yes':
+                    for storyId in list(storyList):
+                        if storyList[storyId]['scenario'] == scenarioId:
+                            storyList[storyId]['scenario'] = ''
+                            saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
                     del scenarioList[scenarioId]
                     os.remove(PROJECT_ROOT + "/database/scenarios/" + scenarioId + ".json")
                 else:
                     scenarioList[scenarioId]['user'] = ''
                     saveToDatabase(scenarioId + '.json', {scenarioId: scenarioList[scenarioId]}, 'scenarios')
+        for storyId in list(storyList):
+            if storyList[storyId]['user'] == userId:
+                if request.form['deleteUserStories'] == 'Yes':
+                    del storyList[storyId]
+                    os.remove(PROJECT_ROOT + "/database/stories/" + storyId + ".json")
+                else:
+                    storyList[storyId]['user'] = ''
+                    if storyList[storyId]['owner'] == userId:
+                        storyList[storyId]['owner'] = ''
+                    saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
+            elif storyList[storyId]['owner'] == userId:
+                storyList[storyId]['owner'] = ''
+                saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
         del userList[userId]
         os.remove(PROJECT_ROOT + "/database/users/" + userId + ".json")
         if userIsAdmin:
@@ -197,7 +211,7 @@ def deleteUser():
 
 @app.route('/userProfile', methods=['GET', 'POST'])
 def userProfile():
-    global scenarioList, userList
+    global scenarioList, userList, storyList
 
     if noUserInDatabase():
         return noUserInDatabase()
@@ -218,28 +232,38 @@ def userProfile():
     for key, scenario in scenarioList.items():
         if scenario['user'] == userId:
             if not scenario['publicView']:
-                userScenarioList['privateScenarios'][key] = scenario['name']
+                if isGranted(userId=userId) or isGranted():
+                    userScenarioList['privateScenarios'][key] = scenario['name']
             elif scenario['publicEdit']:
                 userScenarioList['publicEditScenarios'][key] = scenario['name']
             else:
                 userScenarioList['publicScenarios'][key] = scenario['name']
 
+    userStoryList = {'privateStories': {}, 'publicStories': {}}
+    for key, story in storyList.items():
+        if story['user'] == userId:
+            if not story['public']:
+                if isGranted(userId=userId) or isGranted():
+                    userStoryList['privateStories'][key] = story['name']
+            else:
+                userStoryList['publicStories'][key] = story['name']
+
     if request.method == 'POST' and request.form.get('username') and request.form.get('description') is not None and (isGranted(userId=userId) or isGranted()):
         for user in userList:
             if userList[user]['username'] == request.form['username'] and user != userId:
-                return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userData=userData, usernameTaken=True)
+                return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userStoryList=userStoryList, userData=userData, usernameTaken=True)
         userList[userId]['username'] = request.form['username']
         userList[userId]['description'] = request.form['description']
         saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
         userData = dict(userList[userId])
         del userData['password']
 
-    return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userData=userData)
+    return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userStoryList=userStoryList, userData=userData)
 
 
 @app.route('/deleteScenario')
 def deleteScenario():
-    global scenarioList
+    global scenarioList, storyList
 
     if noUserInDatabase():
         return noUserInDatabase()
@@ -252,6 +276,10 @@ def deleteScenario():
     scenario = scenarioList[scenarioId]
 
     if request.args.get('confirmDelete'):
+        for storyId in list(storyList):
+            if storyList[storyId]['scenario'] == scenarioId:
+                storyList[storyId]['scenario'] = ''
+                saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
         userId = scenario['user']
         del scenarioList[scenarioId]
         os.remove(PROJECT_ROOT + "/database/scenarios/" + scenarioId + ".json")
@@ -266,13 +294,15 @@ def deleteScenario():
 def scenarios():
     global scenarioList
 
-    publicScenarioList = {'publicScenarios': {}, 'publicEditScenarios': {}}
+    publicScenarioList = {'privateScenarios': {}, 'publicScenarios': {}, 'publicEditScenarios': {}}
     for key, scenario in scenarioList.items():
-        if scenario['publicView']:
-            if scenario['publicEdit']:
-                publicScenarioList['publicEditScenarios'][key] = scenario['name']
-            else:
-                publicScenarioList['publicScenarios'][key] = scenario['name']
+        if not scenario['publicView']:
+            if isGranted():
+                publicScenarioList['privateScenarios'][key] = scenario['name']
+        elif scenario['publicEdit']:
+            publicScenarioList['publicEditScenarios'][key] = scenario['name']
+        else:
+            publicScenarioList['publicScenarios'][key] = scenario['name']
 
     return render_template('scenarios.html', publicScenarioList=publicScenarioList)
 
@@ -285,6 +315,10 @@ def start():
         return noUserInDatabase()
 
     scenarioId = request.args.get('scenarioId')
+
+    session['scenarioPath'] = []
+    session['story'] = []
+    session.pop('scenarioData', None)
 
     if scenarioId:
         if scenarioId in scenarioList:
@@ -299,9 +333,6 @@ def start():
         return checkScenarioSession(story='scenarios')
     scenario = scenarioList[session['scenarioId']]
 
-    session['scenarioPath'] = []
-    session.pop('startingAnswer', None)
-
     if scenario['user'] in userList:
         ownerExists = True
     else:
@@ -314,7 +345,10 @@ def start():
                     scenarioPath = session['scenarioPath']
                     scenarioPath.append(questionId)
                     session['scenarioPath'] = scenarioPath
-                    session['startingAnswer'] = request.form['startingAnswer']
+                    story = session['story']
+                    story.append({'question': scenario['questions'][questionId]['text']})
+                    session['story'] = story
+                    session['scenarioData'] = {'scenarioName': scenario['name'], 'owner': scenario['user'], 'startingQuestion': scenario['startingQuestion'], 'startingAnswer': request.form['startingAnswer']}
                     return redirect(url_for('question'))
         return render_template('start.html', scenario=scenario, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists, noKeyWords=True)
 
@@ -323,7 +357,7 @@ def start():
 
 @app.route('/question')
 def question():
-    global scenarioList
+    global scenarioList, userList
 
     if noUserInDatabase():
         return noUserInDatabase()
@@ -335,27 +369,36 @@ def question():
     questionId = request.args.get('questionId')
     answerId = request.args.get('answerId')
 
-    if questionId and questionId in scenario['questions'] and answerId and session['scenarioPath']:
-        answers = scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['answers']
-        if answerId in answers:
-            answer = answers[answerId]
-            if answer['questionId'] == questionId:
-                if checkRequirements(answer):
-                    scenarioPath = session['scenarioPath']
-                    scenarioPath.append(questionId)
-                    scenarioPath[-2] += "-"+answerId
-                    session['scenarioPath'] = scenarioPath
+    if questionId and questionId in scenario['questions'] and answerId and session.get('scenarioPath'):
+        if session['scenarioPath'][-1].split("-")[0] in scenario['questions']:
+            answers = scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['answers']
+            if answerId in answers:
+                answer = answers[answerId]
+                if answer['questionId'] == questionId:
+                    if checkRequirements(answer):
+                        scenarioPath = session['scenarioPath']
+                        scenarioPath.append(questionId)
+                        scenarioPath[-2] += "-"+answerId
+                        session['scenarioPath'] = scenarioPath
+                        story = session['story']
+                        story.append({'question': scenario['questions'][questionId]['text']})
+                        story[-2]['answer'] = answer['text']
+                        session['story'] = story
         return redirect(url_for('question'))
 
     if request.args.get('goBack') and scenario['goBack'] and session['scenarioPath']:
         scenarioPath = session['scenarioPath']
         scenarioPath.pop()
+        story = session['story']
+        story.pop()
         if session['scenarioPath']:
             scenarioPath[-1] = scenarioPath[-1].split("-")[0]
+            story[-1].pop('answer', None)
         session['scenarioPath'] = scenarioPath
+        session['story'] = story
         return redirect(url_for('question'))
 
-    if session['scenarioPath'] and session['scenarioPath'][-1].split("-")[0] in scenario['questions']:
+    if session.get('scenarioPath') and session['scenarioPath'][-1].split("-")[0] in scenario['questions']:
         currentQuestion = session['scenarioPath'][-1].split("-")[0]
     else:
         return redirect(url_for('start'))
@@ -370,12 +413,17 @@ def question():
         if not checkRequirements(optionalTexts[optionalTextId]):
             del optionalTexts[optionalTextId]
 
-    return render_template('question.html', scenario=scenario, answers=answers, optionalTexts=optionalTexts, questionId=currentQuestion, isGranted=isGranted(scenario=scenario, publicEdit=True))
+    if scenario['user'] in userList:
+        ownerExists = True
+    else:
+        ownerExists = False
+
+    return render_template('question.html', scenario=scenario, answers=answers, optionalTexts=optionalTexts, questionId=currentQuestion, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists)
 
 
-@app.route('/currentStory')
+@app.route('/currentStory', methods=['GET', 'POST'])
 def currentStory():
-    global scenarioList
+    global scenarioList, storyList
 
     if noUserInDatabase():
         return noUserInDatabase()
@@ -383,9 +431,104 @@ def currentStory():
     if not session.get('scenarioPath'):
         return redirect(url_for('menu'))
 
-    scenario = scenarioList[session['scenarioId']]
+    storyEnd = False
+    if request.args.get('saveStory') and session.get('userId'):
+        answers = {}
+        if session.get('scenarioId') in scenarioList:
+            if session['scenarioPath'][-1].split("-")[0] in scenarioList[session['scenarioId']]['questions']:
+                answers = dict(scenarioList[session['scenarioId']]['questions'][session['scenarioPath'][-1].split("-")[0]]['answers'])
+                for answerId in list(answers):
+                    if not checkRequirements(answers[answerId]):
+                        del answers[answerId]
+        if not answers:
+            storyEnd = True
+            if request.method == 'POST' and request.form.get('name'):
+                if request.form.get('public'):
+                    public = True
+                else:
+                    public = False
+                if storyList == {}:
+                    key = '0'
+                else:
+                    key = str(int(max(storyList, key=int)) + 1)
+                storyList[key] = {'id': key, 'name': request.form.get('name'), 'scenario': session['scenarioId'], 'user': session['userId'], 'owner': session['scenarioData']['owner'], 'scenarioName': session['scenarioData']['scenarioName'], 'public': public, 'startingQuestion': session['scenarioData']['startingQuestion'], 'startingAnswer': session['scenarioData']['startingAnswer'], 'story': session['story']}
+                saveToDatabase(key + '.json', {key: storyList[key]}, 'stories')
+                session.pop('scenarioPath', None)
+                session.pop('story', None)
+                session.pop('scenarioData', None)
+                return redirect(url_for('userStory', storyId=key))
 
-    return render_template('currentStory.html', scenario=scenario)
+    return render_template('currentStory.html', storyEnd=storyEnd)
+
+
+@app.route('/userStory', methods=['GET', 'POST'])
+def userStory():
+    global scenarioList, storyList, userList
+
+    if noUserInDatabase():
+        return noUserInDatabase()
+
+    storyId = request.args.get('storyId')
+
+    if storyId and storyId in storyList:
+        story = storyList[storyId]
+    else:
+        return redirect(url_for('menu'))
+
+    isOwner = False
+    if isGranted(userId=story['user']) or isGranted():
+        isOwner = True
+
+    if not story['public'] and not isOwner:
+        return redirect(url_for('menu'))
+
+    scenario = {}
+    if storyList[storyId]['scenario'] in scenarioList:
+        scenario = scenarioList[storyList[storyId]['scenario']]
+
+    if story['owner'] in userList:
+        scenarioOwnerExists = True
+    else:
+        scenarioOwnerExists = False
+
+    if story['user'] in userList:
+        storyOwnerExists = True
+    else:
+        storyOwnerExists = False
+
+    if isOwner:
+        if request.args.get('deleteStory'):
+            elementData = {'name': 'story', 'id': storyId, 'storyName': story['name'], 'storyOwner': story['user']}
+            return render_template('delete.html', elementData=elementData)
+        if request.args.get('confirmDelete'):
+            userId = story['user']
+            del storyList[storyId]
+            os.remove(PROJECT_ROOT + "/database/stories/" + storyId + ".json")
+            return redirect(url_for('userProfile', userId=userId))
+        if request.method == 'POST' and request.form.get('name'):
+            story['name'] = request.form['name']
+            if request.form.get('public'):
+                story['public'] = True
+            else:
+                story['public'] = False
+            saveToDatabase(story['id'] + '.json', {story['id']: story}, 'stories')
+
+    return render_template('userStory.html', story=story, scenario=scenario, isOwner=isOwner, scenarioOwnerExists=scenarioOwnerExists, storyOwnerExists=storyOwnerExists)
+
+
+@app.route('/stories')
+def stories():
+    global storyList
+
+    publicStoryList = {'privateStories': {}, 'publicStories': {}}
+    for key, story in storyList.items():
+        if not story['public']:
+            if isGranted():
+                publicStoryList['privateStories'][key] = story['name']
+        else:
+            publicStoryList['publicStories'][key] = story['name']
+
+    return render_template('stories.html', publicStoryList=publicStoryList)
 
 
 @app.route('/editScenario', methods=['GET', 'POST'])
@@ -417,8 +560,9 @@ def editScenario():
         if scenarioId in scenarioList:
             if isGranted(scenario=scenarioList[scenarioId], publicEdit=True):
                 session['scenarioId'] = scenarioId
-                session['scenarioPath'] = []
-                session.pop('startingAnswer', None)
+                session.pop('scenarioPath', None)
+                session.pop('story', None)
+                session.pop('scenarioData', None)
                 session.pop('questionId', None)
             else:
                 return redirect(url_for('menu'))

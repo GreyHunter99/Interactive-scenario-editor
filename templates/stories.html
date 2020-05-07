@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="board">
+        {% if publicStoryList['privateStories'] %}
+            <h2>Historie prywatne:</h2>
+            {% for key in publicStoryList['privateStories'] %}
+                <p><a href="{{ url_for('userStory', storyId=key) }}">{{ publicStoryList['privateStories'][key] }}</a></p>
+            {% endfor %}
+        {% endif %}
+        {% if publicStoryList['publicStories'] %}
+            <h2>Historie publiczne:</h2>
+            {% for key in publicStoryList['publicStories'] %}
+                <p><a href="{{ url_for('userStory', storyId=key) }}">{{ publicStoryList['publicStories'][key] }}</a></p>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

@@ -13,7 +13,7 @@
         {% endif %}
         <h2>{{ scenario['startingQuestion'] }}</h2>
         <form action="{{ url_for('start') }}" method="post">
-            <p><input name='startingAnswer' type="text"></p>
+            <p><input name='startingAnswer' type="text" required="required"></p>
             <p><input type="submit" value="Rozpocznij scenariusz"></p>
         </form>
         <h3>Obecne słowa kluczowe:

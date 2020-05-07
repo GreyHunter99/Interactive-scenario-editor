@@ -20,11 +20,20 @@
         {% for answerKey, answer in answers.items() %}
             <p><a href="{{ url_for('question', questionId = answer['questionId'], answerId = answerKey) }}">{{ answer['text'] }}</a></p>
         {% endfor %}
+        {% if not answers %}
+            <h2>KONIEC SCENARIUSZA</h2>
+            {% if session.get('userId') %}
+                <p><a href="{{ url_for('currentStory', saveStory = True) }}">Zapisz historię</a></p>
+            {% endif %}
+        {% endif %}
         <h3>Odwiedzone pytania:
         {% for question in session['scenarioPath'] %}
             {{ question }},
         {% endfor %}
         </h3>
+        {% if ownerExists %}
+            <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
+        {% endif %}
         {% if isGranted %}
             <p><a href="{{ url_for('edit', questionId=questionId) }}">Edytuj pytanie</a></p>
         {% endif %}

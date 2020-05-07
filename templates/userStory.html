@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+    <p><a href="{{ url_for('stories') }}">Lista historii</a></p>
+    {% if isOwner %}
+        <div class="board">
+            <form action="{{ url_for('userStory', storyId=story['id']) }}" method="post">
+                <h1>Nazwa historii:</h1><p><input name='name' type="text" required="required" value="{{ story['name'] }}"></p>
+                <h2>Historia publiczna:<input type="checkbox" name="public" value="true" {% if story['public'] %}checked{% endif %}></h2>
+                <p><input type="submit" value="Zapisz"></p>
+            </form>
+            <p><a class="deleteButton" href="{{ url_for('userStory', storyId=story['id'], deleteStory=True) }}">Usuń</a></p>
+        </div>
+    {% endif %}
+    <div class="board">
+        {% if not isOwner %}
+            <h1>Nazwa historii: {{ story['name'] }}</h1>
+        {% endif %}
+        <h1>Nazwa scenariusza: {{ story['scenarioName'] }}</h1>
+        {% if scenario %}
+            <p><a href="{{ url_for('start', scenarioId=story['scenario']) }}">Rozpocznij ten scenariusz</a></p>
+        {% endif %}
+        {% if scenarioOwnerExists %}
+            <p><a href="{{ url_for('userProfile', userId=story['owner']) }}">Profil twórcy scenariusza</a></p>
+        {% endif %}
+        {% if storyOwnerExists %}
+            <p><a href="{{ url_for('userProfile', userId=story['user']) }}">Profil twórcy historii</a></p>
+        {% endif %}
+    </div>
+    <div class="board">
+        <h2>{{ story['startingQuestion'] }}</h2>
+        <h3>{{ story['startingAnswer'] }}</h3>
+    </div>
+    {% for record in story['story'] %}
+        <div class="board">
+            <h2>{{ record['question'] }}</h2>
+            {% if 'answer' in record.keys() %}
+                <h3>{{ record['answer'] }}</h3>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+{% endblock %}
