@@ -1,0 +1,50 @@
+{
+    "0": {
+        "id": "0",
+        "name": "Podr\u00f3\u017a 1",
+        "scenario": "0",
+        "user": "1",
+        "owner": "1",
+        "scenarioName": "Scenariusz Podr\u00f3\u017cy",
+        "public": true,
+        "startingQuestion": "Jaki jest cel podr\u00f3\u017cy?",
+        "startingAnswer": "morze",
+        "story": [
+            {
+                "answer": "Morze",
+                "question": "Rodzaj akwenu?"
+            },
+            {
+                "answer": "Dalej",
+                "question": "Lepiej wcze\u015bniej poszuka\u0107 mniej popularnych miejsc oraz zapozna\u0107 si\u0119 z zaleceniami odno\u015bnie bezpiecze\u0144stwa."
+            },
+            {
+                "answer": "Nie",
+                "question": "Czy planujesz po drodze pozwiedza\u0107 miejscowo\u015bci znajduj\u0105ce si\u0119 na trasie podr\u00f3\u017cy?"
+            },
+            {
+                "answer": "Nie",
+                "question": "Czy cel podr\u00f3\u017cy jest za granic\u0105?"
+            },
+            {
+                "answer": "2-4 dni",
+                "question": "Jaka jest d\u0142ugo\u015b\u0107 podr\u00f3\u017cy?"
+            },
+            {
+                "answer": "Dalej",
+                "question": "Poszukaj ofert noclegowych w miejscach blisko atrakcji turystycznych. Ze wzgl\u0119du na kr\u00f3tki czas wycieczki nie musisz bardzo oszcz\u0119dza\u0107 na noclegu."
+            },
+            {
+                "answer": "Ciep\u0142y",
+                "question": "Jaki jest klimat w miejscu docelowym?"
+            },
+            {
+                "answer": "Dalej",
+                "question": "Spakuj lekkie ubranie, ale nie zapomnij o czym\u015b przeciwdeszczowym oraz czym\u015b grubszym na ch\u0142odne wieczory."
+            },
+            {
+                "question": "Gratulacje! Uda\u0142o ci si\u0119 przygotowa\u0107 do podr\u00f3\u017cy."
+            }
+        ]
+    }
+}

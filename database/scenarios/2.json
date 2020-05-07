@@ -6,7 +6,7 @@
         "startingQuestion": "czy masz do\u015bwiadczenie w obr\u00f3bce drewna",
         "goBack": true,
         "publicView": true,
-        "publicEdit": false,
+        "publicEdit": true,
         "questions": {}
     }
 }

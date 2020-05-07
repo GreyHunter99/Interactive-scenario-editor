@@ -5,7 +5,7 @@
         "user": "1",
         "startingQuestion": "Jaki jest cel podr\u00f3\u017cy?",
         "goBack": true,
-        "publicView": true,
+        "publicView": false,
         "publicEdit": false,
         "questions": {
             "0": {
