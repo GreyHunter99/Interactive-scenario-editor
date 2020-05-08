@@ -338,6 +338,7 @@ def start():
     else:
         ownerExists = False
 
+    noKeyWords = False
     if request.method == 'POST' and request.form.get('startingAnswer'):
         for questionId in scenario['questions']:
             for keyWord in scenario['questions'][questionId]['keyWords'].values():
@@ -350,9 +351,9 @@ def start():
                     session['story'] = story
                     session['scenarioData'] = {'scenarioName': scenario['name'], 'owner': scenario['user'], 'startingQuestion': scenario['startingQuestion'], 'startingAnswer': request.form['startingAnswer']}
                     return redirect(url_for('question'))
-        return render_template('start.html', scenario=scenario, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists, noKeyWords=True)
+        noKeyWords = True
 
-    return render_template('start.html', scenario=scenario, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists)
+    return render_template('start.html', scenario=scenario, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists, noKeyWords=noKeyWords)
 
 
 @app.route('/question')
@@ -550,7 +551,7 @@ def editScenario():
                 key = '0'
             else:
                 key = str(int(max(scenarioList, key=int)) + 1)
-            scenarioList[key] = {'id': key, 'name': 'Nazwa scenariusza', 'user': userId, 'startingQuestion': 'Pytanie startowe', 'goBack': False, 'publicView': False, 'publicEdit': False, 'questions': {}}
+            scenarioList[key] = {'id': key, 'name': 'Nazwa scenariusza', 'user': userId, 'startingQuestion': 'Pytanie startowe', 'noKeyWordsMessage': 'Nie znaleziono słów kluczowych. Spróbuj jeszcze raz.', 'goBack': False, 'publicView': False, 'publicEdit': False, 'questions': {}}
             saveToDatabase(key + '.json', {key: scenarioList[key]}, 'scenarios')
             scenarioId = key
         else:
@@ -572,9 +573,10 @@ def editScenario():
         return checkScenarioSession()
     scenario = scenarioList[session['scenarioId']]
 
-    if request.method == 'POST' and request.form.get('name') and request.form.get('startingQuestion'):
+    if request.method == 'POST' and request.form.get('name') and request.form.get('startingQuestion') and request.form.get('noKeyWordsMessage'):
         scenario['name'] = request.form['name']
         scenario['startingQuestion'] = request.form['startingQuestion']
+        scenario['noKeyWordsMessage'] = request.form['noKeyWordsMessage']
         if request.form.get('goBack'):
             scenario['goBack'] = True
         else:
@@ -765,12 +767,15 @@ def checkRequirements(element):
         noExclusion = False
     if not condition or not noExclusion:
         noExclusion = True
+        conditionList = element['conditionalAnswers'].copy()
         for record in session['scenarioPath']:
             if record in element['exclusionAnswers']:
                 noExclusion = False
                 break
-            if not condition and record in element['conditionalAnswers']:
-                condition = True
+            if not condition and record in conditionList:
+                conditionList.remove(record)
+                if not conditionList:
+                    condition = True
     if condition and noExclusion:
         return True
 

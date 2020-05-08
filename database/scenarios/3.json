@@ -4,6 +4,7 @@
         "name": "Budowa_\u0142odzi",
         "user": "2",
         "startingQuestion": "Co chcesz zbudowa\u0107?",
+        "noKeyWordsMessage": "Przykro mi, ale nie mo\u017cesz zbudowa\u0107 \u0142odzi.",
         "goBack": true,
         "publicView": true,
         "publicEdit": false,

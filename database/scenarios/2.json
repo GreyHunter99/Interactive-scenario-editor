@@ -4,6 +4,7 @@
         "name": "budowa_\u0142odzi",
         "user": "2",
         "startingQuestion": "czy masz do\u015bwiadczenie w obr\u00f3bce drewna",
+        "noKeyWordsMessage": "Przykro mi, ale nie mo\u017cesz zbudowa\u0107 \u0142odzi.",
         "goBack": true,
         "publicView": true,
         "publicEdit": true,

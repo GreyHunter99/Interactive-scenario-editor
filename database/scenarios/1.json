@@ -4,6 +4,7 @@
         "name": "Scenariusz Podr\u00f3\u017cy (kopia)",
         "user": "1",
         "startingQuestion": "Jaki jest cel podr\u00f3\u017cy?",
+        "noKeyWordsMessage": "Nie znaleziono takiego miejsca. Spr\u00f3buj jeszcze raz.",
         "goBack": true,
         "publicView": false,
         "publicEdit": false,
