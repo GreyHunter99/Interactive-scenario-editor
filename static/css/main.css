@@ -13,13 +13,28 @@ a {
     background-color: skyblue;
     padding: 0.5%;
     border: 4px solid royalblue;
-    border-radius: 5px;
     font-size: larger;
     font-weight: bold;
 }
 
 a:hover {
-    background-color: yellow;
+    background-color: lemonchiffon;
+}
+
+.menu {
+    position: fixed;
+    left: 0;
+    width: 20%;
+    margin: 1% 1% 1% 2%;
+    background-color: lightsalmon;
+}
+
+.menu p {
+    margin: 8%;
+}
+
+.menu a {
+    padding: 2%;
 }
 
 .board {
@@ -27,8 +42,7 @@ a:hover {
     background-color: lightsalmon;
     width: 60%;
     padding: 3%;
-    border-radius: 10px;
-    margin: 1%;
+    margin: 1% 1% 1% 20%;
 }
 
 .board p {
@@ -42,20 +56,11 @@ a:hover {
 
 .text {
     text-align: left;
-    margin: 0;
     font-size: large;
 }
 
 .text p, .text ul {
     margin: auto;
-}
-
-.text h2 {
-    margin: 0 2% 1% 2%;
-}
-
-.text h3 {
-    margin: 3% 1% 1% 1%;
 }
 
 select {
@@ -65,11 +70,10 @@ select {
     font-size: medium;
     background-color: skyblue;
     border: 4px solid royalblue;
-    border-radius: 5px;
 }
 
 input[type=text], input[type=password] {
-    width: 60%;
+    width: 35%;
     background-color: white;
     padding: 0.5%;
     border: 3px solid royalblue;
@@ -80,7 +84,6 @@ input[type=submit], button {
     background-color: skyblue;
     padding: 0.5%;
     border: 4px solid royalblue;
-    border-radius: 5px;
     font-size: large;
     cursor: pointer;
     font-weight: bold;
@@ -99,4 +102,18 @@ select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, inpu
 .deleteButton {
     background-color: lightcoral;
     border-color: darkred;
+}
+
+@media screen and (max-width:600px) {
+    .menu {
+        width: 100%;
+        position: relative;
+        margin: 0;
+    }
+
+    .board {
+        width: 100%;
+        margin: 0;
+    }
+
 }

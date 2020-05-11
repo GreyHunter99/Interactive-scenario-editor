@@ -6,6 +6,7 @@
 
 {% block body %}
     <div class="board">
+        <h1>Lista użytkowników</h1>
         {% for key in userList %}
             <p><a href="{{ url_for('userProfile', userId=key) }}">{{ userList[key]["username"] }}</a></p>
         {% endfor %}

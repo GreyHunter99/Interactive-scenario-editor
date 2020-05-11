@@ -5,21 +5,19 @@
 {% endblock %}
 
 {% block body %}
-    <p><a href="{{ url_for('editScenario', _anchor='question'+questionId) }}">Lista pytań</a></p>
     <div class="board">
-        <form action="{{ url_for('edit') }}" method="post">
+        <h1>Edycja pytania</h1>
+        <p><a href="{{ url_for('editScenario', _anchor='question'+questionId) }}">Lista pytań</a></p>
+        <form action="{{ url_for('editQuestion') }}" method="post">
             <div class="block">
                 <h1>Treść pytania:</h1>
                 <p><input name='text' type="text" required="required" value="{{ scenario['questions'][questionId]['text'] }}"></p>
                 <p>
-                    {% set newKeyWordId = scenario['questions'][questionId]['keyWords']|length|string %}
-                    <a href="{{ url_for('edit', keyWord=newKeyWordId, _anchor='keyWords' ) }}">Dodaj słowo kluczowe</a>
-                    {% set newOptionalTextId = scenario['questions'][questionId]['optionalTexts']|length|string %}
-                    <a href="{{ url_for('edit', optionalText=newOptionalTextId, _anchor='optionalText'+newOptionalTextId ) }}">Dodaj tekst opcjonalny</a>
+                    <a href="{{ url_for('editQuestion', element='keyWord' ) }}">Dodaj słowo kluczowe</a>
+                    <a href="{{ url_for('editQuestion', element='optionalText' ) }}">Dodaj tekst opcjonalny</a>
                 </p>
                 <p>
-                    {% set newAnswerId = scenario['questions'][questionId]['answers']|length|string %}
-                    <a href="{{ url_for('edit', answer=newAnswerId, _anchor='answer'+newAnswerId ) }}">Dodaj odpowiedź</a>
+                    <a href="{{ url_for('editQuestion', element='answer' ) }}">Dodaj odpowiedź</a>
                     <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=session['questionId']) }}">Usuń pytanie</a>
                 </p>
             </div>
@@ -28,7 +26,7 @@
                     <h1 id="keyWords">Słowa kluczowe:</h1>
                     {% for keyWordKey, keyWord in scenario['questions'][questionId]['keyWords'].items() %}
                         <p><input name='keyWord{{ keyWordKey }}' type="text" required="required" value="{{ keyWord }}"></p>
-                        <p><a class="deleteButton" href="{{ url_for('delete', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('deleteQuestionElement', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -39,8 +37,7 @@
                         <h2 id="optionalText{{ optionalTextKey }}">Treść tekstu {{ optionalTextKey|int + 1 }} :</h2>
                         <p><input name='optionalText{{ optionalTextKey }}' type="text" required="required" value="{{ optionalText['text'] }}"></p>
                         <h3>Pytania warunkowe:</h3>
-                        {% set newRequirementKey = optionalText['conditionalAnswers']|length|string %}
-                        <p><a href="{{ url_for('edit', requirement='optionalTexts-conditionalAnswers-'+optionalTextKey+'-'+newRequirementKey, _anchor='optionalText'+optionalTextKey) }}">Dodaj odpowiedź warunkową</a></p>
+                        <p><a href="{{ url_for('editQuestion', requirement='optionalTexts-conditionalAnswers-'+optionalTextKey) }}">Dodaj odpowiedź warunkową</a></p>
                         {% for requirementKey in range(optionalText['conditionalAnswers']|length) %}
                             <p><select name="optionalText{{ optionalTextKey }}ConditionalAnswers{{ requirementKey }}">
                                 {% for questionKey, question in scenario['questions'].items() %}
@@ -49,11 +46,10 @@
                                     {% endfor %}
                                 {% endfor %}
                             </select></p>
-                            <p><a class="deleteButton" href="{{ url_for('edit', requirement='optionalTexts-conditionalAnswers-'+optionalTextKey+'-'+requirementKey|string+'-'+newRequirementKey, _anchor='optionalText'+optionalTextKey) }}">Usuń odpowiedź warunkową</a></p>
+                            <p><a class="deleteButton" href="{{ url_for('editQuestion', requirement='optionalTexts-conditionalAnswers-'+optionalTextKey+'-'+requirementKey|string) }}">Usuń odpowiedź warunkową</a></p>
                         {% endfor %}
                         <h3>Pytania wykluczające:</h3>
-                        {% set newRequirementKey = optionalText['exclusionAnswers']|length|string %}
-                        <p><a href="{{ url_for('edit', requirement='optionalTexts-exclusionAnswers-'+optionalTextKey+'-'+newRequirementKey, _anchor='optionalText'+optionalTextKey) }}">Dodaj odpowiedź wykluczającą</a></p>
+                        <p><a href="{{ url_for('editQuestion', requirement='optionalTexts-exclusionAnswers-'+optionalTextKey) }}">Dodaj odpowiedź wykluczającą</a></p>
                         {% for requirementKey in range(optionalText['exclusionAnswers']|length) %}
                             <p><select name="optionalText{{ optionalTextKey }}ExclusionAnswers{{ requirementKey }}">
                                 {% for questionKey, question in scenario['questions'].items() %}
@@ -62,9 +58,9 @@
                                     {% endfor %}
                                 {% endfor %}
                             </select></p>
-                            <p><a class="deleteButton" href="{{ url_for('edit', requirement='optionalTexts-exclusionAnswers-'+optionalTextKey+'-'+requirementKey|string+'-'+newRequirementKey, _anchor='optionalText'+optionalTextKey) }}">Usuń odpowiedź wykluczającą</a></p>
+                            <p><a class="deleteButton" href="{{ url_for('editQuestion', requirement='optionalTexts-exclusionAnswers-'+optionalTextKey+'-'+requirementKey|string) }}">Usuń odpowiedź wykluczającą</a></p>
                         {% endfor %}<br>
-                        <p><a class="deleteButton" href="{{ url_for('delete', optionalTextId=optionalTextKey) }}">Usuń tekst opcjonalny</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('deleteQuestionElement', optionalTextId=optionalTextKey) }}">Usuń tekst opcjonalny</a></p>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -81,8 +77,7 @@
                             {% endfor %}
                         </select></p>
                         <h3>Pytania warunkowe:</h3>
-                        {% set newRequirementKey = answer['conditionalAnswers']|length|string %}
-                        <p><a href="{{ url_for('edit', requirement='answers-conditionalAnswers-'+answerKey+'-'+newRequirementKey, _anchor='answer'+answerKey) }}">Dodaj odpowiedź warunkową</a></p>
+                        <p><a href="{{ url_for('editQuestion', requirement='answers-conditionalAnswers-'+answerKey) }}">Dodaj odpowiedź warunkową</a></p>
                         {% for requirementKey in range(answer['conditionalAnswers']|length) %}
                             <p><select name="answer{{ answerKey }}ConditionalAnswers{{ requirementKey }}">
                                 {% for questionKey, question in scenario['questions'].items() %}
@@ -91,11 +86,10 @@
                                     {% endfor %}
                                 {% endfor %}
                             </select></p>
-                            <p><a class="deleteButton" href="{{ url_for('edit', requirement='answers-conditionalAnswers-'+answerKey+'-'+requirementKey|string+'-'+newRequirementKey, _anchor='answer'+answerKey) }}">Usuń odpowiedź warunkową</a></p>
+                            <p><a class="deleteButton" href="{{ url_for('editQuestion', requirement='answers-conditionalAnswers-'+answerKey+'-'+requirementKey|string) }}">Usuń odpowiedź warunkową</a></p>
                         {% endfor %}
                         <h3>Pytania wykluczające:</h3>
-                        {% set newRequirementKey = answer['exclusionAnswers']|length|string %}
-                        <p><a href="{{ url_for('edit', requirement='answers-exclusionAnswers-'+answerKey+'-'+newRequirementKey, _anchor='answer'+answerKey) }}">Dodaj odpowiedź wykluczającą</a></p>
+                        <p><a href="{{ url_for('editQuestion', requirement='answers-exclusionAnswers-'+answerKey) }}">Dodaj odpowiedź wykluczającą</a></p>
                         {% for requirementKey in range(answer['exclusionAnswers']|length) %}
                             <p><select name="answer{{ answerKey }}ExclusionAnswers{{ requirementKey }}">
                                 {% for questionKey, question in scenario['questions'].items() %}
@@ -104,9 +98,9 @@
                                     {% endfor %}
                                 {% endfor %}
                             </select></p>
-                            <p><a class="deleteButton" href="{{ url_for('edit', requirement='answers-exclusionAnswers-'+answerKey+'-'+requirementKey|string+'-'+newRequirementKey, _anchor='answer'+answerKey) }}">Usuń odpowiedź wykluczającą</a></p>
+                            <p><a class="deleteButton" href="{{ url_for('editQuestion', requirement='answers-exclusionAnswers-'+answerKey+'-'+requirementKey|string) }}">Usuń odpowiedź wykluczającą</a></p>
                         {% endfor %}<br>
-                        <p><a class="deleteButton" href="{{ url_for('delete', answerId=answerKey) }}">Usuń odpowiedź</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('deleteQuestionElement', answerId=answerKey) }}">Usuń odpowiedź</a></p>
                     {% endfor %}
                 </div>
             {% endif %}

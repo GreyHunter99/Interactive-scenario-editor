@@ -5,11 +5,18 @@
 {% endblock %}
 
 {% block body %}
-    <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
     <div class="board">
         <p><a href="{{ url_for('start') }}">Reset scenariusza</a>
             <a href="{{ url_for('currentStory') }}">Dotychczasowa historia</a>
             {% if scenario['goBack'] %}<a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
+        <p>
+        {% if ownerExists %}
+            <a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a>
+        {% endif %}
+        {% if isGranted %}
+            <a href="{{ url_for('editQuestion', questionId=questionId) }}">Edytuj pytanie</a>
+        {% endif %}
+        </p><br>
         <h1>{{ scenario['name'] }}</h1>
         <h2>{{ scenario['questions'][questionId]['text'] }}</h2>
         {% if scenario['questions'][questionId]['optionalTexts'] != [] %}
@@ -21,21 +28,10 @@
             <p><a href="{{ url_for('question', questionId = answer['questionId'], answerId = answerKey) }}">{{ answer['text'] }}</a></p>
         {% endfor %}
         {% if not answers %}
-            <h2>KONIEC SCENARIUSZA</h2>
+            <h2>KONIEC SCENARIUSZA</h2><br>
             {% if session.get('userId') %}
                 <p><a href="{{ url_for('currentStory', saveStory = True) }}">Zapisz historię</a></p>
             {% endif %}
-        {% endif %}
-        <h3>Odwiedzone pytania:
-        {% for question in session['scenarioPath'] %}
-            {{ question }},
-        {% endfor %}
-        </h3>
-        {% if ownerExists %}
-            <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
-        {% endif %}
-        {% if isGranted %}
-            <p><a href="{{ url_for('edit', questionId=questionId) }}">Edytuj pytanie</a></p>
         {% endif %}
     </div>
 {% endblock %}

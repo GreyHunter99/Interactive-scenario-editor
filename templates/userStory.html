@@ -5,11 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <p><a href="{{ url_for('stories') }}">Lista historii</a></p>
     {% if isOwner %}
         <div class="board">
             <form action="{{ url_for('userStory', storyId=story['id']) }}" method="post">
-                <h1>Nazwa historii:</h1><p><input name='name' type="text" required="required" value="{{ story['name'] }}"></p>
+                <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ story['name'] }}"></p>
                 <h2>Historia publiczna:<input type="checkbox" name="public" value="true" {% if story['public'] %}checked{% endif %}></h2>
                 <p><input type="submit" value="Zapisz"></p>
             </form>
@@ -18,9 +17,9 @@
     {% endif %}
     <div class="board">
         {% if not isOwner %}
-            <h1>Nazwa historii: {{ story['name'] }}</h1>
+            <h2>Nazwa historii: {{ story['name'] }}</h2>
         {% endif %}
-        <h1>Nazwa scenariusza: {{ story['scenarioName'] }}</h1>
+        <h2>Nazwa scenariusza: {{ story['scenarioName'] }}</h2>
         {% if scenario %}
             <p><a href="{{ url_for('start', scenarioId=story['scenario']) }}">Rozpocznij ten scenariusz</a></p>
         {% endif %}

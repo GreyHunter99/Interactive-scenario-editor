@@ -6,28 +6,38 @@
 
 {% block body %}
     <div class="board text">
-        <h2>Instrukcje</h2>
+        <h1>Instrukcje</h1>
         <p>Aplikacja służy do tworzenia i przechodzenia <b>interaktywnych scenariuszy</b>.</p>
-        <p>Scenariusz może być fikcyjną historią z wieloma rozgałęziającymi się <b>ścieżkami fabularnymi</b>, ale też może mieć strukturę <b>systemu doradczego</b>.</p>
+        <p>Scenariusz może być fikcyjną historią z wieloma rozgałęziającymi się <b>ścieżkami fabularnymi</b>, ale może też mieć strukturę <b>systemu doradczego</b>.</p>
         <p>W przypadku niektórych scenariuszy część pytań może mieć formę <b>reakcji</b> na poprzednie odpowiedzi, a nie kolejnych zapytań.</p>
-        <h3>Użytkownik niezalogowany</h3>
-        <p>Możesz przechodzić <b>scenariusze</b> stworzone przez innych użytkowników.</p>
-        <p>Po wybraniu scenariusza z listy otrzymasz <b>pytanie startowe</b>.</p>
-        <p>Po udzieleniu odpowiedzi zostaniesz odesłany do kolejnych <b>pytań</b>, w których musisz wybrać jedną z dostępnych <b>odpowiedzi</b>.</p><br>
+        <h2>Scenariusze</h2>
+        <p>Lista scenariuszy daje dostęp do wszystkich <b>publicznych scenariuszy</b> stworzonych przez użytkowników.</p>
+        <p>Twoje <b>prywatne scenariusze</b> znajdują się na twoim profilu i są widoczne tylko dla Ciebie.</p>
+        <p>Po wybraniu scenariusza z listy otrzymasz <b>pytanie startowe</b>, na które musisz udzielić odpowiedzi.</p>
+        <p>Po poprawnym jej udzieleniu będziesz odesłany do kolejnych <b>pytań</b>, w których musisz wybrać jeden z dostępnych wariantów <b>odpowiedzi</b>.</p><br>
         <p>W każdej chwili możesz <b>wznowić</b> ogrywanie obecnego scenariusza lub <b>zresetować</b> go.</p>
         <p>Niektóre scenariusze mają <b>możliwość cofania wyborów</b>.</p>
         <p>Możesz też przeglądać <b>profile twórców</b> poszczególnych scenariuszy.</p>
-        <h3>Użytkownik zalogowany</h3>
-        <p><b>Twój profil</b> - możesz tutaj zmodyfikować swoje dane: <b>nazwę</b> (o ile nie jest zajęta), <b>opis</b> i <b>hasło</b>. Masz tutaj również dostęp do <b>listy swoich scenariuszy</b> oraz linków do tworzenia, edycji i usuwania scenariuszy.</p>
-        <p><b>Usunięcie konta</b> - możesz zadecydować czy usunięte zostaną również twoje scenariusze. Jeśli je zostawisz pozostaną one w bazie jako scenariusze bez autora.</p>
-        <p><b>Edycja scenariusza</b> - tutaj możesz zmienić <b>nazwę</b> oraz <b>pytanie startowe</b>. Masz również dostęp do <b>listy pytań</b> oraz linków to tworzenia, edycji i usuwania ich.</p><br>
-        <p><b>Ustawienie "Możliwość cofania"</b> - pozwala na <b>cofanie</b> wyborów podczas przechodzenia scenariusza.</p>
-        <p><b>Ustawienie "Scenariusz publiczny"</b> - pozwala na upublicznienie scenariusza innym użytkownikom. Domyślnie scenariusz jest <b>ukryty</b>.</p>
-        <p><b>Ustawienie "Wszyscy mogą edytować"</b> - uprawnia wszystkich użytkowników do edycji scenariusza (scenariusz musi być też jednoczesnie publiczny). Nie mogą oni tylko usunąć scenariusza oraz zmieniać ustawień "Scenariusz publiczny" i "Wszyscy mogą edytować".</p><br>
-        <p><b>Edycja pytania</b> - tutaj możesz zmienić <b>treść</b> pytania oraz zarządzać jego elementami.</p>
+        <h2>Historie</h2>
+        <p>Lista historii pozwala na przeglądanie konkretnych <b>przejść</b> danych scenariuszy zapisanych i upublicznionych przez użytkowników.</p>
+        <p>Zapisać dane podejście możesz tylko po <b>zakończeniu scenariusza</b>, czyli jeśli natrafiłeś na pytanie, które nie ma już żadnych odpowiedzi.</p>
+        <p>Swoje <b>prywatne historie</b> możesz przeglądać na swoim profilu.</p>
+        <h2>Twój profil</h2>
+        <p>Masz tutaj możliwość modyfikacji swoich danych: <b>nazwy</b>, <b>opisu</b> i <b>hasła</b>. Masz tutaj również dostęp do <b>listy swoich scenariuszy i historii</b>.</p>
+        <p><b>Usunięcie konta</b> - możesz zadecydować czy usunięte zostaną również twoje scenariusze i historie. Jeśli je zostawisz pozostaną one w bazie jako scenariusze bez autora.</p>
+        <h2>Edycja scenariusza</h2>
+        <p>Możesz tutaj zmienić <b>nazwę</b>, <b>pytanie startowe</b> oraz komunikat w przypadku nie znalezienia w odpowiedzi startowej słów kluczowych. Masz również dostęp do <b>listy pytań</b>.</p>
+        <p><b>"Możliwość cofania"</b> - pozwala na <b>cofanie</b> wyborów podczas przechodzenia scenariusza.</p>
+        <p><b>"Scenariusz publiczny"</b> - pozwala na upublicznienie scenariusza innym użytkownikom. Domyślnie scenariusz jest <b>ukryty</b>.</p>
+        <p><b>"Wszyscy mogą edytować"</b> - uprawnia wszystkich użytkowników do edycji scenariusza (scenariusz musi być też jednoczesnie publiczny). Nie mogą oni tylko usunąć scenariusza oraz zmieniać ustawień "Scenariusz publiczny" i "Wszyscy mogą edytować".</p>
+        <h3>Edycja pytania</h3>
+        <p>Możesz tutaj zmienić <b>treść</b> pytania oraz zarządzać jego <b>elementami</b>.</p>
         <p><b>Słowo kluczowe</b> - pozwala na określenie pierwszego pytania scenariusza. Jeśli na początku scenariusza w odpowiedzi na pytanie startowe znajdzie się dane słowo kluczone, użytkownik zostanie odesłany do pytania z tym słowem.</p>
         <p><b>Tekst opcjonalny</b> - pojawi się przy spełnieniu odpowiednich warunków. Można ustawić <b>pytanie warunkowe</b>, którego wcześniejsze odwiedzenie jest wymagane do pojawienia się tekstu, oraz <b>pytanie wykluczające</b>, którego wcześniejsze odwiedzenie wyklucza możliwość pojawienia się tekstu.</p>
         <p><b>Odpowiedź</b> - odsyła do kolejnego pytania. Można ustawić <b>pytanie docelowe</b>, a także <b>pytanie warunkowe</b> oraz <b>pytanie wykluczające</b>, działające tak jak przy tekście opcjonalnym.</p><br>
+        <p>Do tekstów opcjonalnych i odpowiedzi można dodawać odpowiedzi warunkowe i wykluczające, które decydują o pojawieniu się danego elementu pytania.</p>
+        <p><b>Odpowiedź warunkowa</b> - dany tekst opcjonalny lub odpowiedź pojawią się tylko jeśli podczas przechodzenia scenariusza wybraliśmy <b>wszystkie</b> z odpowiedzi warunkowych.</p>
+        <p><b>Odpowiedź wykluczająca</b> - dany tekst opcjonalny lub odpowiedź pojawią się tylko jeśli podczas przechodzenia scenariusza nie wybraliśmy <b>żadnej</b> z odpowiedzi wykluczających.</p><br>
         <p>Kliknięcie <b>"Zatwierdź zmiany"</b> jest wymagane do zapisania danych z <b>formularzy</b>. Dodawanie i usuwanie elementów tego nie wymaga.</p>
         <p>Odsyłacze do edycji scenariusza znajdują się również w module przechodzenia scenariusza.</p>
         <p>Przy tworzeniu scenariusza lepiej zacząć od stworzenia pytań, a następnie połączyć je odpowiedziami oraz dodać warunki i wykluczenia.</p>

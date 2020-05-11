@@ -6,10 +6,11 @@
 
 {% block body %}
     <div class="board">
+        <h1>Edycja scenariusza</h1><br>
         <form action="{{ url_for('editScenario') }}" method="post">
-            <h1>Nazwa scenariusza:</h1><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}"></p>
-            <h1>Pytanie startowe:</h1><p><input name='startingQuestion' type="text" required="required" value="{{ scenario['startingQuestion'] }}"></p>
-            <h1>Komunikat jeśli brak słów kluczowych:</h1><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
+            <h2>Nazwa scenariusza:</h2><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}"></p>
+            <h2>Pytanie startowe:</h2><p><input name='startingQuestion' type="text" required="required" value="{{ scenario['startingQuestion'] }}"></p>
+            <h2>Komunikat jeśli brak słów kluczowych:</h2><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
             <h2>Możliwość cofania:<input type="checkbox" name="goBack" value="true" {% if scenario['goBack'] %}checked{% endif %}></h2>
             {% if isGranted %}
                 <h2>Scenariusz publiczny:<input type="checkbox" name="publicView" value="true" {% if scenario['publicView'] %}checked{% endif %}></h2>
@@ -18,7 +19,7 @@
             <p><input type="submit" value="Zatwierdź zmiany"></p>
         </form>
         <p>
-            <a href="{{ url_for('edit', createQuestion=True) }}">Dodaj pytanie</a>
+            <a href="{{ url_for('editQuestion', createQuestion=True) }}">Dodaj pytanie</a>
             {% if isGranted %}
                 <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a>
             {% endif %}
@@ -31,7 +32,7 @@
         <div class="board" id="question{{ key }}">
             <h2>{{ scenario['questions'][key]['text'] }}</h2>
             <p>
-                <a href="{{ url_for('edit', questionId=key) }}">Edytuj</a>
+                <a href="{{ url_for('editQuestion', questionId=key) }}">Edytuj</a>
                 <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=key) }}">Usuń</a>
             </p>
         </div>

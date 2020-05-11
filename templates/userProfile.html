@@ -5,23 +5,23 @@
 {% endblock %}
 
 {% block body %}
+    <div class="board">
     {% if isAdmin %}
         <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
     {% endif %}
-    <div class="board">
     {% if usernameTaken %}
-        <h2>Nazwa użytkownika zajęta</h2>
+        <h3>Nazwa użytkownika zajęta</h3>
     {% endif %}
     {% if isProfileOwner or isAdmin %}
         <form action="{{ url_for('userProfile', userId=userData['id']) }}" method="post">
             <h1>Nazwa użytkownika:</h1><p><input name='username' type="text" required="required" value="{{ userData['username'] }}"></p>
-            <h1>Opis profilu:</h1><p><input name='description' type="text" value="{{ userData['description'] }}"></p>
+            <h2>Opis profilu:</h2><p><input name='description' type="text" value="{{ userData['description'] }}"></p>
             <p><input type="submit" value="Zatwierdź zmiany"></p>
         </form>
     {% else %}
         <h1>Nazwa użytkownika: {{ userData['username'] }}</h1>
         {% if userData['description'] != '' %}
-            <h1>Opis profilu:</h1>
+            <h2>Opis profilu:</h2>
             <h3>{{ userData['description'] }}</h3>
         {% endif %}
     {% endif %}

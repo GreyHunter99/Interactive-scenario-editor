@@ -2,7 +2,7 @@
     "2": {
         "id": "2",
         "username": "user1",
-        "password": "1234",
+        "password": "$5$rounds=535000$S1UPgBD.SKgepHAu$.YsOdeaIOzfpQwTtk9M.uSlA5mUTeTr0LuaKWptSZuA",
         "description": "opis",
         "isAdmin": false
     }

@@ -6,6 +6,7 @@
 
 {% block body %}
     <div class="board">
+        <h1>Lista historii</h1>
         {% if publicStoryList['privateStories'] %}
             <h2>Historie prywatne:</h2>
             {% for key in publicStoryList['privateStories'] %}

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from passlib.hash import sha256_crypt
 import json
 import os
 
@@ -9,7 +10,7 @@ app.secret_key = 'extra secret key'
 
 
 def createList(catalog):
-    "Funkcja tworząca listę użytkowników lub scenariuszy"
+    "Funkcja tworząca listę użytkowników lub scenariuszy."
     itemList = {}
     folder = os.listdir(PROJECT_ROOT + "/database/" + catalog + "/")
     folder.sort(key=lambda x: int(x.split(".")[0]))
@@ -27,24 +28,27 @@ storyList = createList('stories')
 
 @app.route('/')
 def menu():
+    "Menu główne."
     if noUserInDatabase():
         return noUserInDatabase()
-
     return render_template('menu.html', isGranted=isGranted())
 
 
 @app.route('/gamebooks')
 def gamebooks():
+    "Podstrona o grach paragrafowych."
     return render_template('gamebooks.html')
 
 
 @app.route('/instructions')
 def instructions():
+    "Podstrona z instukcjami do aplikacji."
     return render_template('instructions.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    "Logowanie."
     global userList
     if session.get('userId'):
         return redirect(url_for('menu'))
@@ -52,7 +56,7 @@ def login():
     if request.method == 'POST' and request.form.get('username') and request.form.get('password'):
         for user in userList:
             if userList[user]['username'] == request.form['username']:
-                if userList[user]['password'] == request.form['password']:
+                if sha256_crypt.verify(request.form['password'], userList[user]['password']):
                     session.clear()
                     session['userId'] = user
                     return redirect(url_for('menu'))
@@ -64,6 +68,7 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    "Rejestracja."
     global userList
     if session.get('userId'):
         return redirect(url_for('menu'))
@@ -78,7 +83,7 @@ def register():
             key = '0'
         else:
             key = str(int(max(userList, key=int)) + 1)
-        userList[key] = {'id': key, 'username': request.form['username'], 'password': request.form['password'], 'description': '', 'isAdmin': False}
+        userList[key] = {'id': key, 'username': request.form['username'], 'password': sha256_crypt.encrypt(request.form['password']), 'description': '', 'isAdmin': False}
         saveToDatabase(key + '.json', {key: userList[key]}, 'users')
         session.clear()
         session['userId'] = key
@@ -89,12 +94,14 @@ def register():
 
 @app.route('/logout')
 def logout():
+    "Wylogowanie."
     session.clear()
     return redirect(url_for('menu'))
 
 
 @app.route('/changePassword', methods=['GET', 'POST'])
 def changePassword():
+    "Zmiana hasła."
     global userList
 
     if noUserInDatabase():
@@ -105,15 +112,16 @@ def changePassword():
     if not userId or (not isGranted(userId=userId) and not isGranted()):
         return redirect(url_for('menu'))
 
+    "Warunek na niewymaganie starego hasła."
     if isGranted() and not isGranted(userId=userId):
         noOldPassword = True
     else:
         noOldPassword = False
 
     if request.method == 'POST' and request.form.get('newPassword') and request.form.get('repeatNewPassword') and (noOldPassword or request.form.get('oldPassword')):
-        if noOldPassword or request.form['oldPassword'] == userList[userId]['password']:
+        if noOldPassword or sha256_crypt.verify(request.form['oldPassword'], userList[userId]['password']):
             if request.form['newPassword'] == request.form['repeatNewPassword']:
-                userList[userId]['password'] = request.form['newPassword']
+                userList[userId]['password'] = sha256_crypt.encrypt(request.form['newPassword'])
                 saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
                 return redirect(url_for('userProfile', userId=userId))
             else:
@@ -126,6 +134,7 @@ def changePassword():
 
 @app.route('/grantAdmin')
 def grantAdmin():
+    "Nadawanie lub odbieranie praw administratora."
     global userList
 
     if noUserInDatabase():
@@ -147,6 +156,7 @@ def grantAdmin():
 
 @app.route('/users')
 def users():
+    "Lista użytkowników - tylko dla administratorów."
     global userList
 
     if noUserInDatabase():
@@ -160,6 +170,7 @@ def users():
 
 @app.route('/deleteUser', methods=['GET', 'POST'])
 def deleteUser():
+    "Usuwanie konta użytkownika."
     global scenarioList, userList, storyList
 
     if noUserInDatabase():
@@ -170,11 +181,14 @@ def deleteUser():
     if not userId or userId not in userList or (not isGranted(userId=userId) and not isGranted()):
         return redirect(url_for('menu'))
 
+    "Potwierdzenie usunięcia."
     if request.args.get('confirmDelete') and request.method == 'POST' and request.form.get('deleteUserScenarios'):
         userIsAdmin = isGranted()
+        "Usunięcie lub zmiana danych scenariuszy usuwaniego użytkownika."
         for scenarioId in list(scenarioList):
             if scenarioList[scenarioId]['user'] == userId:
                 if request.form['deleteUserScenarios'] == 'Yes':
+                    "Zmiana danych historii na podstawie usuwanego scenariusza."
                     for storyId in list(storyList):
                         if storyList[storyId]['scenario'] == scenarioId:
                             storyList[storyId]['scenario'] = ''
@@ -184,6 +198,7 @@ def deleteUser():
                 else:
                     scenarioList[scenarioId]['user'] = ''
                     saveToDatabase(scenarioId + '.json', {scenarioId: scenarioList[scenarioId]}, 'scenarios')
+        "Usunięcie lub zmiana danych historii usuwaniego użytkownika."
         for storyId in list(storyList):
             if storyList[storyId]['user'] == userId:
                 if request.form['deleteUserStories'] == 'Yes':
@@ -211,6 +226,7 @@ def deleteUser():
 
 @app.route('/userProfile', methods=['GET', 'POST'])
 def userProfile():
+    "Profil użytkownika."
     global scenarioList, userList, storyList
 
     if noUserInDatabase():
@@ -228,6 +244,7 @@ def userProfile():
     userData = dict(userList[userId])
     del userData['password']
 
+    "Stworzenie listy scenariuszy użytkownika do wyświetlenia na profilu."
     userScenarioList = {'privateScenarios': {}, 'publicScenarios': {}, 'publicEditScenarios': {}}
     for key, scenario in scenarioList.items():
         if scenario['user'] == userId:
@@ -239,6 +256,7 @@ def userProfile():
             else:
                 userScenarioList['publicScenarios'][key] = scenario['name']
 
+    "Stworzenie listy historii użytkownika do wyświetlenia na profilu."
     userStoryList = {'privateStories': {}, 'publicStories': {}}
     for key, story in storyList.items():
         if story['user'] == userId:
@@ -248,6 +266,7 @@ def userProfile():
             else:
                 userStoryList['publicStories'][key] = story['name']
 
+    "Edycja danych użytkownika."
     if request.method == 'POST' and request.form.get('username') and request.form.get('description') is not None and (isGranted(userId=userId) or isGranted()):
         for user in userList:
             if userList[user]['username'] == request.form['username'] and user != userId:
@@ -261,39 +280,12 @@ def userProfile():
     return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userStoryList=userStoryList, userData=userData)
 
 
-@app.route('/deleteScenario')
-def deleteScenario():
-    global scenarioList, storyList
-
-    if noUserInDatabase():
-        return noUserInDatabase()
-
-    scenarioId = request.args.get('scenarioId')
-
-    if not scenarioId or scenarioId not in scenarioList or not isGranted(scenario=scenarioList[scenarioId]):
-        return redirect(url_for('menu'))
-
-    scenario = scenarioList[scenarioId]
-
-    if request.args.get('confirmDelete'):
-        for storyId in list(storyList):
-            if storyList[storyId]['scenario'] == scenarioId:
-                storyList[storyId]['scenario'] = ''
-                saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
-        userId = scenario['user']
-        del scenarioList[scenarioId]
-        os.remove(PROJECT_ROOT + "/database/scenarios/" + scenarioId + ".json")
-        return redirect(url_for('userProfile', userId=userId))
-
-    elementData = {'name': 'scenario', 'id': scenarioId, 'scenarioName': scenario['name'], 'scenarioOwner': scenario['user']}
-
-    return render_template('delete.html', elementData=elementData)
-
-
 @app.route('/scenarios')
 def scenarios():
+    "Lista scenariuszy."
     global scenarioList
 
+    "Stworzenie listy scenariuszy do wyświetlenia."
     publicScenarioList = {'privateScenarios': {}, 'publicScenarios': {}, 'publicEditScenarios': {}}
     for key, scenario in scenarioList.items():
         if not scenario['publicView']:
@@ -309,6 +301,7 @@ def scenarios():
 
 @app.route('/start', methods=['GET', 'POST'])
 def start():
+    "Pytanie startowe scenariusza."
     global scenarioList, userList
 
     if noUserInDatabase():
@@ -320,11 +313,13 @@ def start():
     session['story'] = []
     session.pop('scenarioData', None)
 
+    "Sprawdzenie poprawności id scenariusza."
     if scenarioId:
         if scenarioId in scenarioList:
             if scenarioList[scenarioId]['publicView'] or isGranted(scenario=scenarioList[scenarioId]):
                 session['scenarioId'] = scenarioId
                 session.pop('questionId', None)
+                return redirect(url_for('start'))
             else:
                 return redirect(url_for('menu'))
         else:
@@ -333,12 +328,14 @@ def start():
         return checkScenarioSession(story='scenarios')
     scenario = scenarioList[session['scenarioId']]
 
+    "Sprawdzenie czy scenariusz posiada właściciela."
     if scenario['user'] in userList:
         ownerExists = True
     else:
         ownerExists = False
 
     noKeyWords = False
+    "Sprawdzenie przesłanej odpowiedzi pod kątem słów kluczowych."
     if request.method == 'POST' and request.form.get('startingAnswer'):
         for questionId in scenario['questions']:
             for keyWord in scenario['questions'][questionId]['keyWords'].values():
@@ -358,6 +355,7 @@ def start():
 
 @app.route('/question')
 def question():
+    "Pytania podczas przechodzenia scenariusza."
     global scenarioList, userList
 
     if noUserInDatabase():
@@ -370,6 +368,7 @@ def question():
     questionId = request.args.get('questionId')
     answerId = request.args.get('answerId')
 
+    "Sprawdzenie poprawności przesłanego id pytania."
     if questionId and questionId in scenario['questions'] and answerId and session.get('scenarioPath'):
         if session['scenarioPath'][-1].split("-")[0] in scenario['questions']:
             answers = scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['answers']
@@ -387,6 +386,7 @@ def question():
                         session['story'] = story
         return redirect(url_for('question'))
 
+    "Obsługa żadania cofnięcia pytania."
     if request.args.get('goBack') and scenario['goBack'] and session['scenarioPath']:
         scenarioPath = session['scenarioPath']
         scenarioPath.pop()
@@ -404,16 +404,19 @@ def question():
     else:
         return redirect(url_for('start'))
 
+    "Stworzenie listy odpowiedzi do wyświetlenia pod pytaniem."
     answers = dict(scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['answers'])
     for answerId in list(answers):
         if not checkRequirements(answers[answerId]):
             del answers[answerId]
 
+    "Stworzenie listy tekstów opcjonalnych do wyświetlenia pod pytaniem."
     optionalTexts = dict(scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['optionalTexts'])
     for optionalTextId in list(optionalTexts):
         if not checkRequirements(optionalTexts[optionalTextId]):
             del optionalTexts[optionalTextId]
 
+    "Sprawdzenie czy scenariusz posiada właściciela."
     if scenario['user'] in userList:
         ownerExists = True
     else:
@@ -424,6 +427,7 @@ def question():
 
 @app.route('/currentStory', methods=['GET', 'POST'])
 def currentStory():
+    "Dotychczasowa historia na podstawie przechodzonego scenariusza."
     global scenarioList, storyList
 
     if noUserInDatabase():
@@ -433,6 +437,7 @@ def currentStory():
         return redirect(url_for('menu'))
 
     storyEnd = False
+    "Obsługa żadania zapisania historii."
     if request.args.get('saveStory') and session.get('userId'):
         answers = {}
         if session.get('scenarioId') in scenarioList:
@@ -464,6 +469,7 @@ def currentStory():
 
 @app.route('/userStory', methods=['GET', 'POST'])
 def userStory():
+    "Widok historii."
     global scenarioList, storyList, userList
 
     if noUserInDatabase():
@@ -476,6 +482,7 @@ def userStory():
     else:
         return redirect(url_for('menu'))
 
+    "Sprawdzenie czy zalogowany użytkownik jest właścicielem historii."
     isOwner = False
     if isGranted(userId=story['user']) or isGranted():
         isOwner = True
@@ -487,25 +494,30 @@ def userStory():
     if storyList[storyId]['scenario'] in scenarioList:
         scenario = scenarioList[storyList[storyId]['scenario']]
 
+    "Sprawdzenie czy scenariusz posiada właściciela."
     if story['owner'] in userList:
         scenarioOwnerExists = True
     else:
         scenarioOwnerExists = False
 
+    "Sprawdzenie czy historia posiada właściciela."
     if story['user'] in userList:
         storyOwnerExists = True
     else:
         storyOwnerExists = False
 
     if isOwner:
+        "Usuwanie historii."
         if request.args.get('deleteStory'):
             elementData = {'name': 'story', 'id': storyId, 'storyName': story['name'], 'storyOwner': story['user']}
             return render_template('delete.html', elementData=elementData)
+        "Potwierdzenie usuwania."
         if request.args.get('confirmDelete'):
             userId = story['user']
             del storyList[storyId]
             os.remove(PROJECT_ROOT + "/database/stories/" + storyId + ".json")
             return redirect(url_for('userProfile', userId=userId))
+        "Edycja danych historii."
         if request.method == 'POST' and request.form.get('name'):
             story['name'] = request.form['name']
             if request.form.get('public'):
@@ -519,8 +531,10 @@ def userStory():
 
 @app.route('/stories')
 def stories():
+    "Lista historii."
     global storyList
 
+    "Stworzenie listy historii do wyświetlenia."
     publicStoryList = {'privateStories': {}, 'publicStories': {}}
     for key, story in storyList.items():
         if not story['public']:
@@ -534,6 +548,7 @@ def stories():
 
 @app.route('/editScenario', methods=['GET', 'POST'])
 def editScenario():
+    "Edycja scenariusza."
     global scenarioList
 
     if noUserInDatabase():
@@ -545,6 +560,7 @@ def editScenario():
     scenarioId = request.args.get('scenarioId')
     userId = request.args.get('userId')
 
+    "Stworzenie scenariusza."
     if userId:
         if isGranted(userId=userId) or isGranted():
             if scenarioList == {}:
@@ -557,6 +573,7 @@ def editScenario():
         else:
             return redirect(url_for('userProfile'))
 
+    "Sprawdzenie poprawności id scenariusza."
     if scenarioId:
         if scenarioId in scenarioList:
             if isGranted(scenario=scenarioList[scenarioId], publicEdit=True):
@@ -565,6 +582,7 @@ def editScenario():
                 session.pop('story', None)
                 session.pop('scenarioData', None)
                 session.pop('questionId', None)
+                return redirect(url_for('editScenario'))
             else:
                 return redirect(url_for('menu'))
         else:
@@ -573,6 +591,7 @@ def editScenario():
         return checkScenarioSession()
     scenario = scenarioList[session['scenarioId']]
 
+    "Edycja danych scenariusza."
     if request.method == 'POST' and request.form.get('name') and request.form.get('startingQuestion') and request.form.get('noKeyWordsMessage'):
         scenario['name'] = request.form['name']
         scenario['startingQuestion'] = request.form['startingQuestion']
@@ -595,8 +614,103 @@ def editScenario():
     return render_template('editScenario.html', scenario=scenario, isGranted=isGranted(scenario=scenario))
 
 
+@app.route('/deleteScenario')
+def deleteScenario():
+    "Usuwanie scenariusza."
+    global scenarioList, storyList
+
+    if noUserInDatabase():
+        return noUserInDatabase()
+
+    scenarioId = request.args.get('scenarioId')
+
+    if not scenarioId or scenarioId not in scenarioList or not isGranted(scenario=scenarioList[scenarioId]):
+        return redirect(url_for('menu'))
+
+    scenario = scenarioList[scenarioId]
+
+    "Potwierdzenie usuwania."
+    if request.args.get('confirmDelete'):
+        "Zmiana danych historii na podstawie usuwaniego scenariusza."
+        for storyId in list(storyList):
+            if storyList[storyId]['scenario'] == scenarioId:
+                storyList[storyId]['scenario'] = ''
+                saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
+        userId = scenario['user']
+        del scenarioList[scenarioId]
+        os.remove(PROJECT_ROOT + "/database/scenarios/" + scenarioId + ".json")
+        return redirect(url_for('userProfile', userId=userId))
+
+    elementData = {'name': 'scenario', 'id': scenarioId, 'scenarioName': scenario['name'], 'scenarioOwner': scenario['user']}
+
+    return render_template('delete.html', elementData=elementData)
+
+
+@app.route('/editQuestion', methods=['GET', 'POST'])
+def editQuestion():
+    "Edycja pytania."
+    global scenarioList
+
+    if noUserInDatabase():
+        return noUserInDatabase()
+
+    if checkScenarioSession():
+        return checkScenarioSession()
+    scenario = scenarioList[session['scenarioId']]
+
+    questionId = request.args.get('questionId')
+
+    "Stworzenie pytania."
+    if request.args.get('createQuestion'):
+        if scenario['questions'] == {}:
+            key = '0'
+        else:
+            key = str(int(max(scenario['questions'], key=int)) + 1)
+        scenario['questions'][key] = {'text': 'Pytanie', 'keyWords': {}, 'optionalTexts': {}, 'answers': {}}
+        saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
+        questionId = key
+
+    "Sprawdzenie poprawności id pytania."
+    if questionId:
+        if questionId in scenario['questions']:
+            session['questionId'] = questionId
+            return redirect(url_for('editQuestion'))
+        else:
+            return redirect(url_for('editScenario'))
+    elif not session.get('questionId') or session['questionId'] not in scenario['questions']:
+        return redirect(url_for('editScenario'))
+
+    "Stworzenie elementu pytania."
+    if request.args.get('element'):
+        if request.args.get('element') == 'keyWord':
+            createElement('keyWord', 'Słowo kluczowe', scenario)
+            return redirect(url_for('editQuestion', _anchor='keyWords'))
+        if request.args.get('element') == 'optionalText':
+            createElement('optionalText', {'text': 'Tekst Opcjonalny', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
+            return redirect(url_for('editQuestion', _anchor='optionalText'+str(len(scenario['questions'][session['questionId']]['optionalTexts'])-1)))
+        if request.args.get('element') == 'answer':
+            createElement('answer', {'text': 'Odpowiedź', 'questionId': '0', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
+            return redirect(url_for('editQuestion', _anchor='answer'+str(len(scenario['questions'][session['questionId']]['optionalTexts'])-1)))
+
+    "Stworzenie i usuwanie wymagania elementu pytania."
+    if request.args.get('requirement'):
+        requirement = request.args.get('requirement').split("-")
+        if len(requirement) > 3:
+            deleteRequirement(requirement, scenario)
+        else:
+            createRequirement(requirement, scenario)
+        return redirect(url_for('editQuestion', _anchor=requirement[0][:-1]+requirement[2]))
+
+    "Edycja danych pytania."
+    if request.method == 'POST' and request.form.get('text'):
+        updateQuestion(scenario)
+
+    return render_template('editQuestion.html', scenario=scenario, questionId=session['questionId'])
+
+
 @app.route('/deleteQuestion')
 def deleteQuestion():
+    "Usuwanie pytania."
     global scenarioList
 
     if noUserInDatabase():
@@ -611,6 +725,7 @@ def deleteQuestion():
     if not questionId or questionId not in scenario['questions']:
         return redirect(url_for('editScenario'))
 
+    "Potwierdzenie usuwania."
     if request.args.get('confirmDelete'):
         del scenario['questions'][questionId]
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
@@ -621,55 +736,9 @@ def deleteQuestion():
     return render_template('delete.html', elementData=elementData)
 
 
-@app.route('/edit', methods=['GET', 'POST'])
-def edit():
-    global scenarioList
-
-    if noUserInDatabase():
-        return noUserInDatabase()
-
-    if checkScenarioSession():
-        return checkScenarioSession()
-    scenario = scenarioList[session['scenarioId']]
-
-    questionId = request.args.get('questionId')
-
-    if request.args.get('createQuestion'):
-        if scenario['questions'] == {}:
-            key = '0'
-        else:
-            key = str(int(max(scenario['questions'], key=int)) + 1)
-        scenario['questions'][key] = {'text': 'Pytanie', 'keyWords': {}, 'optionalTexts': {}, 'answers': {}}
-        saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
-        questionId = key
-
-    if questionId:
-        if questionId in scenario['questions']:
-            session['questionId'] = questionId
-        else:
-            return redirect(url_for('editScenario'))
-    elif not session.get('questionId') or session['questionId'] not in scenario['questions']:
-        return redirect(url_for('editScenario'))
-
-    createElement('keyWord', 'Słowo kluczowe', scenario)
-    createElement('optionalText', {'text': 'Tekst Opcjonalny', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
-    createElement('answer', {'text': 'Odpowiedź', 'questionId': '0', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
-
-    if request.args.get('requirement'):
-        requirement = request.args.get('requirement').split("-")
-        if len(requirement) > 4:
-            deleteRequirement(requirement, scenario)
-        else:
-            createRequirement(requirement, scenario)
-
-    if request.method == 'POST' and request.form.get('text'):
-        updateQuestion(scenario)
-
-    return render_template('edit.html', scenario=scenario, questionId=session['questionId'])
-
-
-@app.route('/delete')
-def delete():
+@app.route('/deleteQuestionElement')
+def deleteQuestionElement():
+    "Usuwanie elementu pytania."
     global scenarioList
 
     if noUserInDatabase():
@@ -682,9 +751,10 @@ def delete():
     if not session.get('questionId') or session['questionId'] not in scenario['questions']:
         return redirect(url_for('menu'))
 
+    "Potwierdzenie usuwania."
     if request.args.get('confirmDelete'):
         deleteElement(request.args.get('confirmDelete'), scenario)
-        return redirect(url_for('edit'))
+        return redirect(url_for('editQuestion'))
 
     editedQuestion = scenario['questions'][session['questionId']]
 
@@ -695,24 +765,23 @@ def delete():
     elif request.args.get('answerId') and request.args.get('answerId') in editedQuestion['answers']:
         elementData = {'name': 'answer', 'id': request.args.get('answerId'), 'text': editedQuestion['answers'][request.args.get('answerId')]['text']}
     else:
-        return redirect(url_for('edit'))
+        return redirect(url_for('editQuestion'))
 
     return render_template('delete.html', elementData=elementData)
 
 
 def createElement(element, pattern, scenario):
-    "Funkcja stwarzająca dany element"
-    if request.args.get(element):
-        if scenario['questions'][session['questionId']][element + 's'] == {}:
-            key = '0'
-        else:
-            key = str(int(max(scenario['questions'][session['questionId']][element + 's'], key=int)) + 1)
-        scenario['questions'][session['questionId']][element + 's'][key] = pattern
-        saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
+    "Funkcja tworząca dany element pytania."
+    if scenario['questions'][session['questionId']][element + 's'] == {}:
+        key = '0'
+    else:
+        key = str(int(max(scenario['questions'][session['questionId']][element + 's'], key=int)) + 1)
+    scenario['questions'][session['questionId']][element + 's'][key] = pattern
+    saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
 
 
 def deleteElement(element, scenario):
-    "Funkcja usuwająca dany element"
+    "Funkcja usuwająca dany element pytania."
     if element == 'optionalText' or element == 'keyWord' or element == 'answer':
         if request.args.get(element + 'Id') and request.args.get(element + 'Id') in scenario['questions'][session['questionId']][element + 's']:
             del scenario['questions'][session['questionId']][element + 's'][request.args.get(element + 'Id')]
@@ -720,7 +789,7 @@ def deleteElement(element, scenario):
 
 
 def createRequirement(requirement, scenario):
-    "Funkcja stwarzająca wymaganie do danego elementu"
+    "Funkcja stwarzająca wymaganie do danego elementu pytania."
     if (requirement[0] == 'optionalTexts' or requirement[0] == 'answers') and (requirement[1] == 'conditionalAnswers' or requirement[1] == 'exclusionAnswers'):
         if requirement[2] in scenario['questions'][session['questionId']][requirement[0]]:
             scenario['questions'][session['questionId']][requirement[0]][requirement[2]][requirement[1]].append("0-0")
@@ -728,7 +797,7 @@ def createRequirement(requirement, scenario):
 
 
 def deleteRequirement(requirement, scenario):
-    "Funkcja usuwająca wymaganie do danego elementu"
+    "Funkcja usuwająca wymaganie do danego elementu pytania."
     if (requirement[0] == 'optionalTexts' or requirement[0] == 'answers') and (requirement[1] == 'conditionalAnswers' or requirement[1] == 'exclusionAnswers'):
         if requirement[2] in scenario['questions'][session['questionId']][requirement[0]]:
             if requirement[3].isdigit() and int(requirement[3]) < len(scenario['questions'][session['questionId']][requirement[0]][requirement[2]][requirement[1]]):
@@ -737,7 +806,7 @@ def deleteRequirement(requirement, scenario):
 
 
 def updateQuestion(scenario):
-    "Funkcja aktualizująca dane pytania"
+    "Funkcja aktualizująca dane pytania."
     scenario['questions'][session['questionId']]['text'] = request.form['text']
     for keyWordKey in scenario['questions'][session['questionId']]['keyWords']:
         scenario['questions'][session['questionId']]['keyWords'][keyWordKey] = request.form['keyWord' + keyWordKey]
@@ -758,7 +827,7 @@ def updateQuestion(scenario):
 
 
 def checkRequirements(element):
-    "Funkcja sprawdzająca wymagania danego elementu"
+    "Funkcja sprawdzająca wymagania danego elementu pytania."
     condition = True
     noExclusion = True
     if element['conditionalAnswers']:
@@ -781,14 +850,14 @@ def checkRequirements(element):
 
 
 def noUserInDatabase():
-    "Funkcja sprawdzająca czy zalogowany użytkownik znajduje się w bazie"
+    "Funkcja sprawdzająca czy zalogowany użytkownik znajduje się w bazie."
     global userList
     if session.get('userId') and session['userId'] not in userList:
         return redirect(url_for('logout'))
 
 
 def checkScenarioSession(story=None):
-    "Funkcja sprawdzająca zmienną sesyjną przechowująca id scenariusza"
+    "Funkcja sprawdzająca poprawność zmiennej sesyjnej przechowującej id scenariusza."
     global scenarioList
     if session.get('scenarioId') and session['scenarioId'] in scenarioList:
         if story:
@@ -804,7 +873,7 @@ def checkScenarioSession(story=None):
 
 
 def isGranted(scenario=None, userId=None, publicEdit=None):
-    "Funkcja zwracająca rolę zalogowanego użytkownika"
+    "Funkcja zwracająca rolę zalogowanego użytkownika."
     global userList
     if session.get('userId'):
         if userId:
@@ -822,7 +891,7 @@ def isGranted(scenario=None, userId=None, publicEdit=None):
 
 
 def saveToDatabase(name, data, catalog):
-    "Funkcja zapisująca dane do bazy"
+    "Funkcja zapisująca dane do bazy."
     with open(PROJECT_ROOT + "/database/" + catalog + "/" + name, "w") as write_file:
         json.dump(data, write_file, indent=4)
     #print(oct(os.stat(PROJECT_ROOT + "/database/" + catalog + "/" + name).st_mode)[-3:])

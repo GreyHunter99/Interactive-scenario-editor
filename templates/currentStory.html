@@ -5,13 +5,12 @@
 {% endblock %}
 
 {% block body %}
-    <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
     {% if storyEnd %}
         <div class="board">
-            <h1>Zapisz historię</h1>
-            <h2>UWAGA! Nie będziesz mógł już edytować tego podejścia.</h2>
+            <h2>Zapisz historię</h2>
+            <h3>UWAGA! Nie będziesz mógł już edytować tego podejścia.</h3>
             <form action="{{ url_for('currentStory', saveStory = True) }}" method="post">
-                <h1>Nazwa historii:</h1><p><input name='name' type="text" required="required" value="{{ session['scenarioData']['scenarioName'] }}"></p>
+                <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ session['scenarioData']['scenarioName'] }}"></p>
                 <h2>Historia publiczna:<input type="checkbox" name="public" value="true"></h2>
                 <p><input type="submit" value="Zapisz"></p>
             </form>

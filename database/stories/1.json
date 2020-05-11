@@ -6,7 +6,7 @@
         "user": "1",
         "owner": "2",
         "scenarioName": "Budowa_\u0142odzi",
-        "public": false,
+        "public": true,
         "startingQuestion": "Co chcesz zbudowa\u0107?",
         "startingAnswer": "kajak",
         "story": [
