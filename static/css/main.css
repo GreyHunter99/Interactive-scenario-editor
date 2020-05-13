@@ -22,11 +22,18 @@ a:hover {
 }
 
 .menu {
+    display: inline-block;
     position: fixed;
+    width: 19%;
+    margin: 1% 1% 1% 1%;
+}
+
+.mainMenu {
     left: 0;
-    width: 20%;
-    margin: 1% 1% 1% 2%;
-    background-color: lightsalmon;
+}
+
+.contextMenu {
+    right: 0;
 }
 
 .menu p {
@@ -37,12 +44,32 @@ a:hover {
     padding: 2%;
 }
 
-.board {
+.menuBoard {
+    background-color: lightblue;
+    padding: 5%;
+    margin-bottom: 3%;
+}
+
+.messageBoard {
+    background-color: lightgreen;
+    padding: 5%;
+    margin-bottom: 3%;
+}
+
+.delete {
+    background-color: lightcoral;
+}
+
+.mainBoard {
     display: inline-block;
-    background-color: lightsalmon;
-    width: 60%;
+    width: 55%;
+    margin: 1% 1% 1% 1%;
+}
+
+.board {
+    background-color: lightblue;
     padding: 3%;
-    margin: 1% 1% 1% 20%;
+    margin-bottom: 3%;
 }
 
 .board p {
@@ -57,6 +84,7 @@ a:hover {
 .text {
     text-align: left;
     font-size: large;
+    padding: 5%;
 }
 
 .text p, .text ul {
@@ -64,7 +92,7 @@ a:hover {
 }
 
 select {
-    width: 70%;
+    width: 50%;
     padding: 0.2%;
     cursor: pointer;
     font-size: medium;
@@ -96,12 +124,24 @@ input[type=checkbox] {
 }
 
 select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, input[type=password]:focus, input[type=password]:hover, input[type=submit]:hover, button:hover {
-    background-color: yellow;
+    background-color: lemonchiffon;
 }
 
 .deleteButton {
     background-color: lightcoral;
     border-color: darkred;
+}
+
+.leftButton {
+    display: inline;
+}
+
+.rightButton {
+    display: inline;
+}
+
+.error {
+    color: red;
 }
 
 @media screen and (max-width:600px) {

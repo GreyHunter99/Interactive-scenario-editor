@@ -5,30 +5,32 @@
 {% endblock %}
 
 {% block body %}
-    {% if storyEnd %}
+    <div class="mainBoard">
+        {% if storyEnd %}
+            <div class="board">
+                <h1>Zapisz historię</h1>
+                <h3 class="error">UWAGA! Nie będziesz mógł już edytować tego podejścia.</h3>
+                <form action="{{ url_for('currentStory', saveStory = True) }}" method="post">
+                    <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ session['scenarioData']['scenarioName'] }}"></p>
+                    <h2>Historia publiczna:<input type="checkbox" name="public" value="true"></h2>
+                    <p><input type="submit" value="Zapisz"></p>
+                </form>
+            </div>
+        {% endif %}
         <div class="board">
-            <h2>Zapisz historię</h2>
-            <h3>UWAGA! Nie będziesz mógł już edytować tego podejścia.</h3>
-            <form action="{{ url_for('currentStory', saveStory = True) }}" method="post">
-                <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ session['scenarioData']['scenarioName'] }}"></p>
-                <h2>Historia publiczna:<input type="checkbox" name="public" value="true"></h2>
-                <p><input type="submit" value="Zapisz"></p>
-            </form>
+            <h1>{{ session['scenarioData']['scenarioName'] }}</h1>
         </div>
-    {% endif %}
-    <div class="board">
-        <h1>{{ session['scenarioData']['scenarioName'] }}</h1>
-    </div>
-    <div class="board">
-        <h2>{{ session['scenarioData']['startingQuestion'] }}</h2>
-        <h3>{{ session['scenarioData']['startingAnswer'] }}</h3>
-    </div>
-    {% for record in session['story'] %}
         <div class="board">
-            <h2>{{ record['question'] }}</h2>
-            {% if 'answer' in record.keys()  %}
-                <h3>{{ record['answer'] }}</h3>
-            {% endif %}
+            <h2>{{ session['scenarioData']['startingQuestion'] }}</h2>
+            <h3>{{ session['scenarioData']['startingAnswer'] }}</h3>
         </div>
-    {% endfor %}
+        {% for record in session['story'] %}
+            <div class="board">
+                <h2>{{ record['question'] }}</h2>
+                {% if 'answer' in record.keys()  %}
+                    <h3>{{ record['answer'] }}</h3>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
