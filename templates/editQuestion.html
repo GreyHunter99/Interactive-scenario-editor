@@ -14,7 +14,7 @@
                     <p><input name='text' type="text" required="required" value="{{ scenario['questions'][questionId]['text'] }}"></p>
                     <p><input type="submit" value="Zatwierdź zmiany"></p>
                 </div>
-                {% if scenario['questions'][questionId]['keyWords'] != {} %}
+                {% if scenario['questions'][questionId]['keyWords'] %}
                     <div class="block">
                         <h1 id="keyWords">Słowa kluczowe:</h1>
                         {% for keyWordKey, keyWord in scenario['questions'][questionId]['keyWords'].items() %}
@@ -23,7 +23,7 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                {% if scenario['questions'][questionId]['optionalTexts'] != {} %}
+                {% if scenario['questions'][questionId]['optionalTexts'] %}
                     <div class="block">
                         <h1>Teksty opcjonalne:</h1>
                         {% for optionalTextKey, optionalText in scenario['questions'][questionId]['optionalTexts'].items() %}
@@ -35,7 +35,7 @@
                                 <p><select name="optionalText{{ optionalTextKey }}ConditionalAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} <- {{ question['text'] }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} &larr; {{ question['text'] }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>
@@ -47,7 +47,7 @@
                                 <p><select name="optionalText{{ optionalTextKey }}ExclusionAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} <- {{ question['text'] }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} &larr; {{ question['text'] }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>
@@ -57,7 +57,7 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                {% if scenario['questions'][questionId]['answers'] != {} %}
+                {% if scenario['questions'][questionId]['answers'] %}
                     <div class="block">
                         <h1>Odpowiedzi:</h1>
                         {% for answerKey, answer in scenario['questions'][questionId]['answers'].items() %}
@@ -75,7 +75,7 @@
                                 <p><select name="answer{{ answerKey }}ConditionalAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} <- {{ question['text'] }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} &larr; {{ question['text'] }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>
@@ -87,7 +87,7 @@
                                 <p><select name="answer{{ answerKey }}ExclusionAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} <- {{ question['text'] }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text'] }} &larr; {{ question['text'] }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>

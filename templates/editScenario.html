@@ -20,18 +20,32 @@
                 <p><input type="submit" value="Zatwierdź zmiany"></p>
             </form>
         </div>
-        <div class="board">
-            <h1>Lista pytań</h1>
-        </div>
-        {% for key in scenario['questions'].keys() %}
-            <div class="board" id="question{{ key }}">
-                <h2>{{ scenario['questions'][key]['text'] }}</h2>
-                <p>
-                    <a href="{{ url_for('editQuestion', questionId=key) }}">Edytuj</a>
-                    <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=key) }}">Usuń</a>
-                </p>
+        {% if scenario['questions'] %}
+            <div class="board">
+                <h1>Lista pytań</h1>
             </div>
-        {% endfor %}
+            {% for questionKey, question in scenario['questions'].items() %}
+                <div class="board" id="question{{ questionKey }}">
+                    <h2>{{ question['text'] }}</h2>
+                    {% if question['previousQuestions'] %}
+                        <br><h3>Pytania poprzedzające:</h3>
+                    {% endif %}
+                    {% for previousQuestion in question['previousQuestions'] %}
+                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+previousQuestion.split('-')[0]) }}">{{ scenario['questions'][previousQuestion.split('-')[0]]['answers'][previousQuestion.split('-')[1]]['text'] }} &larr; {{ scenario['questions'][previousQuestion.split('-')[0]]['text'] }}</a></p>
+                    {% endfor %}
+                    {% if question['answers'] %}
+                        <br><h3>Odpowiedzi:</h3>
+                    {% endif %}
+                    {% for answerKey, answer in question['answers'].items() %}
+                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+answer['questionId']) }}">{{ answer['text'] }} &rarr; {{ scenario['questions'][answer['questionId']]['text'] }}</a></p>
+                    {% endfor %}
+                    <br><p>
+                        <a href="{{ url_for('editQuestion', questionId=questionKey) }}">Edytuj</a>
+                        <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=questionKey) }}">Usuń</a>
+                    </p>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
     <div class="menu contextMenu">
         <div class="menuBoard">

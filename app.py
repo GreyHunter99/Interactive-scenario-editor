@@ -626,6 +626,14 @@ def editScenario():
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
         flash('Zapisano dane scenariusza')
 
+    "Dodanie do scenariusza pytań poprzedzających."
+    scenario = scenario.copy()
+    for scenarioQuestionKey, scenarioQuestion in scenario['questions'].items():
+        scenarioQuestion['previousQuestions'] = []
+    for scenarioQuestionKey, scenarioQuestion in scenario['questions'].items():
+        for answerKey, answer in scenarioQuestion['answers'].items():
+            scenario['questions'][answer['questionId']]['previousQuestions'].append(scenarioQuestionKey+'-'+answerKey)
+
     return render_template('editScenario.html', scenario=scenario, isGranted=isGranted(scenario=scenario), ownerExists=ownerExists(scenario, 'user'))
 
 
