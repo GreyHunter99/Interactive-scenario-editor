@@ -87,24 +87,26 @@
     {% endif %}
     </div>
     <div class="menu contextMenu">
-        <div class="menuBoard">
-            <h1>Menu kontekstowe</h1>
-            {% if isAdmin %}
-                <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
-            {% endif %}
-            {% if isProfileOwner or isAdmin %}
-                <p><a href="{{ url_for('editScenario', userId=userData['id']) }}">Stwórz scenariusz</a></p>
-            {% endif %}
-            {% if isProfileOwner or isAdmin %}
-                <p><a href="{{ url_for('changePassword', userId=userData['id']) }}">Zmień hasło</a></p>
-            {% endif %}
-            {% if isAdmin and not isProfileOwner %}
-                <p><a href="{{ url_for('grantAdmin', userId=userData['id']) }}">{% if userData['isAdmin'] %}Odbierz uprawnienia admina{% else %}Nadaj uprawnienia admina{% endif %}</a></p>
-            {% endif %}
-            {% if isProfileOwner or isAdmin %}
-                <p><a class="deleteButton" href="{{ url_for('deleteUser', userId=userData['id']) }}">Usuń konto</a></p>
-            {% endif %}
-        </div>
+        {% if isAdmin or isProfileOwner %}
+            <div class="menuBoard">
+                <h1>Menu kontekstowe</h1>
+                {% if isAdmin %}
+                    <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
+                {% endif %}
+                {% if isProfileOwner or isAdmin %}
+                    <p><a href="{{ url_for('editScenario', userId=userData['id']) }}">Stwórz scenariusz</a></p>
+                {% endif %}
+                {% if isProfileOwner or isAdmin %}
+                    <p><a href="{{ url_for('changePassword', userId=userData['id']) }}">Zmień hasło</a></p>
+                {% endif %}
+                {% if isAdmin and not isProfileOwner %}
+                    <p><a href="{{ url_for('grantAdmin', userId=userData['id']) }}">{% if userData['isAdmin'] %}Odbierz uprawnienia admina{% else %}Nadaj uprawnienia admina{% endif %}</a></p>
+                {% endif %}
+                {% if isProfileOwner or isAdmin %}
+                    <p><a class="deleteButton" href="{{ url_for('deleteUser', userId=userData['id']) }}">Usuń konto</a></p>
+                {% endif %}
+            </div>
+        {% endif %}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
