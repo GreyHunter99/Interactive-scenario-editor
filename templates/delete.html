@@ -42,15 +42,14 @@
                 <h3>Tekst opcjonalny: {{ elementData['text'] }}</h3><br>
                 <p class="leftButton"><a href="{{ url_for('editQuestion', _anchor=elementData['name']+elementData['id']) }}">Anuluj</a></p>
                 <p class="rightButton"><a class="deleteButton" href="{{ url_for('deleteQuestionElement', confirmDelete='optionalText', optionalTextId=elementData['id']) }}">Usuń</a></p>
-            {% elif elementData['name'] == 'keyWord' %}
-                <h3>Słowo kluczowe: {{ elementData['text'] }}</h3><br>
-                <p class="leftButton"><a href="{{ url_for('editQuestion', _anchor=elementData['name']+'s') }}">Anuluj</a></p>
-                <p class="rightButton"><a class="deleteButton" href="{{ url_for('deleteQuestionElement', confirmDelete='keyWord', keyWordId=elementData['id']) }}">Usuń</a></p>
             {% elif elementData['name'] == 'answer' %}
                 <h3>Odpowiedź: {{ elementData['text'] }}</h3><br>
                 <p class="leftButton"><a href="{{ url_for('editQuestion', _anchor=elementData['name']+elementData['id']) }}">Anuluj</a></p>
                 <p class="rightButton"><a class="deleteButton" href="{{ url_for('deleteQuestionElement', confirmDelete='answer', answerId=elementData['id']) }}">Usuń</a></p>
             {% endif %}
         </div>
+    </div>
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
     </div>
 {% endblock %}

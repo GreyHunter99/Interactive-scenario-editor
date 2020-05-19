@@ -35,6 +35,7 @@
         {% endfor %}
     </div>
     <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
         {% if scenario or scenarioOwnerExists or storyOwnerExists or isOwner %}
             <div class="menuBoard">
                 <h1>Menu kontekstowe</h1>

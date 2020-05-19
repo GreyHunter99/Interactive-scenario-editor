@@ -5,29 +5,6 @@
 {% endblock %}
 
 {% block body %}
-    <div class="menu mainMenu">
-    <div class="menuBoard">
-        <h1>Menu główne</h1>
-            {% if not session.get('userId') %}
-                <p><a href="{{ url_for('login') }}">Logowanie</a></p>
-                <p><a href="{{ url_for('register') }}">Rejestracja</a></p>
-            {% else %}
-                <p><a href="{{ url_for('userProfile') }}">Mój profil</a></p>
-                <p><a href="{{ url_for('logout') }}">Wyloguj się</a></p>
-            {% endif %}
-            <p><a href="{{ url_for('menu') }}">Strona główna</a></p>
-            {% if isGranted %}
-                <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
-            {% endif %}
-            <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
-            <p><a href="{{ url_for('stories') }}">Lista historii</a></p>
-            <p><a href="{{ url_for('gamebooks') }}">Gry paragrafowe</a></p>
-            <p><a href="{{ url_for('instructions') }}">Instrukcje</a></p>
-            {% if session.get('scenarioPath') and request.path != '/question' %}
-                <p><a href="{{ url_for('question') }}">Wznów scenariusz</a></p>
-            {% endif %}
-        </div>
-    </div>
     <div class="mainBoard">
         <div class="board text">
             <h1>Interakcyjny Edytor Scenariuszy</h1>
@@ -37,6 +14,7 @@
         </div>
     </div>
     <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}

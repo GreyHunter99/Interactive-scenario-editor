@@ -31,4 +31,13 @@
             {% endif %}
         </div>
     </div>
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+        {% if session.get('userId') %}
+            <div class="menuBoard">
+                <h1>Menu kontekstowe</h1>
+                <p><a href="{{ url_for('editScenario', userId=session['userId']) }}">Stwórz scenariusz</a></p>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

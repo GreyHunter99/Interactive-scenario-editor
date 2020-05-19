@@ -21,15 +21,14 @@
                 <p><input type="submit" value="Rozpocznij scenariusz"></p>
             </form>
             <h3>Obecne słowa kluczowe:
-            {% for question in scenario['questions'] %}
-                {% for keyWord in scenario['questions'][question]['keyWords'].values() %}
-                    {{ keyWord }},
-                {% endfor %}
+            {% for keyWord in scenario['keyWords'].values() %}
+                {{ keyWord }},
             {% endfor %}
             </h3>
         </div>
     </div>
     <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
         {% if ownerExists or isGranted %}
             <div class="menuBoard">
                 <h1>Menu kontekstowe</h1>

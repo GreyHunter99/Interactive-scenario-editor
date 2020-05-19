@@ -4,393 +4,440 @@
         "name": "Scenariusz Podr\u00f3\u017cy",
         "user": "1",
         "startingQuestion": "Jaki jest cel podr\u00f3\u017cy?",
+        "keyWords": {
+            "0": "G\u00f3ry",
+            "1": "Morze",
+            "2": "Ocean",
+            "3": "Jezioro",
+            "4": "Miasto",
+            "5": "Wie\u015b"
+        },
         "noKeyWordsMessage": "Nie znaleziono takiego miejsca. Spr\u00f3buj jeszcze raz.",
+        "firstQuestion": "0",
         "goBack": true,
         "publicView": true,
         "publicEdit": false,
         "questions": {
             "0": {
-                "text": "Jaka jest \u015brednia wysoko\u015b\u0107 g\u00f3r w miejscu docelowym?",
-                "keyWords": {
-                    "0": "G\u00f3ry"
-                },
+                "text": "Jaki jest rodzaj terenu w miejscu docelowym?",
                 "optionalTexts": {},
                 "answers": {
                     "0": {
-                        "text": "Poni\u017cej 1000 m n.p.m.",
+                        "text": "Teren g\u00f3rski",
                         "questionId": "1",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     },
                     "1": {
-                        "text": "Powy\u017cej 1000 m n.p.m.",
-                        "questionId": "2",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "1": {
-                "text": "Na tak\u0105 wycieczk\u0119 powinno wystarczy\u0107 przygotowanie we w\u0142asnym zakresie. Warto jednak zapozna\u0107 si\u0119 ze szczeg\u00f3\u0142owymi informacjami odno\u015bnie docelowego szczytu.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
-                        "questionId": "3",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "2": {
-                "text": "Zalecane jest odpowiednie przygotowanie pod docelowy szczyt. Dobrze jest mie\u0107 do\u015bwiadczenie w w\u0119dr\u00f3wkach po g\u00f3rach lub zasi\u0119gn\u0105\u0107 rady os\u00f3b do\u015bwiadczonych.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
-                        "questionId": "3",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "3": {
-                "text": "Czy planujesz po drodze pozwiedza\u0107 miejscowo\u015bci znajduj\u0105ce si\u0119 na trasie podr\u00f3\u017cy?",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Tak",
-                        "questionId": "7",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    },
-                    "1": {
-                        "text": "Nie",
-                        "questionId": "10",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "4": {
-                "text": "Rodzaj akwenu?",
-                "keyWords": {
-                    "0": "Morze",
-                    "1": "Ocean",
-                    "2": "Jezioro"
-                },
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Jezioro",
+                        "text": "Teren nad wod\u0105",
                         "questionId": "5",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     },
-                    "1": {
-                        "text": "Morze",
-                        "questionId": "6",
+                    "2": {
+                        "text": "Teren zabudowany",
+                        "questionId": "8",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
-            },
-            "5": {
-                "text": "Ta opcja pozwala na wi\u0119kszy wyb\u00f3r miejsca docelowego. W razie napi\u0119tego bud\u017cetu mo\u017cna zaoszcz\u0119dzi\u0107 na doje\u017adzie.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
-                        "questionId": "3",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "6": {
-                "text": "Lepiej wcze\u015bniej poszuka\u0107 mniej popularnych miejsc oraz zapozna\u0107 si\u0119 z zaleceniami odno\u015bnie bezpiecze\u0144stwa.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
-                        "questionId": "3",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "7": {
-                "text": "Jaka jest wielko\u015b\u0107 miejscowo\u015bci docelowej?",
-                "keyWords": {
-                    "0": "Miasto",
-                    "1": "Wie\u015b"
                 },
+                "previousQuestions": []
+            },
+            "1": {
+                "text": "Jaka jest \u015brednia wysoko\u015b\u0107 g\u00f3r w miejscu docelowym?",
                 "optionalTexts": {},
                 "answers": {
                     "0": {
-                        "text": "Miasto",
+                        "text": "Poni\u017cej 1000 m n.p.m.",
+                        "questionId": "2",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    },
+                    "1": {
+                        "text": "Powy\u017cej 1000 m n.p.m.",
+                        "questionId": "3",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "0-0"
+                ]
+            },
+            "2": {
+                "text": "Na tak\u0105 wycieczk\u0119 powinno wystarczy\u0107 przygotowanie we w\u0142asnym zakresie. Warto jednak zapozna\u0107 si\u0119 ze szczeg\u00f3\u0142owymi informacjami odno\u015bnie docelowego szczytu.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "4",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "1-0"
+                ]
+            },
+            "3": {
+                "text": "Zalecane jest odpowiednie przygotowanie pod docelowy szczyt. Dobrze jest mie\u0107 do\u015bwiadczenie w w\u0119dr\u00f3wkach po g\u00f3rach lub zasi\u0119gn\u0105\u0107 rady os\u00f3b do\u015bwiadczonych.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "4",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "1-1"
+                ]
+            },
+            "4": {
+                "text": "Czy planujesz po drodze pozwiedza\u0107 miejscowo\u015bci znajduj\u0105ce si\u0119 na trasie podr\u00f3\u017cy?",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Tak",
                         "questionId": "8",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     },
                     "1": {
-                        "text": "Wie\u015b",
-                        "questionId": "9",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "8": {
-                "text": "Warto sprawdzi\u0107 oferty okresowych bilet\u00f3w komunikacji miejskiej. Mo\u017cesz r\u00f3wnie\u017c poszuka\u0107  informacji o muzeach i innych wi\u0119kszych o\u015brodkach kulturowych i turystycznych.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
-                        "questionId": "10",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "9": {
-                "text": "Dobrym pomys\u0142em jest podr\u00f3\u017c samochodem. Warto r\u00f3wnie\u017c wcze\u015bniej zaopatrzy\u0107 si\u0119 w przedmioty trudniej dost\u0119pne w mniejszych miejscowo\u015bciach.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
-                        "questionId": "10",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "10": {
-                "text": "Czy cel podr\u00f3\u017cy jest za granic\u0105?",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Tak",
+                        "text": "Nie",
                         "questionId": "11",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "2-0",
+                    "3-0",
+                    "6-0",
+                    "7-0"
+                ]
+            },
+            "5": {
+                "text": "Rodzaj akwenu?",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Jezioro",
+                        "questionId": "6",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
                     },
                     "1": {
-                        "text": "Nie",
-                        "questionId": "15",
+                        "text": "Morze",
+                        "questionId": "7",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "0-1"
+                ]
             },
-            "11": {
-                "text": "Zaopatrz si\u0119 w odpowiedni\u0105 walut\u0119 i zapoznaj z podstawowym prawem w danym kraju.",
-                "keyWords": {},
+            "6": {
+                "text": "Ta opcja pozwala na wi\u0119kszy wyb\u00f3r miejsca docelowego. W razie napi\u0119tego bud\u017cetu mo\u017cna zaoszcz\u0119dzi\u0107 na doje\u017adzie.",
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "Dalej",
-                        "questionId": "12",
+                        "questionId": "4",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "5-0"
+                ]
             },
-            "12": {
-                "text": "Czy kraj docelowy s\u0105siaduje z twoim?",
-                "keyWords": {},
+            "7": {
+                "text": "Lepiej wcze\u015bniej poszuka\u0107 mniej popularnych miejsc oraz zapozna\u0107 si\u0119 z zaleceniami odno\u015bnie bezpiecze\u0144stwa.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "4",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "5-1"
+                ]
+            },
+            "8": {
+                "text": "Jaka jest wielko\u015b\u0107 miejscowo\u015bci docelowej?",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Miasto",
+                        "questionId": "9",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    },
+                    "1": {
+                        "text": "Wie\u015b",
+                        "questionId": "10",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "0-2",
+                    "4-0"
+                ]
+            },
+            "9": {
+                "text": "Warto sprawdzi\u0107 oferty okresowych bilet\u00f3w komunikacji miejskiej. Mo\u017cesz r\u00f3wnie\u017c poszuka\u0107  informacji o muzeach i innych wi\u0119kszych o\u015brodkach kulturowych i turystycznych.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "11",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "8-0"
+                ]
+            },
+            "10": {
+                "text": "Dobrym pomys\u0142em jest podr\u00f3\u017c samochodem. Warto r\u00f3wnie\u017c wcze\u015bniej zaopatrzy\u0107 si\u0119 w przedmioty trudniej dost\u0119pne w mniejszych miejscowo\u015bciach.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "11",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "8-1"
+                ]
+            },
+            "11": {
+                "text": "Czy cel podr\u00f3\u017cy jest za granic\u0105?",
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "Tak",
-                        "questionId": "13",
+                        "questionId": "12",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     },
                     "1": {
                         "text": "Nie",
+                        "questionId": "16",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "4-1",
+                    "9-0",
+                    "10-0"
+                ]
+            },
+            "12": {
+                "text": "Zaopatrz si\u0119 w odpowiedni\u0105 walut\u0119 i zapoznaj z podstawowym prawem w danym kraju.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "13",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "11-0"
+                ]
+            },
+            "13": {
+                "text": "Czy kraj docelowy s\u0105siaduje z twoim?",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Tak",
                         "questionId": "14",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
-                    }
-                }
-            },
-            "13": {
-                "text": "Najprostsz\u0105 form\u0105 transportu b\u0119dzie samoch\u00f3d, autobus lub poci\u0105g.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
+                    },
+                    "1": {
+                        "text": "Nie",
                         "questionId": "15",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "12-0"
+                ]
             },
             "14": {
-                "text": "Mo\u017cesz zorientowa\u0107 si\u0119 w alternatywnych formach transportu jak np. samolot.",
-                "keyWords": {},
+                "text": "Najprostsz\u0105 form\u0105 transportu b\u0119dzie samoch\u00f3d, autobus lub poci\u0105g.",
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "Dalej",
-                        "questionId": "15",
+                        "questionId": "16",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "13-0"
+                ]
             },
             "15": {
+                "text": "Mo\u017cesz zorientowa\u0107 si\u0119 w alternatywnych formach transportu jak np. samolot.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "16",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "13-1"
+                ]
+            },
+            "16": {
                 "text": "Jaka jest d\u0142ugo\u015b\u0107 podr\u00f3\u017cy?",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "1 dzie\u0144",
-                        "questionId": "16",
+                        "questionId": "17",
                         "conditionalAnswers": [
-                            "7-0"
+                            "8-0"
                         ],
                         "exclusionAnswers": [
-                            "4-0",
-                            "4-1"
+                            "5-0",
+                            "5-1"
                         ]
                     },
                     "1": {
                         "text": "1 dzie\u0144",
-                        "questionId": "16",
+                        "questionId": "17",
                         "conditionalAnswers": [
-                            "7-1"
+                            "8-1"
                         ],
                         "exclusionAnswers": [
-                            "4-0",
-                            "4-1"
+                            "5-0",
+                            "5-1"
                         ]
                     },
                     "2": {
                         "text": "2-4 dni",
-                        "questionId": "17",
+                        "questionId": "18",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     },
                     "3": {
                         "text": "1 tydzie\u0144",
-                        "questionId": "18",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "16": {
-                "text": "Je\u015bli nie planujesz noclegu wyjed\u017a bardzo wcze\u015bnie rano, aby mie\u0107 jak najwi\u0119cej czasu w miejscu docelowym.",
-                "keyWords": {},
-                "optionalTexts": {},
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
                         "questionId": "19",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "11-1",
+                    "14-0",
+                    "15-0"
+                ]
             },
             "17": {
-                "text": "Poszukaj ofert noclegowych w miejscach blisko atrakcji turystycznych. Ze wzgl\u0119du na kr\u00f3tki czas wycieczki nie musisz bardzo oszcz\u0119dza\u0107 na noclegu.",
-                "keyWords": {},
+                "text": "Je\u015bli nie planujesz noclegu wyjed\u017a bardzo wcze\u015bnie rano, aby mie\u0107 jak najwi\u0119cej czasu w miejscu docelowym.",
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "Dalej",
-                        "questionId": "19",
+                        "questionId": "20",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "16-0",
+                    "16-1"
+                ]
             },
             "18": {
-                "text": "Przy d\u0142u\u017cszym pobycie dobrze jest poszuka\u0107 ta\u0144szych ofert noclegowych.",
-                "keyWords": {},
+                "text": "Poszukaj ofert noclegowych w miejscach blisko atrakcji turystycznych. Ze wzgl\u0119du na kr\u00f3tki czas wycieczki nie musisz bardzo oszcz\u0119dza\u0107 na noclegu.",
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "Dalej",
-                        "questionId": "19",
+                        "questionId": "20",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "16-2"
+                ]
             },
             "19": {
+                "text": "Przy d\u0142u\u017cszym pobycie dobrze jest poszuka\u0107 ta\u0144szych ofert noclegowych.",
+                "optionalTexts": {},
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "20",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "16-3"
+                ]
+            },
+            "20": {
                 "text": "Jaki jest klimat w miejscu docelowym?",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {
                     "0": {
                         "text": "Ciep\u0142y",
-                        "questionId": "20",
+                        "questionId": "21",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     },
                     "1": {
                         "text": "Ch\u0142odny",
-                        "questionId": "21",
-                        "conditionalAnswers": [],
-                        "exclusionAnswers": []
-                    }
-                }
-            },
-            "20": {
-                "text": "Spakuj lekkie ubranie, ale nie zapomnij o czym\u015b przeciwdeszczowym oraz czym\u015b grubszym na ch\u0142odne wieczory.",
-                "keyWords": {},
-                "optionalTexts": {
-                    "0": {
-                        "text": "Pami\u0119taj o stroju k\u0105pielowym.",
-                        "conditionalAnswers": [
-                            "4-0"
-                        ],
-                        "exclusionAnswers": []
-                    },
-                    "1": {
-                        "text": "Pami\u0119taj o stroju k\u0105pielowym.",
-                        "conditionalAnswers": [
-                            "4-1"
-                        ],
-                        "exclusionAnswers": []
-                    }
-                },
-                "answers": {
-                    "0": {
-                        "text": "Dalej",
                         "questionId": "22",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "17-0",
+                    "18-0",
+                    "19-0"
+                ]
             },
             "21": {
-                "text": "Zabierz du\u017co warstw ubra\u0144. Lepiej wzi\u0105\u0107 za du\u017co ni\u017c potem marzn\u0105\u0107.",
-                "keyWords": {},
+                "text": "Spakuj lekkie ubranie, ale nie zapomnij o czym\u015b przeciwdeszczowym oraz czym\u015b grubszym na ch\u0142odne wieczory.",
                 "optionalTexts": {
                     "0": {
-                        "text": "Wybierz odpowiednie obuwie do klimatu.",
+                        "text": "Pami\u0119taj o stroju k\u0105pielowym.",
                         "conditionalAnswers": [
-                            "0-0"
+                            "5-0"
                         ],
                         "exclusionAnswers": []
                     },
                     "1": {
-                        "text": "Wybierz odpowiednie obuwie do klimatu.",
+                        "text": "Pami\u0119taj o stroju k\u0105pielowym.",
                         "conditionalAnswers": [
-                            "0-1"
+                            "5-1"
                         ],
                         "exclusionAnswers": []
                     }
@@ -398,17 +445,53 @@
                 "answers": {
                     "0": {
                         "text": "Dalej",
-                        "questionId": "22",
+                        "questionId": "23",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "20-0"
+                ]
             },
             "22": {
+                "text": "Zabierz du\u017co warstw ubra\u0144. Lepiej wzi\u0105\u0107 za du\u017co ni\u017c potem marzn\u0105\u0107.",
+                "optionalTexts": {
+                    "0": {
+                        "text": "Wybierz odpowiednie obuwie do klimatu.",
+                        "conditionalAnswers": [
+                            "1-0"
+                        ],
+                        "exclusionAnswers": []
+                    },
+                    "1": {
+                        "text": "Wybierz odpowiednie obuwie do klimatu.",
+                        "conditionalAnswers": [
+                            "1-1"
+                        ],
+                        "exclusionAnswers": []
+                    }
+                },
+                "answers": {
+                    "0": {
+                        "text": "Dalej",
+                        "questionId": "23",
+                        "conditionalAnswers": [],
+                        "exclusionAnswers": []
+                    }
+                },
+                "previousQuestions": [
+                    "20-1"
+                ]
+            },
+            "23": {
                 "text": "Gratulacje! Uda\u0142o ci si\u0119 przygotowa\u0107 do podr\u00f3\u017cy.",
-                "keyWords": {},
                 "optionalTexts": {},
-                "answers": {}
+                "answers": {},
+                "previousQuestions": [
+                    "21-0",
+                    "22-0"
+                ]
             }
         }
     }

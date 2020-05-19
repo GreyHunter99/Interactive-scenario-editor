@@ -87,12 +87,10 @@
     {% endif %}
     </div>
     <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
         {% if isAdmin or isProfileOwner %}
             <div class="menuBoard">
                 <h1>Menu kontekstowe</h1>
-                {% if isAdmin %}
-                    <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
-                {% endif %}
                 {% if isProfileOwner or isAdmin %}
                     <p><a href="{{ url_for('editScenario', userId=userData['id']) }}">Stwórz scenariusz</a></p>
                 {% endif %}

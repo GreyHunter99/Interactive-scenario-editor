@@ -7,23 +7,43 @@
 {% block body %}
     <div class="mainBoard">
         <div class="board">
-            <h1>Edycja scenariusza</h1><br>
+            <h1>Edycja scenariusza</h1>
             <form action="{{ url_for('editScenario') }}" method="post">
-                <h2>Nazwa scenariusza:</h2><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}"></p>
-                <h2>Pytanie startowe:</h2><p><input name='startingQuestion' type="text" required="required" value="{{ scenario['startingQuestion'] }}"></p>
-                <h2>Komunikat jeśli brak słów kluczowych:</h2><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
-                <h2>Możliwość cofania:<input type="checkbox" name="goBack" value="true" {% if scenario['goBack'] %}checked{% endif %}></h2>
-                {% if isGranted %}
-                    <h2>Scenariusz publiczny:<input type="checkbox" name="publicView" value="true" {% if scenario['publicView'] %}checked{% endif %}></h2>
-                    <h2>Wszyscy mogą edytować:<input type="checkbox" name="publicEdit" value="true" {% if scenario['publicEdit'] %}checked{% endif %}></h2>
+                <div class="block">
+                    <h2>Nazwa scenariusza:</h2><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}"></p>
+                    <h2>Pytanie startowe:</h2><p><input name='startingQuestion' type="text" required="required" value="{{ scenario['startingQuestion'] }}"></p>
+                    <h2>Komunikat jeśli brak słów kluczowych:</h2><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
+                    <h2>Pierwsze pytanie scenariusza:</h2>
+                    <p><select name="firstQuestion">
+                        {% for questionKey, question in scenario['questions'].items() %}
+                            <option value="{{ questionKey }}"{% if scenario['firstQuestion'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                        {% endfor %}
+                    </select></p>
+                    <h2>Możliwość cofania:<input type="checkbox" name="goBack" value="true" {% if scenario['goBack'] %}checked{% endif %}></h2>
+                    {% if isGranted %}
+                        <h2>Scenariusz publiczny:<input type="checkbox" name="publicView" value="true" {% if scenario['publicView'] %}checked{% endif %}></h2>
+                        <h2>Wszyscy mogą edytować:<input type="checkbox" name="publicEdit" value="true" {% if scenario['publicEdit'] %}checked{% endif %}></h2>
+                    {% endif %}
+                    <p><input type="submit" value="Zatwierdź zmiany"></p>
+                </div>
+                <br><h1 id="keyWords">Słowa kluczowe:</h1>
+                {% if scenario['keyWords'] %}
+                    {% for keyWordKey, keyWord in scenario['keyWords'].items() %}
+                        <p><input name='keyWord{{ keyWordKey }}' type="text" required="required" value="{{ keyWord }}"></p>
+                        <p><a class="deleteButton" href="{{ url_for('editScenario', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
+                    {% endfor %}
+                {% else %}
+                    <h2 class="error">Brak słów kluczowych</h2>
                 {% endif %}
-                <p><input type="submit" value="Zatwierdź zmiany"></p>
             </form>
         </div>
+        <div class="board">
+            <h1>Lista pytań</h1>
+            {% if not scenario['questions'] %}
+                <h2 class="error">Brak pytań</h2>
+            {% endif %}
+        </div>
         {% if scenario['questions'] %}
-            <div class="board">
-                <h1>Lista pytań</h1>
-            </div>
             {% for questionKey, question in scenario['questions'].items() %}
                 <div class="board" id="question{{ questionKey }}">
                     <h2>{{ question['text'] }}</h2>
@@ -48,9 +68,11 @@
         {% endif %}
     </div>
     <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
         <div class="menuBoard">
             <h1>Menu kontekstowe</h1>
             <p><a href="{{ url_for('editQuestion', createQuestion=True) }}">Dodaj pytanie</a></p>
+            <p><a href="{{ url_for('editScenario', createKeyWord=True ) }}">Dodaj słowo kluczowe</a></p>
             <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>
             {% if ownerExists %}
                 <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>

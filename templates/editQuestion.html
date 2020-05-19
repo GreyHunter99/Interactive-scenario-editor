@@ -14,15 +14,6 @@
                     <p><input name='text' type="text" required="required" value="{{ scenario['questions'][questionId]['text'] }}"></p>
                     <p><input type="submit" value="Zatwierdź zmiany"></p>
                 </div>
-                {% if scenario['questions'][questionId]['keyWords'] %}
-                    <div class="block">
-                        <h1 id="keyWords">Słowa kluczowe:</h1>
-                        {% for keyWordKey, keyWord in scenario['questions'][questionId]['keyWords'].items() %}
-                            <p><input name='keyWord{{ keyWordKey }}' type="text" required="required" value="{{ keyWord }}"></p>
-                            <p><a class="deleteButton" href="{{ url_for('deleteQuestionElement', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
                 {% if scenario['questions'][questionId]['optionalTexts'] %}
                     <div class="block">
                         <h1>Teksty opcjonalne:</h1>
@@ -101,10 +92,10 @@
         </div>
     </div>
     <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
         <div class="menuBoard">
             <h1>Menu kontekstowe</h1>
             <p><a href="{{ url_for('editScenario', _anchor='question'+questionId) }}">Lista pytań</a></p>
-            <p><a href="{{ url_for('editQuestion', element='keyWord' ) }}">Dodaj słowo kluczowe</a></p>
             <p><a href="{{ url_for('editQuestion', element='optionalText' ) }}">Dodaj tekst opcjonalny</a></p>
             <p><a href="{{ url_for('editQuestion', element='answer' ) }}">Dodaj odpowiedź</a></p>
             <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>

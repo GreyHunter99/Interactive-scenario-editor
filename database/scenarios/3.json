@@ -4,20 +4,21 @@
         "name": "Budowa_\u0142odzi",
         "user": "2",
         "startingQuestion": "Co chcesz zbudowa\u0107?",
+        "keyWords": {
+                    "0": "kajak",
+                    "1": "\u017cagl\u00f3wka",
+                    "2": "dinghy",
+                    "3": "jacht",
+                    "4": "kuter"
+        },
         "noKeyWordsMessage": "Przykro mi, ale nie mo\u017cesz zbudowa\u0107 \u0142odzi.",
+        "firstQuestion": "0",
         "goBack": true,
         "publicView": true,
         "publicEdit": false,
         "questions": {
             "0": {
                 "text": "Czy potrafisz czyta\u0107 plany?",
-                "keyWords": {
-                    "0": "kajak",
-                    "1": "\u017cagl\u00f3wka",
-                    "2": "dinghy",
-                    "3": "jacht",
-                    "4": "kuter"
-                },
                 "optionalTexts": {},
                 "answers": {
                     "0": {
@@ -42,7 +43,6 @@
             },
             "1": {
                 "text": "Czy znasz podstawy obr\u00f3bki drewna?",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {
                     "0": {
@@ -61,7 +61,6 @@
             },
             "2": {
                 "text": "Kup plan",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {
                     "0": {
@@ -74,7 +73,6 @@
             },
             "3": {
                 "text": "Kup sobie podr\u0119cznik",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {
                     "0": {
@@ -87,19 +85,16 @@
             },
             "5": {
                 "text": "Daj sobie spok\u00f3j",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {}
             },
             "6": {
                 "text": "Kup drewno",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {}
             },
             "7": {
                 "text": "Kup sobie zestaw do samodzielnego monta\u017cu (kit)",
-                "keyWords": {},
                 "optionalTexts": {},
                 "answers": {}
             }
