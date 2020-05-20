@@ -16,7 +16,7 @@
                 {% endif %}
             {% endwith %}
             <form action="{{ url_for('register') }}" method="post">
-                    <h2>Nazwa użytkownika:</h2><p><input name='username' type="text" required="required"></p>
+                    <h2>Nazwa użytkownika:</h2><p><input name='username' type="text" required="required" autofocus></p>
                     <h2>Hasło:</h2><p><input name='password' type="password" required="required"></p>
                     <h2>Powtórz hasło:</h2><p><input name='repeatPassword' type="password" required="required"></p>
                     <p><input type="submit" value="Zarejestruj się"></p>

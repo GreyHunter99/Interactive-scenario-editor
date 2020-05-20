@@ -10,7 +10,7 @@
             <h1>Edycja scenariusza</h1>
             <form action="{{ url_for('editScenario') }}" method="post">
                 <div class="block">
-                    <h2>Nazwa scenariusza:</h2><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}"></p>
+                    <h2>Nazwa scenariusza:</h2><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}" autofocus></p>
                     <h2>Pytanie startowe:</h2><p><input name='startingQuestion' type="text" required="required" value="{{ scenario['startingQuestion'] }}"></p>
                     <h2>Komunikat jeśli brak słów kluczowych:</h2><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
                     <h2>Pierwsze pytanie scenariusza:</h2>

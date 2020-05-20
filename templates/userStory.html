@@ -9,7 +9,7 @@
         {% if isOwner %}
             <div class="board">
                 <form action="{{ url_for('userStory', storyId=story['id']) }}" method="post">
-                    <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ story['name'] }}"></p>
+                    <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ story['name'] }}" autofocus></p>
                     <h2>Historia publiczna:<input type="checkbox" name="public" value="true" {% if story['public'] %}checked{% endif %}></h2>
                     <p><input type="submit" value="Zapisz zmiany"></p>
                 </form>

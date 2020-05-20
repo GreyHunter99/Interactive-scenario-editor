@@ -12,7 +12,7 @@
         {% endif %}
         {% if isProfileOwner or isAdmin %}
             <form action="{{ url_for('userProfile', userId=userData['id']) }}" method="post">
-                <h1>Nazwa użytkownika:</h1><p><input name='username' type="text" required="required" value="{{ userData['username'] }}"></p>
+                <h1>Nazwa użytkownika:</h1><p><input name='username' type="text" required="required" value="{{ userData['username'] }}" autofocus></p>
                 <h2>Opis profilu:</h2><p><input name='description' type="text" value="{{ userData['description'] }}"></p>
                 <p><input type="submit" value="Zatwierdź zmiany"></p>
             </form>
