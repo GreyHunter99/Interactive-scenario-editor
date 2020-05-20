@@ -5,11 +5,11 @@
         "user": "2",
         "startingQuestion": "Co chcesz zbudowa\u0107?",
         "keyWords": {
-                    "0": "kajak",
-                    "1": "\u017cagl\u00f3wka",
-                    "2": "dinghy",
-                    "3": "jacht",
-                    "4": "kuter"
+            "0": "kajak",
+            "1": "\u017cagl\u00f3wka",
+            "2": "dinghy",
+            "3": "jacht",
+            "4": "kuter"
         },
         "noKeyWordsMessage": "Przykro mi, ale nie mo\u017cesz zbudowa\u0107 \u0142odzi.",
         "firstQuestion": "0",
@@ -39,7 +39,8 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": []
             },
             "1": {
                 "text": "Czy znasz podstawy obr\u00f3bki drewna?",
@@ -57,7 +58,11 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "2-0",
+                    "3-0"
+                ]
             },
             "2": {
                 "text": "Kup plan",
@@ -69,7 +74,10 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "0-0"
+                ]
             },
             "3": {
                 "text": "Kup sobie podr\u0119cznik",
@@ -81,22 +89,34 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                }
+                },
+                "previousQuestions": [
+                    "0-1"
+                ]
             },
             "5": {
                 "text": "Daj sobie spok\u00f3j",
                 "optionalTexts": {},
-                "answers": {}
+                "answers": {},
+                "previousQuestions": [
+                    "0-2"
+                ]
             },
             "6": {
                 "text": "Kup drewno",
                 "optionalTexts": {},
-                "answers": {}
+                "answers": {},
+                "previousQuestions": [
+                    "1-0"
+                ]
             },
             "7": {
                 "text": "Kup sobie zestaw do samodzielnego monta\u017cu (kit)",
                 "optionalTexts": {},
-                "answers": {}
+                "answers": {},
+                "previousQuestions": [
+                    "1-1"
+                ]
             }
         }
     }

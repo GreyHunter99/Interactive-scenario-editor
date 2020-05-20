@@ -15,7 +15,7 @@
         "noKeyWordsMessage": "Nie znaleziono takiego miejsca. Spr\u00f3buj jeszcze raz.",
         "firstQuestion": "0",
         "goBack": true,
-        "publicView": true,
+        "publicView": false,
         "publicEdit": false,
         "questions": {
             "0": {

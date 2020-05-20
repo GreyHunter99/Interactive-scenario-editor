@@ -165,9 +165,8 @@ select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, inpu
         margin: 0;
     }
 
-    .board {
+    .mainBoard {
         width: 100%;
         margin: 0;
     }
-
 }

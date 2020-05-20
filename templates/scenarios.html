@@ -8,26 +8,38 @@
     <div class="mainBoard">
         <div class="board">
             <h1>Lista scenariuszy</h1>
-            {% if publicScenarioList['privateScenarios'] %}
-                <h2>Scenariusze prywatne:</h2>
-                {% for key in publicScenarioList['privateScenarios'] %}
-                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['privateScenarios'][key] }}</a></p>
-                {% endfor %}
+            {% if session.get('userId') %}
+                {% if isAdmin %}
+                    <h2>Scenariusze prywatne:</h2>
+                {% else %}
+                    <h2>Moje scenariusze prywatne:</h2>
+                {% endif %}
+                {% if publicScenarioList['privateScenarios'] %}
+                    {% for key in publicScenarioList['privateScenarios'] %}
+                        <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['privateScenarios'][key] }}</a></p>
+                    {% endfor %}
+                {% else %}
+                    <h3 class="error">Brak scenariuszy</h3>
+                {% endif %}
             {% endif %}
+            <h2>Scenariusze publiczne:</h2>
             {% if publicScenarioList['publicScenarios'] %}
-                <h2>Scenariusze publiczne:</h2>
                 {% for key in publicScenarioList['publicScenarios'] %}
                     <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicScenarios'][key] }}</a></p>
                 {% endfor %}
+            {% else %}
+                <h3 class="error">Brak scenariuszy</h3>
             {% endif %}
+            <h2>Scenariusze publiczne z możliwością edycji przez wszystkich:</h2>
             {% if publicScenarioList['publicEditScenarios'] %}
-                <h2>Scenariusze publiczne do edycji dla wszystkich:</h2>
                 {% for key in publicScenarioList['publicEditScenarios'] %}
                     <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicEditScenarios'][key] }}</a>
                     {% if session.get('userId') %}
                             <a href="{{ url_for('editScenario', scenarioId=key) }}">Edycja</a></p>
                     {% endif %}
                 {% endfor %}
+            {% else %}
+                <h3 class="error">Brak scenariuszy</h3>
             {% endif %}
         </div>
     </div>

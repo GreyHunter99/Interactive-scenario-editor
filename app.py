@@ -324,7 +324,7 @@ def scenarios():
     publicScenarioList = {'privateScenarios': {}, 'publicScenarios': {}, 'publicEditScenarios': {}}
     for key, scenario in scenarioList.items():
         if not scenario['publicView']:
-            if isGranted():
+            if isGranted(element=scenario):
                 publicScenarioList['privateScenarios'][key] = scenario['name']
         elif scenario['publicEdit']:
             publicScenarioList['publicEditScenarios'][key] = scenario['name']
@@ -351,7 +351,7 @@ def start():
     "Sprawdzenie poprawności id scenariusza."
     if scenarioId:
         if scenarioId in scenarioList:
-            if scenarioList[scenarioId]['publicView'] or isGranted(scenario=scenarioList[scenarioId]):
+            if scenarioList[scenarioId]['publicView'] or isGranted(element=scenarioList[scenarioId]):
                 session['scenarioId'] = scenarioId
                 session.pop('questionId', None)
                 return redirect(url_for('start'))
@@ -381,7 +381,7 @@ def start():
             return redirect(url_for('question'))
         flash(scenario['noKeyWordsMessage'])
 
-    return render_template('start.html', scenario=scenario, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
+    return render_template('start.html', scenario=scenario, isGranted=isGranted(element=scenario, publicEdit=True), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
 
 
 @app.route('/question')
@@ -447,7 +447,7 @@ def question():
         if not checkRequirements(optionalTexts[optionalTextId]):
             del optionalTexts[optionalTextId]
 
-    return render_template('question.html', scenario=scenario, answers=answers, optionalTexts=optionalTexts, questionId=currentQuestion, isGranted=isGranted(scenario=scenario, publicEdit=True), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
+    return render_template('question.html', scenario=scenario, answers=answers, optionalTexts=optionalTexts, questionId=currentQuestion, isGranted=isGranted(element=scenario, publicEdit=True), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
 
 
 @app.route('/currentStory', methods=['GET', 'POST'])
@@ -554,7 +554,7 @@ def stories():
     publicStoryList = {'privateStories': {}, 'publicStories': {}}
     for key, story in storyList.items():
         if not story['public']:
-            if isGranted():
+            if isGranted(element=story):
                 publicStoryList['privateStories'][key] = story['name']
         else:
             publicStoryList['publicStories'][key] = story['name']
@@ -593,7 +593,7 @@ def editScenario():
     "Sprawdzenie poprawności id scenariusza."
     if scenarioId:
         if scenarioId in scenarioList:
-            if isGranted(scenario=scenarioList[scenarioId], publicEdit=True):
+            if isGranted(element=scenarioList[scenarioId], publicEdit=True):
                 session['scenarioId'] = scenarioId
                 session.pop('scenarioPath', None)
                 session.pop('story', None)
@@ -636,7 +636,7 @@ def editScenario():
             scenario['goBack'] = True
         else:
             scenario['goBack'] = False
-        if isGranted(scenario=scenario):
+        if isGranted(element=scenario):
             if request.form.get('publicView'):
                 scenario['publicView'] = True
             else:
@@ -658,7 +658,7 @@ def editScenario():
         for answerKey, answer in scenarioQuestion['answers'].items():
             scenario['questions'][answer['questionId']]['previousQuestions'].append(scenarioQuestionKey+'-'+answerKey)
 
-    return render_template('editScenario.html', scenario=scenario, isGranted=isGranted(scenario=scenario), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
+    return render_template('editScenario.html', scenario=scenario, isGranted=isGranted(element=scenario), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
 
 
 @app.route('/deleteScenario')
@@ -671,7 +671,7 @@ def deleteScenario():
 
     scenarioId = request.args.get('scenarioId')
 
-    if not scenarioId or scenarioId not in scenarioList or not isGranted(scenario=scenarioList[scenarioId]):
+    if not scenarioId or scenarioId not in scenarioList or not isGranted(element=scenarioList[scenarioId]):
         return redirect(url_for('menu'))
 
     scenario = scenarioList[scenarioId]
@@ -779,7 +779,7 @@ def deleteQuestion():
         del scenario['questions'][questionId]
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
         flash('Usunięto pytanie', 'delete')
-        return redirect(url_for('editScenario'))
+        return redirect(url_for('editScenario', _anchor='questions'))
 
     elementData = {'name': 'question', 'id': questionId, 'questionText': scenario['questions'][questionId]['text']}
 
@@ -927,10 +927,10 @@ def checkScenarioSession(story=None):
     global scenarioList
     if session.get('scenarioId') and session['scenarioId'] in scenarioList:
         if story:
-            if not scenarioList[session['scenarioId']]['publicView'] and not isGranted(scenario=scenarioList[session['scenarioId']]):
+            if not scenarioList[session['scenarioId']]['publicView'] and not isGranted(element=scenarioList[session['scenarioId']]):
                 return redirect(url_for(story))
         else:
-            if not isGranted(scenario=scenarioList[session['scenarioId']], publicEdit=True):
+            if not isGranted(element=scenarioList[session['scenarioId']], publicEdit=True):
                 return redirect(url_for('menu'))
     elif story:
         return redirect(url_for(story))
@@ -946,7 +946,7 @@ def ownerExists(element, key):
         return False
 
 
-def isGranted(scenario=None, userId=None, publicEdit=None):
+def isGranted(element=None, userId=None, publicEdit=None):
     "Funkcja zwracająca rolę zalogowanego użytkownika."
     global userList
     if session.get('userId'):
@@ -956,11 +956,11 @@ def isGranted(scenario=None, userId=None, publicEdit=None):
         else:
             if userList[session['userId']]['isAdmin']:
                 return 'admin'
-            if scenario:
-                if scenario['user'] == session['userId']:
+            if element:
+                if element['user'] == session['userId']:
                     return 'owner'
                 if publicEdit:
-                    if scenario['publicView'] and scenario['publicEdit']:
+                    if element['publicView'] and element['publicEdit']:
                         return 'granted'
 
 

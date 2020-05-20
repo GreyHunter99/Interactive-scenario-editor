@@ -5,14 +5,6 @@
 {% endblock %}
 
 {% block body %}
-    <div class="mainBoard">
-        <div class="board text">
-            <h1>Interakcyjny Edytor Scenariuszy</h1>
-            <p>Aplikacja służy do tworzenia i przechodzenia <b>interaktywnych scenariuszy</b>.</p>
-            <p>Scenariusz może być fikcyjną historią z wieloma rozgałęziającymi się <b>ścieżkami fabularnymi</b>, ale może też mieć strukturę <b>systemu doradczego</b>.</p>
-            <p>W przypadku niektórych scenariuszy część pytań może mieć formę <b>reakcji</b> na poprzednie odpowiedzi, a nie kolejnych zapytań.</p>
-        </div>
-    </div>
     <div class="menu contextMenu">
         {% include 'userMenu.html' %}
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -24,5 +16,13 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+    </div>
+    <div class="mainBoard">
+        <div class="board text">
+            <h1>Interakcyjny Edytor Scenariuszy</h1>
+            <p>Aplikacja służy do tworzenia i przechodzenia <b>interaktywnych scenariuszy</b>.</p>
+            <p>Scenariusz może być fikcyjną historią z wieloma rozgałęziającymi się <b>ścieżkami fabularnymi</b>, ale może też mieć strukturę <b>systemu doradczego</b>.</p>
+            <p>W przypadku niektórych scenariuszy część pytań może mieć formę <b>reakcji</b> na poprzednie odpowiedzi, a nie kolejnych zapytań.</p>
+        </div>
     </div>
 {% endblock %}

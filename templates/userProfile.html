@@ -24,21 +24,23 @@
             {% endif %}
         {% endif %}
         </div>
-        {% if userScenarioList['privateScenarios'] or userScenarioList['publicScenarios'] or userScenarioList['publicEditScenarios'] %}
-            <div class="board">
-                <h1>Scenariusze użytkownika:</h1>
+        <div class="board">
+            <h1>Scenariusze użytkownika:</h1>
+            {% if isProfileOwner or isAdmin %}
+                <h2>Scenariusze prywatne:</h2>
                 {% if userScenarioList['privateScenarios'] %}
-                    <h2>Scenariusze prywatne:</h2>
+                    {% for key in userScenarioList['privateScenarios'] %}
+                        <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['privateScenarios'][key] }}</a>
+                            <a href="{{ url_for('editScenario', scenarioId=key) }}">Edycja</a>
+                            <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń</a>
+                        </p>
+                    {% endfor %}
+                {% else %}
+                    <h3 class="error">Brak scenariuszy</h3>
                 {% endif %}
-                {% for key in userScenarioList['privateScenarios'] %}
-                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['privateScenarios'][key] }}</a>
-                        <a href="{{ url_for('editScenario', scenarioId=key) }}">Edycja</a>
-                        <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń</a>
-                    </p>
-                {% endfor %}
-                {% if userScenarioList['publicScenarios'] %}
-                    <h2>Scenariusze publiczne bez możliwości edycji:</h2>
-                {% endif %}
+            {% endif %}
+            <h2>Scenariusze publiczne:</h2>
+            {% if userScenarioList['publicScenarios'] %}
                 {% for key in userScenarioList['publicScenarios'] %}
                     <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicScenarios'][key] }}</a>
                         {% if isProfileOwner or isAdmin %}
@@ -47,9 +49,11 @@
                         {% endif %}
                     </p>
                 {% endfor %}
-                {% if userScenarioList['publicEditScenarios'] %}
-                    <h2>Scenariusze publiczne z możliwością edycji:</h2>
-                {% endif %}
+            {% else %}
+                <h3 class="error">Brak scenariuszy</h3>
+            {% endif %}
+            <h2>Scenariusze publiczne z możliwością edycji przez wszystkich:</h2>
+            {% if userScenarioList['publicEditScenarios'] %}
                 {% for key in userScenarioList['publicEditScenarios'] %}
                     <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicEditScenarios'][key] }}</a>
                         {% if session.get('userId') %}
@@ -60,31 +64,37 @@
                         {% endif %}
                     </p>
                 {% endfor %}
-            </div>
-    {% endif %}
-    {% if userStoryList['privateStories'] or userStoryList['publicStories'] %}
+            {% else %}
+                <h3 class="error">Brak scenariuszy</h3>
+            {% endif %}
+        </div>
         <div class="board">
             <h1>Historie użytkownika:</h1>
-            {% if userStoryList['privateStories'] %}
+            {% if isProfileOwner or isAdmin %}
                 <h2>Historie prywatne:</h2>
+                {% if userStoryList['privateStories'] %}
+                    {% for key in userStoryList['privateStories'] %}
+                        <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['privateStories'][key] }}</a>
+                            <a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a>
+                        </p>
+                    {% endfor %}
+                {% else %}
+                    <h3 class="error">Brak historii</h3>
+                {% endif %}
             {% endif %}
-            {% for key in userStoryList['privateStories'] %}
-                <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['privateStories'][key] }}</a>
-                    <a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a>
-                </p>
-            {% endfor %}
+            <h2>Historie publiczne:</h2>
             {% if userStoryList['publicStories'] %}
-                <h2>Historie publiczne:</h2>
+                {% for key in userStoryList['publicStories'] %}
+                    <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['publicStories'][key] }}</a>
+                        {% if isProfileOwner or isAdmin %}
+                            <a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a>
+                        {% endif %}
+                    </p>
+                {% endfor %}
+            {% else %}
+                <h3 class="error">Brak historii</h3>
             {% endif %}
-            {% for key in userStoryList['publicStories'] %}
-                <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['publicStories'][key] }}</a>
-                    {% if isProfileOwner or isAdmin %}
-                        <a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a>
-                    {% endif %}
-                </p>
-            {% endfor %}
         </div>
-    {% endif %}
     </div>
     <div class="menu contextMenu">
         {% include 'userMenu.html' %}
