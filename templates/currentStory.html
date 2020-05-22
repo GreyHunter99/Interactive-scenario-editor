@@ -13,6 +13,13 @@
             <div class="board">
                 <h1>Zapisz historię</h1>
                 <h3 class="error">UWAGA! Nie będziesz mógł już edytować tego podejścia.</h3>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <h3 class="error">{{ message }}</h3>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <form action="{{ url_for('currentStory', saveStory = True) }}" method="post">
                     <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ session['scenarioData']['scenarioName'] }}" autofocus></p>
                     <h2>Historia publiczna:<input type="checkbox" name="public" value="true"></h2>

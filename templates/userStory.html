@@ -24,12 +24,14 @@
                 {% endif %}
             </div>
         {% endif %}
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for message in messages %}
-                    <div class="messageBoard">
-                        <h3>{{ message }}</h3>
-                    </div>
+                {% for category, message in messages %}
+                    {% if category != 'error' %}
+                        <div class="messageBoard">
+                            <h3>{{ message }}</h3>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -37,6 +39,16 @@
     <div class="mainBoard">
         {% if isOwner %}
             <div class="board">
+                <h1>Historia użytkownika</h1>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <h3 class="error">{{ message }}</h3>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <form action="{{ url_for('userStory', storyId=story['id']) }}" method="post">
                     <h2>Nazwa historii:</h2><p><input name='name' type="text" required="required" value="{{ story['name'] }}" autofocus></p>
                     <h2>Historia publiczna:<input type="checkbox" name="public" value="true" {% if story['public'] %}checked{% endif %}></h2>

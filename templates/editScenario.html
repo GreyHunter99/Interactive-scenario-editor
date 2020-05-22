@@ -22,9 +22,11 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="messageBoard {{ category }}">
-                        <h3>{{ message }}</h3>
-                    </div>
+                    {% if category != 'error' %}
+                        <div class="messageBoard {{ category }}">
+                            <h3>{{ message }}</h3>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -34,9 +36,18 @@
             <h1>Edycja scenariusza</h1>
             <form action="{{ url_for('editScenario') }}" method="post">
                 <div class="block">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                {% if category == 'error' %}
+                                    <h3 class="error">{{ message }}</h3>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                     <h2>Nazwa scenariusza:</h2><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}" autofocus></p>
                     <h2>Pytanie startowe:</h2><p><input name='startingQuestion' type="text" required="required" value="{{ scenario['startingQuestion'] }}"></p>
-                    <h2>Komunikat jeśli brak słów kluczowych:</h2><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
+                    <h2>Komunikat w przypadku braku słów kluczowych:</h2><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
                     <h2>Pierwsze pytanie scenariusza:</h2>
                     <p><select name="firstQuestion">
                         {% for questionKey, question in scenario['questions'].items() %}

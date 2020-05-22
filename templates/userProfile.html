@@ -40,17 +40,17 @@
         <div class="board">
             <h1>Profil użytkownika</h1>
             {% if isProfileOwner or isAdmin %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <h3 class="error">{{ message }}</h3>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <form action="{{ url_for('userProfile', userId=userData['id']) }}" method="post">
                     <h2>Nazwa użytkownika:</h2><p><input name='username' type="text" required="required" value="{{ userData['username'] }}" autofocus></p>
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                {% if category == 'error' %}
-                                    <h3 class="error">{{ message }}</h3>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
                     <h2>Opis profilu:</h2><p><input name='description' type="text" value="{{ userData['description'] }}"></p>
                     <p><input type="submit" value="Zatwierdź zmiany"></p>
                 </form>
@@ -74,7 +74,7 @@
                         </p><br>
                     {% endfor %}
                 {% else %}
-                    <h3 class="error">Brak scenariuszy</h3><br>
+                    <h3>Brak scenariuszy</h3><br>
                 {% endif %}
             {% endif %}
             <h2>Scenariusze publiczne:</h2>
@@ -88,7 +88,7 @@
                     <br>
                 {% endfor %}
             {% else %}
-                <h3 class="error">Brak scenariuszy</h3><br>
+                <h3>Brak scenariuszy</h3><br>
             {% endif %}
             <h2>Scenariusze publiczne z możliwością edycji przez wszystkich:</h2>
             {% if userScenarioList['publicEditScenarios'] %}
@@ -104,7 +104,7 @@
                     </p><br>
                 {% endfor %}
             {% else %}
-                <h3 class="error">Brak scenariuszy</h3><br>
+                <h3>Brak scenariuszy</h3><br>
             {% endif %}
         </div>
         <div class="board">
@@ -113,25 +113,24 @@
                 <h2>Historie prywatne:</h2>
                 {% if userStoryList['privateStories'] %}
                     {% for key in userStoryList['privateStories'] %}
-                        <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['privateStories'][key] }}</a>
-                            <a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a>
-                        </p><br>
+                        <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['privateStories'][key] }}</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a></p><br>
                     {% endfor %}
                 {% else %}
-                    <h3 class="error">Brak historii</h3><br>
+                    <h3>Brak historii</h3><br>
                 {% endif %}
             {% endif %}
             <h2>Historie publiczne:</h2>
             {% if userStoryList['publicStories'] %}
                 {% for key in userStoryList['publicStories'] %}
-                    <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['publicStories'][key] }}</a>
+                    <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['publicStories'][key] }}</a></p>
                         {% if isProfileOwner or isAdmin %}
-                            <a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a>
+                            <p><a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń</a></p>
                         {% endif %}
-                    </p><br>
+                    <br>
                 {% endfor %}
             {% else %}
-                <h3 class="error">Brak historii</h3><br>
+                <h3>Brak historii</h3><br>
             {% endif %}
         </div>
     </div>

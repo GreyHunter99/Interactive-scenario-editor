@@ -62,8 +62,9 @@ def login():
                     flash('Zalogowano')
                     return redirect(url_for('menu'))
                 flash('Złe hasło')
-                return render_template('login.html', isAdmin=isGranted())
+                return redirect(url_for('login'))
         flash('Zła nazwa użytkownika')
+        return redirect(url_for('login'))
 
     return render_template('login.html', isAdmin=isGranted())
 
@@ -76,23 +77,33 @@ def register():
         return redirect(url_for('menu'))
 
     if request.method == 'POST' and request.form.get('username') and request.form.get('password') and request.form.get('repeatPassword'):
+        correctForm = True
         for user in userList:
             if userList[user]['username'] == request.form['username']:
                 flash('Nazwa użytkownika zajęta')
-                return render_template('register.html', isAdmin=isGranted())
+                correctForm = False
+                break
+        if len(request.form['username']) < 4 or len(request.form['username']) > 30:
+            flash('Nazwa użytkownika musi mieć od 4 do 30 znaków')
+            correctForm = False
+        if len(request.form['password']) < 4 or len(request.form['password']) > 30:
+            flash('Hasło musi mieć od 4 do 30 znaków')
+            correctForm = False
         if request.form['password'] != request.form['repeatPassword']:
             flash('Hasła są różne')
-            return render_template('register.html', isAdmin=isGranted())
-        if userList == {}:
-            key = '0'
-        else:
-            key = str(int(max(userList, key=int)) + 1)
-        userList[key] = {'id': key, 'username': request.form['username'], 'password': sha256_crypt.encrypt(request.form['password']), 'description': '', 'isAdmin': False}
-        saveToDatabase(key + '.json', {key: userList[key]}, 'users')
-        session.clear()
-        session['userId'] = key
-        flash('Zarejestrowano')
-        return redirect(url_for('menu'))
+            correctForm = False
+        if correctForm:
+            if userList == {}:
+                key = '0'
+            else:
+                key = str(int(max(userList, key=int)) + 1)
+            userList[key] = {'id': key, 'username': request.form['username'], 'password': sha256_crypt.encrypt(request.form['password']), 'description': '', 'isAdmin': False}
+            saveToDatabase(key + '.json', {key: userList[key]}, 'users')
+            session.clear()
+            session['userId'] = key
+            flash('Zarejestrowano')
+            return redirect(url_for('menu'))
+        return redirect(url_for('register'))
 
     return render_template('register.html', isAdmin=isGranted())
 
@@ -135,18 +146,22 @@ def changePassword():
         noOldPassword = False
 
     if request.method == 'POST' and request.form.get('newPassword') and request.form.get('repeatNewPassword') and (noOldPassword or request.form.get('oldPassword')):
-        if noOldPassword or sha256_crypt.verify(request.form['oldPassword'], userList[userId]['password']):
-            if request.form['newPassword'] == request.form['repeatNewPassword']:
-                userList[userId]['password'] = sha256_crypt.encrypt(request.form['newPassword'])
-                saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
-                flash('Hasło zostało zmienione')
-                return redirect(url_for('userProfile', userId=userId))
-            else:
-                flash('Nowe hasła się nie zgadzają')
-                return render_template('changePassword.html', noOldPassword=noOldPassword, userId=userId, isAdmin=isGranted())
-        else:
+        correctForm = True
+        if not noOldPassword and not sha256_crypt.verify(request.form['oldPassword'], userList[userId]['password']):
             flash('Złe stare hasło')
-            return render_template('changePassword.html', noOldPassword=noOldPassword, userId=userId, isAdmin=isGranted())
+            correctForm = False
+        if len(request.form['newPassword']) < 4 or len(request.form['newPassword']) > 30:
+            flash('Nowe hasło musi mieć od 4 do 30 znaków')
+            correctForm = False
+        if request.form['newPassword'] != request.form['repeatNewPassword']:
+            flash('Nowe hasła się nie zgadzają')
+            correctForm = False
+        if correctForm:
+            userList[userId]['password'] = sha256_crypt.encrypt(request.form['newPassword'])
+            saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
+            flash('Hasło zostało zmienione')
+            return redirect(url_for('userProfile', userId=userId))
+        return redirect(url_for('changePassword', userId=userId))
 
     return render_template('changePassword.html', noOldPassword=noOldPassword, userId=userId, isAdmin=isGranted())
 
@@ -203,7 +218,7 @@ def deleteUser():
         return redirect(url_for('menu'))
 
     "Potwierdzenie usunięcia."
-    if request.args.get('confirmDelete') and request.method == 'POST' and request.form.get('deleteUserScenarios'):
+    if request.args.get('confirmDelete') and request.method == 'POST' and request.form.get('deleteUserScenarios') and request.form.get('deleteUserStories'):
         userIsAdmin = isGranted()
         "Usunięcie lub zmiana danych scenariuszy usuwaniego użytkownika."
         for scenarioId in list(scenarioList):
@@ -302,16 +317,31 @@ def userProfile():
 
     "Edycja danych użytkownika."
     if request.method == 'POST' and request.form.get('username') and request.form.get('description') is not None and (isGranted(userId=userId) or isGranted()):
+        correctUsername = True
+        correctDescription = True
         for user in userList:
             if userList[user]['username'] == request.form['username'] and user != userId:
                 flash('Nazwa użytkownika zajęta', 'error')
-                return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userStoryList=userStoryList, userData=userData)
-        userList[userId]['username'] = request.form['username']
-        userList[userId]['description'] = request.form['description']
-        saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
-        flash('Zapisano dane użytkownika')
-        userData = dict(userList[userId])
-        del userData['password']
+                correctUsername = False
+                break
+        if len(request.form['username']) < 4 or len(request.form['username']) > 30:
+            flash('Nazwa użytkownika musi mieć od 4 do 30 znaków', 'error')
+            correctUsername = False
+        if len(request.form['description']) > 500:
+            flash('Opis profilu musi mieć mniej niż 500 znaków', 'error')
+            correctDescription = False
+        if correctUsername or correctDescription:
+            if correctUsername:
+                userList[userId]['username'] = request.form['username']
+            if correctDescription:
+                userList[userId]['description'] = request.form['description']
+            saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')
+            flash('Zapisano dane użytkownika')
+            if not correctUsername or not correctDescription:
+                flash('Wykryto błędy w formularzu. Nie zapisano wszystkich danych', 'delete')
+            userData = dict(userList[userId])
+            del userData['password']
+        return redirect(url_for('userProfile', userId=userId))
 
     return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userStoryList=userStoryList, userData=userData)
 
@@ -360,12 +390,15 @@ def start():
                 return redirect(url_for('menu'))
         else:
             return redirect(url_for('menu'))
-    elif checkScenarioSession(story='scenarios'):
-        return checkScenarioSession(story='scenarios')
+    elif checkScenarioSession(storyRedirect='scenarios'):
+        return checkScenarioSession(storyRedirect='scenarios')
     scenario = scenarioList[session['scenarioId']]
 
     "Sprawdzenie przesłanej odpowiedzi pod kątem słów kluczowych."
     if request.method == 'POST' and request.form.get('startingAnswer'):
+        if len(request.form['startingAnswer']) < 1 or len(request.form['startingAnswer']) > 50:
+            flash('Odpowiedź na pytanie startowe musi mieć od 1 do 50 znaków')
+            return redirect(url_for('start'))
         foundKeyWord = False
         for keyWord in scenario['keyWords'].values():
             if keyWord.lower() in request.form['startingAnswer'].lower():
@@ -381,6 +414,7 @@ def start():
             session['scenarioData'] = {'scenarioName': scenario['name'], 'owner': scenario['user'], 'startingQuestion': scenario['startingQuestion'], 'startingAnswer': request.form['startingAnswer']}
             return redirect(url_for('question'))
         flash(scenario['noKeyWordsMessage'])
+        return redirect(url_for('start'))
 
     return render_template('start.html', scenario=scenario, isGranted=isGranted(element=scenario, publicEdit=True), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
 
@@ -393,8 +427,8 @@ def question():
     if noUserInDatabase():
         return noUserInDatabase()
 
-    if checkScenarioSession(story='start'):
-        return checkScenarioSession(story='start')
+    if checkScenarioSession(storyRedirect='start'):
+        return checkScenarioSession(storyRedirect='start')
     scenario = scenarioList[session['scenarioId']]
 
     questionId = request.args.get('questionId')
@@ -475,6 +509,9 @@ def currentStory():
         if not answers:
             storyEnd = True
             if request.method == 'POST' and request.form.get('name'):
+                if len(request.form['name']) < 1 or len(request.form['name']) > 40:
+                    flash('Nazwa historii musi mieć od 1 do 40 znaków')
+                    return redirect(url_for('currentStory', saveStory=True))
                 if request.form.get('public'):
                     public = True
                 else:
@@ -535,13 +572,17 @@ def userStory():
             return redirect(url_for('userProfile', userId=userId))
         "Edycja danych historii."
         if request.method == 'POST' and request.form.get('name'):
+            if len(request.form['name']) < 1 or len(request.form['name']) > 40:
+                flash('Nazwa historii musi mieć od 1 do 40 znaków', 'error')
+                return redirect(url_for('userStory', storyId=storyId))
             story['name'] = request.form['name']
             if request.form.get('public'):
                 story['public'] = True
             else:
                 story['public'] = False
-            flash('Zapisano dane historii')
             saveToDatabase(story['id'] + '.json', {story['id']: story}, 'stories')
+            flash('Zapisano dane historii')
+            return redirect(url_for('userStory', storyId=storyId))
 
     return render_template('userStory.html', story=story, scenario=scenario, isOwner=isOwner, scenarioOwnerExists=ownerExists(story, 'owner'), storyOwnerExists=ownerExists(story, 'user'), isAdmin=isGranted())
 
@@ -629,9 +670,22 @@ def editScenario():
 
     "Edycja danych scenariusza."
     if request.method == 'POST' and request.form.get('name') and request.form.get('startingQuestion') and request.form.get('noKeyWordsMessage'):
-        scenario['name'] = request.form['name']
-        scenario['startingQuestion'] = request.form['startingQuestion']
-        scenario['noKeyWordsMessage'] = request.form['noKeyWordsMessage']
+        formError = False
+        if len(request.form['name']) < 1 or len(request.form['name']) > 40:
+            flash('Nazwa scenariusza musi mieć od 1 do 40 znaków', 'error')
+            formError = True
+        else:
+            scenario['name'] = request.form['name']
+        if len(request.form['startingQuestion']) < 1 or len(request.form['startingQuestion']) > 100:
+            flash('Pytanie startowe musi mieć od 1 do 100 znaków', 'error')
+            formError = True
+        else:
+            scenario['startingQuestion'] = request.form['startingQuestion']
+        if len(request.form['noKeyWordsMessage']) < 1 or len(request.form['noKeyWordsMessage']) > 100:
+            flash('Komunikat w przypadku braku słów kluczowych musi mieć od 1 do 100 znaków', 'error')
+            formError = True
+        else:
+            scenario['noKeyWordsMessage'] = request.form['noKeyWordsMessage']
         scenario['firstQuestion'] = request.form.get('firstQuestion')
         if request.form.get('goBack'):
             scenario['goBack'] = True
@@ -646,10 +700,19 @@ def editScenario():
                 scenario['publicEdit'] = True
             else:
                 scenario['publicEdit'] = False
+        keyWordError = False
         for keyWordKey in scenario['keyWords']:
-            scenario['keyWords'][keyWordKey] = request.form['keyWord' + keyWordKey]
+            if len(request.form['keyWord' + keyWordKey]) < 1 or len(request.form['keyWord' + keyWordKey]) > 50:
+                keyWordError = True
+            else:
+                scenario['keyWords'][keyWordKey] = request.form['keyWord' + keyWordKey]
+        if keyWordError:
+            flash('Słowo kluczowe musi mieć od 1 do 50 znaków', 'error')
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
         flash('Zapisano dane scenariusza')
+        if formError or keyWordError:
+            flash('Wykryto błędy w formularzu. Nie zapisano wszystkich danych', 'delete')
+        return redirect(url_for('editScenario'))
 
     "Dodanie do scenariusza pytań poprzedzających."
     scenario = scenario.copy()
@@ -752,8 +815,42 @@ def editQuestion():
 
     "Edycja danych pytania."
     if request.method == 'POST' and request.form.get('text'):
-        updateQuestion(scenario)
+        if len(request.form['text']) < 1 or len(request.form['text']) > 200:
+            flash('Treść pytania musi mieć od 1 do 200 znaków', 'error')
+            questionTextError = True
+        else:
+            scenario['questions'][session['questionId']]['text'] = request.form['text']
+            questionTextError = False
+        optionalTextError = False
+        for optionalTextKey, optionalText in scenario['questions'][session['questionId']]['optionalTexts'].items():
+            if len(request.form['optionalText' + optionalTextKey]) < 1 or len(request.form['optionalText' + optionalTextKey]) > 200:
+                optionalTextError = True
+            else:
+                optionalText['text'] = request.form['optionalText' + optionalTextKey]
+            for requirementKey in range(len(optionalText['conditionalAnswers'])):
+                optionalText['conditionalAnswers'][requirementKey] = request.form.get('optionalText' + optionalTextKey + 'ConditionalAnswers' + str(requirementKey))
+            for requirementKey in range(len(optionalText['exclusionAnswers'])):
+                optionalText['exclusionAnswers'][requirementKey] = request.form.get('optionalText' + optionalTextKey + 'ExclusionAnswers' + str(requirementKey))
+        answerError = False
+        for answerKey, answer in scenario['questions'][session['questionId']]['answers'].items():
+            if len(request.form['answerText' + answerKey]) < 1 or len(request.form['answerText' + answerKey]) > 100:
+                answerError = True
+            else:
+                answer['text'] = request.form['answerText' + answerKey]
+            answer['questionId'] = request.form['answerQuestionId' + answerKey]
+            for requirementKey in range(len(answer['conditionalAnswers'])):
+                answer['conditionalAnswers'][requirementKey] = request.form.get('answer' + answerKey + 'ConditionalAnswers' + str(requirementKey))
+            for requirementKey in range(len(answer['exclusionAnswers'])):
+                answer['exclusionAnswers'][requirementKey] = request.form.get('answer' + answerKey + 'ExclusionAnswers' + str(requirementKey))
+        if optionalTextError:
+            flash('Treść tekstu opcjonalnego musi mieć od 1 do 200 znaków', 'error')
+        if answerError:
+            flash('Treść odpowiedzi musi mieć od 1 do 100 znaków', 'error')
+        saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
         flash('Zapisano dane pytania')
+        if questionTextError or optionalTextError or answerError:
+            flash('Wykryto błędy w formularzu. Nie zapisano wszystkich danych', 'delete')
+        return redirect(url_for('editQuestion'))
 
     return render_template('editQuestion.html', scenario=scenario, questionId=session['questionId'], ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
 
@@ -874,25 +971,6 @@ def deleteRequirement(requirement, scenario):
                     flash('Usunięto wykluczenie dla odpowiedzi', 'delete')
 
 
-def updateQuestion(scenario):
-    "Funkcja aktualizująca dane pytania."
-    scenario['questions'][session['questionId']]['text'] = request.form['text']
-    for optionalTextKey, optionalText in scenario['questions'][session['questionId']]['optionalTexts'].items():
-        optionalText['text'] = request.form['optionalText' + optionalTextKey]
-        for requirementKey in range(len(optionalText['conditionalAnswers'])):
-            optionalText['conditionalAnswers'][requirementKey] = request.form.get('optionalText' + optionalTextKey + 'ConditionalAnswers' + str(requirementKey))
-        for requirementKey in range(len(optionalText['exclusionAnswers'])):
-            optionalText['exclusionAnswers'][requirementKey] = request.form.get('optionalText' + optionalTextKey + 'ExclusionAnswers' + str(requirementKey))
-    for answerKey, answer in scenario['questions'][session['questionId']]['answers'].items():
-        answer['text'] = request.form['answerText' + answerKey]
-        answer['questionId'] = request.form['answerQuestionId' + answerKey]
-        for requirementKey in range(len(answer['conditionalAnswers'])):
-            answer['conditionalAnswers'][requirementKey] = request.form.get('answer' + answerKey + 'ConditionalAnswers' + str(requirementKey))
-        for requirementKey in range(len(answer['exclusionAnswers'])):
-            answer['exclusionAnswers'][requirementKey] = request.form.get('answer' + answerKey + 'ExclusionAnswers' + str(requirementKey))
-    saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
-
-
 def checkRequirements(element):
     "Funkcja sprawdzająca wymagania danego elementu pytania."
     condition = True
@@ -923,18 +1001,18 @@ def noUserInDatabase():
         return redirect(url_for('logout'))
 
 
-def checkScenarioSession(story=None):
+def checkScenarioSession(storyRedirect=None):
     "Funkcja sprawdzająca poprawność zmiennej sesyjnej przechowującej id scenariusza."
     global scenarioList
     if session.get('scenarioId') and session['scenarioId'] in scenarioList:
-        if story:
+        if storyRedirect:
             if not scenarioList[session['scenarioId']]['publicView'] and not isGranted(element=scenarioList[session['scenarioId']]):
-                return redirect(url_for(story))
+                return redirect(url_for(storyRedirect))
         else:
             if not isGranted(element=scenarioList[session['scenarioId']], publicEdit=True):
                 return redirect(url_for('menu'))
-    elif story:
-        return redirect(url_for(story))
+    elif storyRedirect:
+        return redirect(url_for(storyRedirect))
     else:
         return redirect(url_for('menu'))
 

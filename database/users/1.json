@@ -2,8 +2,8 @@
     "1": {
         "id": "1",
         "username": "user",
-        "password": "$5$rounds=535000$LNpcA6yKiSo10x/K$yviEZ9yAOVX887XHVCw1oT2a9TBfpBs5DUpZY5OuK05",
-        "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "password": "$5$rounds=535000$z/63ebOmCq9OomfC$Vyf.QvzJVvID.Dx2i3TNjJ273JwIEJCmSUbYXabcid/",
+        "description": "opis profilu",
         "isAdmin": false
     }
 }
