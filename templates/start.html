@@ -5,6 +5,20 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+        {% if ownerExists or isGranted %}
+            <div class="menuBoard">
+                <h1>Menu kontekstowe</h1>
+                {% if ownerExists %}
+                    <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
+                {% endif %}
+                {% if isGranted %}
+                    <p><a href="{{ url_for('editScenario') }}">Edytuj scenariusz</a></p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
     <div class="mainBoard">
         <div class="board">
             <h1>{{ scenario['name'] }}</h1>
@@ -26,19 +40,5 @@
             {% endfor %}
             </h3>
         </div>
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
-        {% if ownerExists or isGranted %}
-            <div class="menuBoard">
-                <h1>Menu kontekstowe</h1>
-                {% if ownerExists %}
-                    <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
-                {% endif %}
-                {% if isGranted %}
-                    <p><a href="{{ url_for('editScenario') }}">Edytuj scenariusz</a></p>
-                {% endif %}
-            </div>
-        {% endif %}
     </div>
 {% endblock %}

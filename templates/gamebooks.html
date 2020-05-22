@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+    </div>
     <div class="mainBoard">
         <div class="board text">
             <h1>O grach paragrafowych</h1>
@@ -49,8 +52,5 @@
                 <li>do tworzenia interaktywnych kursów i poradników.</li>
             </ul>
         </div>
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
     </div>
 {% endblock %}

@@ -5,6 +5,21 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+        <div class="menuBoard">
+            <h1>Menu kontekstowe</h1>
+            <p><a href="{{ url_for('start') }}">Reset scenariusza</a></p>
+            <p><a href="{{ url_for('currentStory') }}">Dotychczasowa historia</a></p>
+                {% if scenario['goBack'] %}<p><a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
+            {% if ownerExists %}
+                <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
+            {% endif %}
+            {% if isGranted %}
+                <p><a href="{{ url_for('editQuestion', questionId=questionId) }}">Edytuj pytanie</a></p>
+            {% endif %}
+        </div>
+    </div>
     <div class="mainBoard">
         <div class="board">
             <h1>{{ scenario['name'] }}</h1>
@@ -22,21 +37,6 @@
                 {% if session.get('userId') %}
                     <p><a href="{{ url_for('currentStory', saveStory = True) }}">Zapisz historię</a></p>
                 {% endif %}
-            {% endif %}
-        </div>
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
-        <div class="menuBoard">
-            <h1>Menu kontekstowe</h1>
-            <p><a href="{{ url_for('start') }}">Reset scenariusza</a></p>
-            <p><a href="{{ url_for('currentStory') }}">Dotychczasowa historia</a></p>
-                {% if scenario['goBack'] %}<p><a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
-            {% if ownerExists %}
-                <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
-            {% endif %}
-            {% if isGranted %}
-                <p><a href="{{ url_for('editQuestion', questionId=questionId) }}">Edytuj pytanie</a></p>
             {% endif %}
         </div>
     </div>

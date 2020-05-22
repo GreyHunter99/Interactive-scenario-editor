@@ -1,6 +1,7 @@
 body {
     background-color: white;
     text-align: center;
+    overflow-wrap: break-word;
 }
 
 h1, h2, h3, p {
@@ -17,15 +18,8 @@ a {
     font-weight: bold;
 }
 
-.shortText {
-    word-wrap: break-word;
-}
-
 .shortText a {
     display: block;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
     margin-left: auto;
     margin-right: auto;
     width: 50%;
@@ -56,6 +50,12 @@ a:hover {
 
 .menu a {
     padding: 2%;
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
 }
 
 .menuBoard {

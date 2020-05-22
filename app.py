@@ -304,7 +304,8 @@ def userProfile():
     if request.method == 'POST' and request.form.get('username') and request.form.get('description') is not None and (isGranted(userId=userId) or isGranted()):
         for user in userList:
             if userList[user]['username'] == request.form['username'] and user != userId:
-                return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userStoryList=userStoryList, userData=userData, usernameTaken=True)
+                flash('Nazwa użytkownika zajęta', 'error')
+                return render_template('userProfile.html', isAdmin=isGranted(), isProfileOwner=isGranted(userId=userId), userScenarioList=userScenarioList, userStoryList=userStoryList, userData=userData)
         userList[userId]['username'] = request.form['username']
         userList[userId]['description'] = request.form['description']
         saveToDatabase(userId + '.json', {userId: userList[userId]}, 'users')

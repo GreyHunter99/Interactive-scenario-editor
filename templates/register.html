@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+    </div>
     <div class="mainBoard">
         <div class="board">
             <h1>Rejestracja</h1>
@@ -22,8 +25,5 @@
                     <p><input type="submit" value="Zarejestruj się"></p>
             </form>
         </div>
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
     </div>
 {% endblock %}

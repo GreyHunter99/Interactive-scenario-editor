@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+    </div>
     <div class="mainBoard">
         {% if storyEnd %}
             <div class="board">
@@ -32,8 +35,5 @@
                 {% endif %}
             </div>
         {% endfor %}
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
     </div>
 {% endblock %}

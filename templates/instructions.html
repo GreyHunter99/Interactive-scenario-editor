@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+    </div>
     <div class="mainBoard">
         <div class="board text">
             <h1>Instrukcje</h1>
@@ -44,8 +47,5 @@
                 Przejść do edycji scenariusza można również podczas przechodzenia scenariusza.
                 Przy tworzeniu scenariusza lepiej zacząć od stworzenia <b>pytań</b>, a następnie połączyć je <b>odpowiedziami</b>.</p>
         </div>
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
     </div>
 {% endblock %}

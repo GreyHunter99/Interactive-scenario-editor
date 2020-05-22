@@ -5,6 +5,30 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+        <div class="menuBoard">
+            <h1>Menu kontekstowe</h1>
+            <p><a href="{{ url_for('editQuestion', createQuestion=True) }}">Dodaj pytanie</a></p>
+            <p><a href="{{ url_for('editScenario', createKeyWord=True ) }}">Dodaj słowo kluczowe</a></p>
+            <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>
+            {% if ownerExists %}
+                <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
+            {% endif %}
+            {% if isGranted %}
+                <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a></p>
+            {% endif %}
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="messageBoard {{ category }}">
+                        <h3>{{ message }}</h3>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
     <div class="mainBoard">
         <div class="board">
             <h1>Edycja scenariusza</h1>
@@ -16,7 +40,7 @@
                     <h2>Pierwsze pytanie scenariusza:</h2>
                     <p><select name="firstQuestion">
                         {% for questionKey, question in scenario['questions'].items() %}
-                            <option value="{{ questionKey }}"{% if scenario['firstQuestion'] == questionKey %} selected="selected"{% endif %}>{{ question['text'] }}</option>
+                            <option value="{{ questionKey }}"{% if scenario['firstQuestion'] == questionKey %} selected="selected"{% endif %}>{{ question['text']|truncate(40) }}</option>
                         {% endfor %}
                     </select></p>
                     <h2>Możliwość cofania:<input type="checkbox" name="goBack" value="true" {% if scenario['goBack'] %}checked{% endif %}></h2>
@@ -51,13 +75,13 @@
                         <br><h3>Pytania poprzedzające:</h3>
                     {% endif %}
                     {% for previousQuestion in question['previousQuestions'] %}
-                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+previousQuestion.split('-')[0]) }}">{{ scenario['questions'][previousQuestion.split('-')[0]]['answers'][previousQuestion.split('-')[1]]['text'] }} &larr; {{ scenario['questions'][previousQuestion.split('-')[0]]['text'] }}</a></p>
+                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+previousQuestion.split('-')[0]) }}">{{ scenario['questions'][previousQuestion.split('-')[0]]['answers'][previousQuestion.split('-')[1]]['text']|truncate(20) }} &larr; {{ scenario['questions'][previousQuestion.split('-')[0]]['text']|truncate(20) }}</a></p>
                     {% endfor %}
                     {% if question['answers'] %}
                         <br><h3>Odpowiedzi:</h3>
                     {% endif %}
                     {% for answerKey, answer in question['answers'].items() %}
-                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+answer['questionId']) }}">{{ answer['text'] }} &rarr; {{ scenario['questions'][answer['questionId']]['text'] }}</a></p>
+                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+answer['questionId']) }}">{{ answer['text']|truncate(20) }} &rarr; {{ scenario['questions'][answer['questionId']]['text']|truncate(20) }}</a></p>
                     {% endfor %}
                     <br><p>
                         <a href="{{ url_for('editQuestion', questionId=questionKey) }}">Edytuj</a>
@@ -66,29 +90,5 @@
                 </div>
             {% endfor %}
         {% endif %}
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
-        <div class="menuBoard">
-            <h1>Menu kontekstowe</h1>
-            <p><a href="{{ url_for('editQuestion', createQuestion=True) }}">Dodaj pytanie</a></p>
-            <p><a href="{{ url_for('editScenario', createKeyWord=True ) }}">Dodaj słowo kluczowe</a></p>
-            <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>
-            {% if ownerExists %}
-                <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
-            {% endif %}
-            {% if isGranted %}
-                <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a></p>
-            {% endif %}
-        </div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="messageBoard {{ category }}">
-                        <h3>{{ message }}</h3>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
     </div>
 {% endblock %}

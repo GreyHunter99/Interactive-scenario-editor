@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+    <div class="menu contextMenu">
+        {% include 'userMenu.html' %}
+    </div>
     <div class="mainBoard">
         <div class="board">
             <h2>USUWANIE ELEMENTU:</h2>
@@ -48,8 +51,5 @@
                 <p class="rightButton"><a class="deleteButton" href="{{ url_for('deleteQuestionElement', confirmDelete='answer', answerId=elementData['id']) }}">Usuń</a></p>
             {% endif %}
         </div>
-    </div>
-    <div class="menu contextMenu">
-        {% include 'userMenu.html' %}
     </div>
 {% endblock %}
