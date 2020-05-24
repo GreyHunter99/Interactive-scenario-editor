@@ -46,8 +46,8 @@
                         {% endif %}
                     {% endwith %}
                     <h2>Nazwa scenariusza:</h2><p><input name='name' type="text" required="required" value="{{ scenario['name'] }}" autofocus></p>
-                    <h2>Pytanie startowe:</h2><p><input name='startingQuestion' type="text" required="required" value="{{ scenario['startingQuestion'] }}"></p>
-                    <h2>Komunikat w przypadku braku słów kluczowych:</h2><p><input name='noKeyWordsMessage' type="text" required="required" value="{{ scenario['noKeyWordsMessage'] }}"></p>
+                    <h2>Pytanie startowe:</h2><p><textarea rows="3" name="startingQuestion" required="required">{{ scenario['startingQuestion'] }}</textarea></p>
+                    <h2>Komunikat w przypadku braku słów kluczowych:</h2><p><textarea rows="3" name="noKeyWordsMessage" required="required">{{ scenario['noKeyWordsMessage'] }}</textarea></p>
                     <h2>Pierwsze pytanie scenariusza:</h2>
                     <p><select name="firstQuestion">
                         {% for questionKey, question in scenario['questions'].items() %}

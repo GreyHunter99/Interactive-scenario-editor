@@ -904,12 +904,10 @@ def deleteQuestionElement():
         deleteElement(request.args.get('confirmDelete'), scenario)
         return redirect(url_for('editQuestion'))
 
-    editedQuestion = scenario['questions'][session['questionId']]
-
-    if request.args.get('optionalTextId') and request.args.get('optionalTextId') in editedQuestion['optionalTexts']:
-        elementData = {'name': 'optionalText', 'id': request.args.get('optionalTextId'), 'text': editedQuestion['optionalTexts'][request.args.get('optionalTextId')]['text']}
-    elif request.args.get('answerId') and request.args.get('answerId') in editedQuestion['answers']:
-        elementData = {'name': 'answer', 'id': request.args.get('answerId'), 'text': editedQuestion['answers'][request.args.get('answerId')]['text']}
+    if request.args.get('optionalTextId') and request.args.get('optionalTextId') in scenario['questions'][session['questionId']]['optionalTexts']:
+        elementData = {'name': 'optionalText', 'id': request.args.get('optionalTextId'), 'text': scenario['questions'][session['questionId']]['optionalTexts'][request.args.get('optionalTextId')]['text']}
+    elif request.args.get('answerId') and request.args.get('answerId') in scenario['questions'][session['questionId']]['answers']:
+        elementData = {'name': 'answer', 'id': request.args.get('answerId'), 'text': scenario['questions'][session['questionId']]['answers'][request.args.get('answerId')]['text']}
     else:
         return redirect(url_for('editQuestion'))
 

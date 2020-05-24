@@ -114,7 +114,7 @@ select {
     border: 4px solid royalblue;
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password], textarea {
     width: 35%;
     background-color: white;
     padding: 0.5%;
@@ -137,8 +137,12 @@ input[type=checkbox] {
     margin: 1.2%;
 }
 
-select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, input[type=password]:focus, input[type=password]:hover, input[type=submit]:hover, button:hover {
+select:hover, select:focus, input[type=text]:focus, input[type=text]:hover, input[type=password]:focus, input[type=password]:hover, input[type=submit]:hover, button:hover, textarea:focus, textarea:hover {
     background-color: lemonchiffon;
+}
+
+textarea {
+    resize: none;
 }
 
 .deleteButton {

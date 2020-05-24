@@ -51,7 +51,7 @@
                 {% endwith %}
                 <form action="{{ url_for('userProfile', userId=userData['id']) }}" method="post">
                     <h2>Nazwa użytkownika:</h2><p><input name='username' type="text" required="required" value="{{ userData['username'] }}" autofocus></p>
-                    <h2>Opis profilu:</h2><p><input name='description' type="text" value="{{ userData['description'] }}"></p>
+                    <h2>Opis profilu:</h2><p><textarea rows="6" name="description">{{ userData['description'] }}</textarea></p>
                     <p><input type="submit" value="Zatwierdź zmiany"></p>
                 </form>
             {% else %}

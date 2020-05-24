@@ -45,7 +45,7 @@
                         {% endif %}
                     {% endwith %}
                     <h2>Treść pytania:</h2>
-                    <p><input name='text' type="text" required="required" value="{{ scenario['questions'][questionId]['text'] }}" autofocus></p>
+                    <p><textarea rows="5" name="text" required="required" autofocus>{{ scenario['questions'][questionId]['text'] }}</textarea></p>
                     <p><input type="submit" value="Zatwierdź zmiany"></p>
                 </div>
                 {% if scenario['questions'][questionId]['optionalTexts'] %}
@@ -53,7 +53,7 @@
                         <h1>Teksty opcjonalne:</h1>
                         {% for optionalTextKey, optionalText in scenario['questions'][questionId]['optionalTexts'].items() %}
                             <h2 id="optionalText{{ optionalTextKey }}">Treść tekstu {{ optionalTextKey|int + 1 }} :</h2>
-                            <p><input name='optionalText{{ optionalTextKey }}' type="text" required="required" value="{{ optionalText['text'] }}"></p>
+                            <p><textarea rows="5" name="optionalText{{ optionalTextKey }}" required="required" autofocus>{{ optionalText['text'] }}</textarea></p>
                             <h3>Pytania warunkowe:</h3>
                             <p><a href="{{ url_for('editQuestion', requirement='optionalTexts-conditionalAnswers-'+optionalTextKey) }}">Dodaj odpowiedź warunkową</a></p>
                             {% for requirementKey in range(optionalText['conditionalAnswers']|length) %}
@@ -87,7 +87,7 @@
                         <h1>Odpowiedzi:</h1>
                         {% for answerKey, answer in scenario['questions'][questionId]['answers'].items() %}
                             <h2 id="answer{{ answerKey }}">Treść odpowiedzi {{ answerKey|int + 1 }} :</h2>
-                            <p><input name='answerText{{ answerKey }}' type="text" required="required" value="{{ answer['text'] }}"></p>
+                            <p><textarea rows="3" name="answerText{{ answerKey }}" required="required" autofocus>{{ answer['text'] }}</textarea></p>
                             <h3>Pytanie docelowe:</h3>
                             <p><select name="answerQuestionId{{ answerKey }}">
                                 {% for questionKey, question in scenario['questions'].items() %}
