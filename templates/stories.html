@@ -22,7 +22,7 @@
                         <p><a href="{{ url_for('userStory', storyId=key) }}">{{ publicStoryList['privateStories'][key] }}</a></p>
                     {% endfor %}
                 {% else %}
-                    <h3 class="error">Brak historii</h3>
+                    <h3>Brak historii</h3>
                 {% endif %}
             {% endif %}
             <h2>Historie publiczne:</h2>
@@ -31,7 +31,7 @@
                     <p><a href="{{ url_for('userStory', storyId=key) }}">{{ publicStoryList['publicStories'][key] }}</a></p>
                 {% endfor %}
             {% else %}
-                <h3 class="error">Brak historii</h3>
+                <h3>Brak historii</h3>
             {% endif %}
         </div>
     </div>
