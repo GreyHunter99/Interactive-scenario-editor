@@ -105,12 +105,6 @@ a:hover {
     margin: auto;
 }
 
-.footer {
-    bottom: 1%;
-    position: absolute;
-    left: 1%;
-}
-
 select {
     width: 50%;
     padding: 0.2%;
