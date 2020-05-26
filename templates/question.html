@@ -8,16 +8,18 @@
     <div class="menu contextMenu">
         {% include 'userMenu.html' %}
         <div class="menuBoard">
-            <h1>Menu kontekstowe</h1>
-            <p><a href="{{ url_for('start') }}">Reset scenariusza</a></p>
-            <p><a href="{{ url_for('currentStory') }}">Dotychczasowa historia</a></p>
-                {% if scenario['goBack'] %}<p><a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
-            {% if ownerExists %}
-                <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
-            {% endif %}
-            {% if isGranted %}
-                <p><a href="{{ url_for('editQuestion', questionId=questionId) }}">Edytuj pytanie</a></p>
-            {% endif %}
+            <button class="collapseMenu">&#9776 Menu kontekstowe</button>
+            <div class="menuContent">
+                <p><a href="{{ url_for('start') }}">Reset scenariusza</a></p>
+                <p><a href="{{ url_for('currentStory') }}">Dotychczasowa historia</a></p>
+                    {% if scenario['goBack'] %}<p><a href="{{ url_for('question', goBack=True) }}">Cofnij</a>{% endif %}</p>
+                {% if ownerExists %}
+                    <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
+                {% endif %}
+                {% if isGranted %}
+                    <p><a href="{{ url_for('editQuestion', questionId=questionId) }}">Edytuj pytanie</a></p>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="mainBoard">

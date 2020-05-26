@@ -9,19 +9,21 @@
         {% include 'userMenu.html' %}
         {% if scenario or scenarioOwnerExists or storyOwnerExists or isOwner %}
             <div class="menuBoard">
-                <h1>Menu kontekstowe</h1>
-                {% if scenario %}
-                    <p><a href="{{ url_for('start', scenarioId=story['scenario']) }}">Rozpocznij ten scenariusz</a></p>
-                {% endif %}
-                {% if scenarioOwnerExists %}
-                    <p><a href="{{ url_for('userProfile', userId=story['owner']) }}">Profil twórcy scenariusza</a></p>
-                {% endif %}
-                {% if storyOwnerExists %}
-                    <p><a href="{{ url_for('userProfile', userId=story['user']) }}">Profil twórcy historii</a></p>
-                {% endif %}
-                {% if isOwner %}
-                    <p><a class="deleteButton" href="{{ url_for('userStory', storyId=story['id'], deleteStory=True) }}">Usuń historię</a></p>
-                {% endif %}
+                <button class="collapseMenu">&#9776 Menu kontekstowe</button>
+                <div class="menuContent">
+                    {% if scenario %}
+                        <p><a href="{{ url_for('start', scenarioId=story['scenario']) }}">Rozpocznij ten scenariusz</a></p>
+                    {% endif %}
+                    {% if scenarioOwnerExists %}
+                        <p><a href="{{ url_for('userProfile', userId=story['owner']) }}">Profil twórcy scenariusza</a></p>
+                    {% endif %}
+                    {% if storyOwnerExists %}
+                        <p><a href="{{ url_for('userProfile', userId=story['user']) }}">Profil twórcy historii</a></p>
+                    {% endif %}
+                    {% if isOwner %}
+                        <p><a class="deleteButton" href="{{ url_for('userStory', storyId=story['id'], deleteStory=True) }}">Usuń historię</a></p>
+                    {% endif %}
+                </div>
             </div>
         {% endif %}
         {% with messages = get_flashed_messages(with_categories=true) %}

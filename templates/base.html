@@ -10,21 +10,33 @@
     <body>
         <div class="menu mainMenu">
             <div class="menuBoard">
-                <h1>Menu główne</h1>
-                <p><a href="{{ url_for('menu') }}">Strona główna</a></p>
-                <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
-                <p><a href="{{ url_for('stories') }}">Lista historii</a></p>
-                {% if isAdmin %}
-                    <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
-                {% endif %}
-                <p><a href="{{ url_for('gamebooks') }}">Gry paragrafowe</a></p>
-                <p><a href="{{ url_for('instructions') }}">Instrukcje</a></p>
-                {% if session.get('scenarioPath') and request.path != '/question' %}
-                    <p><a href="{{ url_for('question') }}">Wznów scenariusz</a></p>
-                {% endif %}
+                <button class="collapseMenu">&#9776 Menu główne</button>
+                <div class="menuContent">
+                    <p><a href="{{ url_for('menu') }}">Strona główna</a></p>
+                    <p><a href="{{ url_for('scenarios') }}">Lista scenariuszy</a></p>
+                    <p><a href="{{ url_for('stories') }}">Lista historii</a></p>
+                    {% if isAdmin %}
+                        <p><a href="{{ url_for('users') }}">Lista użytkowników</a></p>
+                    {% endif %}
+                    <p><a href="{{ url_for('gamebooks') }}">Gry paragrafowe</a></p>
+                    <p><a href="{{ url_for('instructions') }}">Instrukcje</a></p>
+                    {% if session.get('scenarioPath') and request.path != '/question' %}
+                        <p><a href="{{ url_for('question') }}">Wznów scenariusz</a></p>
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% block body %}{% endblock %}
         <div class="footer">&copy; Bernard Świątek</div>
+        <script>
+        var menus = document.getElementsByClassName("collapseMenu");
+        var i;
+
+        for (i = 0; i < menus.length; i++) {
+          menus[i].addEventListener("click", function() {
+            this.nextElementSibling.classList.toggle("toggleMenu");
+          });
+        }
+        </script>
     </body>
 </html>

@@ -8,16 +8,18 @@
     <div class="menu contextMenu">
         {% include 'userMenu.html' %}
         <div class="menuBoard">
-            <h1>Menu kontekstowe</h1>
-            <p><a href="{{ url_for('editQuestion', createQuestion=True) }}">Dodaj pytanie</a></p>
-            <p><a href="{{ url_for('editScenario', createKeyWord=True ) }}">Dodaj słowo kluczowe</a></p>
-            <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>
-            {% if ownerExists %}
-                <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
-            {% endif %}
-            {% if isGranted %}
-                <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a></p>
-            {% endif %}
+            <button class="collapseMenu">&#9776 Menu kontekstowe</button>
+            <div class="menuContent">
+                <p><a href="{{ url_for('editQuestion', createQuestion=True) }}">Dodaj pytanie</a></p>
+                <p><a href="{{ url_for('editScenario', createKeyWord=True ) }}">Dodaj słowo kluczowe</a></p>
+                <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>
+                {% if ownerExists %}
+                    <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
+                {% endif %}
+                {% if isGranted %}
+                    <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=session['scenarioId']) }}">Usuń scenariusz</a></p>
+                {% endif %}
+            </div>
         </div>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -86,7 +88,7 @@
                         <br><h3>Pytania poprzedzające:</h3>
                     {% endif %}
                     {% for previousQuestion in question['previousQuestions'] %}
-                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+previousQuestion.split('-')[0]) }}">{{ scenario['questions'][previousQuestion.split('-')[0]]['answers'][previousQuestion.split('-')[1]]['text']|truncate(20) }} &larr; {{ scenario['questions'][previousQuestion.split('-')[0]]['text']|truncate(20) }}</a></p>
+                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+previousQuestion.split('-')[0]) }}">{{ scenario['questions'][previousQuestion.split('-')[0]]['text']|truncate(20) }} &rarr; {{ scenario['questions'][previousQuestion.split('-')[0]]['answers'][previousQuestion.split('-')[1]]['text']|truncate(20) }}</a></p>
                     {% endfor %}
                     {% if question['answers'] %}
                         <br><h3>Odpowiedzi:</h3>

@@ -8,15 +8,17 @@
     <div class="menu contextMenu">
         {% include 'userMenu.html' %}
         <div class="menuBoard">
-            <h1>Menu kontekstowe</h1>
-            <p><a href="{{ url_for('editScenario', _anchor='question'+questionId) }}">Lista pytań</a></p>
-            <p><a href="{{ url_for('editQuestion', element='optionalText' ) }}">Dodaj tekst opcjonalny</a></p>
-            <p><a href="{{ url_for('editQuestion', element='answer' ) }}">Dodaj odpowiedź</a></p>
-            <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>
-            {% if ownerExists %}
-                <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
-            {% endif %}
-            <p><a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=session['questionId']) }}">Usuń pytanie</a></p>
+            <button class="collapseMenu">&#9776 Menu kontekstowe</button>
+            <div class="menuContent">
+                <p><a href="{{ url_for('editScenario', _anchor='question'+questionId) }}">Lista pytań</a></p>
+                <p><a href="{{ url_for('editQuestion', element='optionalText' ) }}">Dodaj tekst opcjonalny</a></p>
+                <p><a href="{{ url_for('editQuestion', element='answer' ) }}">Dodaj odpowiedź</a></p>
+                <p><a href="{{ url_for('start') }}">Test scenariusza</a></p>
+                {% if ownerExists %}
+                    <p><a href="{{ url_for('userProfile', userId=scenario['user']) }}">Profil twórcy</a></p>
+                {% endif %}
+                <p><a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=session['questionId']) }}">Usuń pytanie</a></p>
+            </div>
         </div>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

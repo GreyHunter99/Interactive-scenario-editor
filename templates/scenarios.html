@@ -9,8 +9,10 @@
         {% include 'userMenu.html' %}
         {% if session.get('userId') %}
             <div class="menuBoard">
-                <h1>Menu kontekstowe</h1>
-                <p><a href="{{ url_for('editScenario', userId=session['userId']) }}">Stwórz scenariusz</a></p>
+                <button class="collapseMenu">&#9776 Menu kontekstowe</button>
+                <div class="menuContent">
+                    <p><a href="{{ url_for('editScenario', userId=session['userId']) }}">Stwórz scenariusz</a></p>
+                </div>
             </div>
         {% endif %}
     </div>
