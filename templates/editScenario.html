@@ -21,17 +21,6 @@
                 {% endif %}
             </div>
         </div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    {% if category != 'error' %}
-                        <div class="messageBoard {{ category }}">
-                            <h3>{{ message }}</h3>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
     </div>
     <div class="mainBoard">
         <div class="board">
@@ -88,17 +77,17 @@
                         <br><h3>Pytania poprzedzające:</h3>
                     {% endif %}
                     {% for previousQuestion in question['previousQuestions'] %}
-                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+previousQuestion.split('-')[0]) }}">{{ scenario['questions'][previousQuestion.split('-')[0]]['text']|truncate(20) }} &rarr; {{ scenario['questions'][previousQuestion.split('-')[0]]['answers'][previousQuestion.split('-')[1]]['text']|truncate(20) }}</a></p>
+                        <p class="blockList"><a href="{{ url_for('editScenario', _anchor = 'question'+previousQuestion.split('-')[0]) }}">{{ scenario['questions'][previousQuestion.split('-')[0]]['text']|truncate(50) }} &rarr; {{ scenario['questions'][previousQuestion.split('-')[0]]['answers'][previousQuestion.split('-')[1]]['text']|truncate(50) }}</a></p>
                     {% endfor %}
                     {% if question['answers'] %}
                         <br><h3>Odpowiedzi:</h3>
                     {% endif %}
                     {% for answerKey, answer in question['answers'].items() %}
-                        <p class="shortText"><a href="{{ url_for('editScenario', _anchor = 'question'+answer['questionId']) }}">{{ answer['text']|truncate(20) }} &rarr; {{ scenario['questions'][answer['questionId']]['text']|truncate(20) }}</a></p>
+                        <p class="blockList"><a href="{{ url_for('editScenario', _anchor = 'question'+answer['questionId']) }}">{{ answer['text']|truncate(50) }} &rarr; {{ scenario['questions'][answer['questionId']]['text']|truncate(50) }}</a></p>
                     {% endfor %}
                     <br><p>
-                        <a href="{{ url_for('editQuestion', questionId=questionKey) }}">Edytuj</a>
-                        <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=questionKey) }}">Usuń</a>
+                        <a href="{{ url_for('editQuestion', questionId=questionKey) }}">Edytuj pytanie</a>
+                        <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=questionKey) }}">Usuń pytanie</a>
                     </p>
                 </div>
             {% endfor %}

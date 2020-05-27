@@ -61,9 +61,9 @@ def login():
                     session['userId'] = user
                     flash('Zalogowano')
                     return redirect(url_for('menu'))
-                flash('Złe hasło')
+                flash('Złe hasło', 'error')
                 return redirect(url_for('login'))
-        flash('Zła nazwa użytkownika')
+        flash('Zła nazwa użytkownika', 'error')
         return redirect(url_for('login'))
 
     return render_template('login.html', isAdmin=isGranted())
@@ -80,17 +80,17 @@ def register():
         correctForm = True
         for user in userList:
             if userList[user]['username'] == request.form['username']:
-                flash('Nazwa użytkownika zajęta')
+                flash('Nazwa użytkownika zajęta', 'error')
                 correctForm = False
                 break
         if len(request.form['username']) < 4 or len(request.form['username']) > 30:
-            flash('Nazwa użytkownika musi mieć od 4 do 30 znaków')
+            flash('Nazwa użytkownika musi mieć od 4 do 30 znaków', 'error')
             correctForm = False
         if len(request.form['password']) < 4 or len(request.form['password']) > 30:
-            flash('Hasło musi mieć od 4 do 30 znaków')
+            flash('Hasło musi mieć od 4 do 30 znaków', 'error')
             correctForm = False
         if request.form['password'] != request.form['repeatPassword']:
-            flash('Hasła są różne')
+            flash('Hasła są różne', 'error')
             correctForm = False
         if correctForm:
             if userList == {}:
@@ -148,13 +148,13 @@ def changePassword():
     if request.method == 'POST' and request.form.get('newPassword') and request.form.get('repeatNewPassword') and (noOldPassword or request.form.get('oldPassword')):
         correctForm = True
         if not noOldPassword and not sha256_crypt.verify(request.form['oldPassword'], userList[userId]['password']):
-            flash('Złe stare hasło')
+            flash('Złe stare hasło', 'error')
             correctForm = False
         if len(request.form['newPassword']) < 4 or len(request.form['newPassword']) > 30:
-            flash('Nowe hasło musi mieć od 4 do 30 znaków')
+            flash('Nowe hasło musi mieć od 4 do 30 znaków', 'error')
             correctForm = False
         if request.form['newPassword'] != request.form['repeatNewPassword']:
-            flash('Nowe hasła się nie zgadzają')
+            flash('Nowe hasła się nie zgadzają', 'error')
             correctForm = False
         if correctForm:
             userList[userId]['password'] = sha256_crypt.encrypt(request.form['newPassword'])
@@ -397,7 +397,7 @@ def start():
     "Sprawdzenie przesłanej odpowiedzi pod kątem słów kluczowych."
     if request.method == 'POST' and request.form.get('startingAnswer'):
         if len(request.form['startingAnswer']) < 1 or len(request.form['startingAnswer']) > 50:
-            flash('Odpowiedź na pytanie startowe musi mieć od 1 do 50 znaków')
+            flash('Odpowiedź na pytanie startowe musi mieć od 1 do 50 znaków', 'error')
             return redirect(url_for('start'))
         foundKeyWord = False
         for keyWord in scenario['keyWords'].values():
@@ -413,7 +413,7 @@ def start():
             session['story'] = story
             session['scenarioData'] = {'scenarioName': scenario['name'], 'owner': scenario['user'], 'startingQuestion': scenario['startingQuestion'], 'startingAnswer': request.form['startingAnswer']}
             return redirect(url_for('question'))
-        flash(scenario['noKeyWordsMessage'])
+        flash(scenario['noKeyWordsMessage'], 'error')
         return redirect(url_for('start'))
 
     return render_template('start.html', scenario=scenario, isGranted=isGranted(element=scenario, publicEdit=True), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
@@ -498,7 +498,7 @@ def currentStory():
 
     storyEnd = False
     "Obsługa żadania zapisania historii."
-    if request.args.get('saveStory') and session.get('userId'):
+    if session.get('userId'):
         answers = {}
         if session.get('scenarioId') in scenarioList:
             if session['scenarioPath'][-1].split("-")[0] in scenarioList[session['scenarioId']]['questions']:
@@ -510,7 +510,7 @@ def currentStory():
             storyEnd = True
             if request.method == 'POST' and request.form.get('name'):
                 if len(request.form['name']) < 1 or len(request.form['name']) > 40:
-                    flash('Nazwa historii musi mieć od 1 do 40 znaków')
+                    flash('Nazwa historii musi mieć od 1 do 40 znaków', 'error')
                     return redirect(url_for('currentStory', saveStory=True))
                 if request.form.get('public'):
                     public = True

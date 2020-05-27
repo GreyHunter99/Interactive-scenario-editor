@@ -32,12 +32,12 @@
                 {% endfor %}
             {% endif %}
             {% for answerKey, answer in answers.items() %}
-                <p><a href="{{ url_for('question', questionId = answer['questionId'], answerId = answerKey) }}">{{ answer['text'] }}</a></p>
+                <p class="blockList"><a href="{{ url_for('question', questionId = answer['questionId'], answerId = answerKey) }}">{{ answer['text'] }}</a></p>
             {% endfor %}
             {% if not answers %}
                 <br><h2>KONIEC SCENARIUSZA</h2><br>
                 {% if session.get('userId') %}
-                    <p><a href="{{ url_for('currentStory', saveStory = True) }}">Zapisz historię</a></p>
+                    <p><a href="{{ url_for('currentStory') }}">Zapisz historię</a></p>
                 {% endif %}
             {% endif %}
         </div>

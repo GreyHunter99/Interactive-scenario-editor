@@ -24,13 +24,15 @@
     <div class="mainBoard">
         <div class="board">
             <h1>{{ scenario['name'] }}</h1>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <h3 class="error">{{ message }}</h3>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <h3 class="error">{{ message }}</h3>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             <h2>{{ scenario['startingQuestion'] }}</h2>
             <form action="{{ url_for('start') }}" method="post">
                 <p><textarea rows="2" name="startingAnswer" required="required" autofocus></textarea></p>

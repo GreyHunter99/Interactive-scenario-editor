@@ -7,15 +7,6 @@
 {% block body %}
     <div class="menu contextMenu">
         {% include 'userMenu.html' %}
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="messageBoard {{ category }}">
-                        <h3>{{ message }}</h3>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
     </div>
     <div class="mainBoard">
         <div class="board text">

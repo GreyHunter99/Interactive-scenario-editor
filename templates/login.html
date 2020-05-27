@@ -11,13 +11,15 @@
     <div class="mainBoard">
         <div class="board">
             <h1>Logowanie</h1>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <h3 class="error">{{ message }}</h3>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <h3 class="error">{{ message }}</h3>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             <form action="{{ url_for('login') }}" method="post">
                     <h2>Nazwa użytkownika:</h2><p><input name='username' type="text" required="required" autofocus></p>
                     <h2>Hasło:</h2><p><input name='password' type="password" required="required"></p>
