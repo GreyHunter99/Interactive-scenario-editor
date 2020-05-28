@@ -39,8 +39,7 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                },
-                "previousQuestions": []
+                }
             },
             "1": {
                 "text": "Czy znasz podstawy obr\u00f3bki drewna?",
@@ -58,11 +57,7 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                },
-                "previousQuestions": [
-                    "2-0",
-                    "3-0"
-                ]
+                }
             },
             "2": {
                 "text": "Kup plan",
@@ -74,10 +69,7 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                },
-                "previousQuestions": [
-                    "0-0"
-                ]
+                }
             },
             "3": {
                 "text": "Kup sobie podr\u0119cznik",
@@ -89,34 +81,22 @@
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
-                },
-                "previousQuestions": [
-                    "0-1"
-                ]
+                }
             },
-            "5": {
+            "4": {
                 "text": "Daj sobie spok\u00f3j",
                 "optionalTexts": {},
-                "answers": {},
-                "previousQuestions": [
-                    "0-2"
-                ]
+                "answers": {}
             },
-            "6": {
+            "5": {
                 "text": "Kup drewno",
                 "optionalTexts": {},
-                "answers": {},
-                "previousQuestions": [
-                    "1-0"
-                ]
+                "answers": {}
             },
-            "7": {
+            "6": {
                 "text": "Kup sobie zestaw do samodzielnego monta\u017cu (kit)",
                 "optionalTexts": {},
-                "answers": {},
-                "previousQuestions": [
-                    "1-1"
-                ]
+                "answers": {}
             }
         }
     }

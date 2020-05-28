@@ -59,14 +59,14 @@
                         <p><a class="deleteButton" href="{{ url_for('editScenario', keyWordId=keyWordKey) }}">Usuń słowo kluczowe</a></p>
                     {% endfor %}
                 {% else %}
-                    <h2 class="error">Brak słów kluczowych</h2>
+                    <h2>Brak słów kluczowych</h2>
                 {% endif %}
             </form>
         </div>
         <div class="board">
             <h1 id="questions">Lista pytań</h1>
             {% if not scenario['questions'] %}
-                <h2 class="error">Brak pytań</h2>
+                <h2>Brak pytań</h2>
             {% endif %}
         </div>
         {% if scenario['questions'] %}
@@ -85,10 +85,9 @@
                     {% for answerKey, answer in question['answers'].items() %}
                         <p class="blockList"><a href="{{ url_for('editScenario', _anchor = 'question'+answer['questionId']) }}">{{ answer['text']|truncate(50) }} &rarr; {{ scenario['questions'][answer['questionId']]['text']|truncate(50) }}</a></p>
                     {% endfor %}
-                    <br><p>
-                        <a href="{{ url_for('editQuestion', questionId=questionKey) }}">Edytuj pytanie</a>
-                        <a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=questionKey) }}">Usuń pytanie</a>
-                    </p>
+                    <br>
+                    <p><a href="{{ url_for('editQuestion', questionId=questionKey) }}">Edytuj pytanie</a></p>
+                    <p><a class="deleteButton" href="{{ url_for('deleteQuestion', questionId=questionKey) }}">Usuń pytanie</a></p>
                 </div>
             {% endfor %}
         {% endif %}

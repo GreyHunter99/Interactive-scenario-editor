@@ -60,9 +60,8 @@
                 {% if userScenarioList['privateScenarios'] %}
                     {% for key in userScenarioList['privateScenarios'] %}
                         <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['privateScenarios'][key]|truncate(40) }}</a></p>
-                        <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a>
-                            <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a>
-                        </p><br>
+                        <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p>
+                        <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a></p><br>
                     {% endfor %}
                 {% else %}
                     <h3>Brak scenariuszy</h3><br>
@@ -73,10 +72,9 @@
                 {% for key in userScenarioList['publicScenarios'] %}
                     <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicScenarios'][key] }}</a></p>
                         {% if isProfileOwner or isAdmin %}
-                            <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a>
-                            <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a></p>
+                            <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p>
+                            <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a></p><br>
                         {% endif %}
-                    <br>
                 {% endfor %}
             {% else %}
                 <h3>Brak scenariuszy</h3><br>
@@ -85,14 +83,13 @@
             {% if userScenarioList['publicEditScenarios'] %}
                 {% for key in userScenarioList['publicEditScenarios'] %}
                     <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicEditScenarios'][key] }}</a></p>
-                    <p>
                         {% if session.get('userId') %}
-                            <a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a>
+                            <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p>
+                            {% if isProfileOwner or isAdmin %}
+                                <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a></p>
+                            {% endif %}
+                            <br>
                         {% endif %}
-                        {% if isProfileOwner or isAdmin %}
-                            <a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a>
-                        {% endif %}
-                    </p><br>
                 {% endfor %}
             {% else %}
                 <h3>Brak scenariuszy</h3><br>

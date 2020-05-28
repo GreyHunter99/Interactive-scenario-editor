@@ -51,7 +51,7 @@
                                 <p><select name="optionalText{{ optionalTextKey }}ConditionalAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text']|truncate(20) }} &larr; {{ question['text']|truncate(20) }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>
@@ -63,7 +63,7 @@
                                 <p><select name="optionalText{{ optionalTextKey }}ExclusionAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text']|truncate(20) }} &larr; {{ question['text']|truncate(20) }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>
@@ -91,7 +91,7 @@
                                 <p><select name="answer{{ answerKey }}ConditionalAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text']|truncate(20) }} &larr; {{ question['text']|truncate(20) }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>
@@ -103,7 +103,7 @@
                                 <p><select name="answer{{ answerKey }}ExclusionAnswers{{ requirementKey }}">
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
-                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ questionAnswer['text']|truncate(20) }} &larr; {{ question['text']|truncate(20) }}</option>
+                                            <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
                                         {% endfor %}
                                     {% endfor %}
                                 </select></p>

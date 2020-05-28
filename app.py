@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from passlib.hash import sha256_crypt
 import json
 import os
+import copy
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -404,7 +405,7 @@ def start():
             if keyWord.lower() in request.form['startingAnswer'].lower():
                 foundKeyWord = True
                 break
-        if (not scenario['keyWords'] or foundKeyWord) and scenario['firstQuestion']:
+        if (not scenario['keyWords'] or foundKeyWord) and scenario['firstQuestion'] in scenario['questions']:
             scenarioPath = session['scenarioPath']
             scenarioPath.append(scenario['firstQuestion'])
             session['scenarioPath'] = scenarioPath
@@ -625,7 +626,7 @@ def editScenario():
                 key = '0'
             else:
                 key = str(int(max(scenarioList, key=int)) + 1)
-            scenarioList[key] = {'id': key, 'name': 'Nowy scenariusz', 'user': userId, 'startingQuestion': 'Pytanie startowe', 'keyWords': {}, 'noKeyWordsMessage': 'Nie znaleziono słów kluczowych. Spróbuj jeszcze raz.', 'firstQuestion': "", 'goBack': False, 'publicView': False, 'publicEdit': False, 'questions': {}}
+            scenarioList[key] = {'id': key, 'name': 'Nowy scenariusz', 'user': userId, 'startingQuestion': 'Pytanie startowe', 'keyWords': {}, 'noKeyWordsMessage': 'Nie znaleziono słów kluczowych. Spróbuj jeszcze raz.', 'firstQuestion': "", 'goBack': True, 'publicView': False, 'publicEdit': False, 'questions': {}}
             saveToDatabase(key + '.json', {key: scenarioList[key]}, 'scenarios')
             flash('Stworzono scenariusz')
             scenarioId = key
@@ -715,7 +716,7 @@ def editScenario():
         return redirect(url_for('editScenario'))
 
     "Dodanie do scenariusza pytań poprzedzających."
-    scenario = scenario.copy()
+    scenario = copy.deepcopy(scenario)
     for scenarioQuestionKey, scenarioQuestion in scenario['questions'].items():
         scenarioQuestion['previousQuestions'] = []
     for scenarioQuestionKey, scenarioQuestion in scenario['questions'].items():

@@ -44,9 +44,9 @@
             <h2>Scenariusze publiczne z możliwością edycji przez wszystkich:</h2>
             {% if publicScenarioList['publicEditScenarios'] %}
                 {% for key in publicScenarioList['publicEditScenarios'] %}
-                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicEditScenarios'][key] }}</a>
+                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicEditScenarios'][key] }}</a></p>
                     {% if session.get('userId') %}
-                            <a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p>
+                        <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p><br>
                     {% endif %}
                 {% endfor %}
             {% else %}
