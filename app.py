@@ -397,8 +397,8 @@ def start():
 
     "Sprawdzenie przesłanej odpowiedzi pod kątem słów kluczowych."
     if request.method == 'POST' and request.form.get('startingAnswer'):
-        if len(request.form['startingAnswer']) < 1 or len(request.form['startingAnswer']) > 50:
-            flash('Odpowiedź na pytanie startowe musi mieć od 1 do 50 znaków', 'error')
+        if len(request.form['startingAnswer']) < 1 or len(request.form['startingAnswer']) > 100:
+            flash('Odpowiedź na pytanie startowe musi mieć od 1 do 100 znaków', 'error')
             return redirect(url_for('start'))
         foundKeyWord = False
         for keyWord in scenario['keyWords'].values():
@@ -803,7 +803,7 @@ def editQuestion():
         if request.args.get('element') == 'answer':
             createElement('answer', {'text': 'Nowa odpowiedź', 'questionId': '0', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
             flash('Stworzono odpowiedź')
-            return redirect(url_for('editQuestion', _anchor='answer'+str(len(scenario['questions'][session['questionId']]['optionalTexts'])-1)))
+            return redirect(url_for('editQuestion', _anchor='answer'+str(len(scenario['questions'][session['questionId']]['answers'])-1)))
 
     "Stworzenie i usuwanie wymagania elementu pytania."
     if request.args.get('requirement'):
