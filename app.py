@@ -400,12 +400,15 @@ def start():
         if len(request.form['startingAnswer']) < 1 or len(request.form['startingAnswer']) > 100:
             flash('Odpowiedź na pytanie startowe musi mieć od 1 do 100 znaków', 'error')
             return redirect(url_for('start'))
+        if scenario['firstQuestion'] not in scenario['questions']:
+            flash('Scenariusz nie posiada ustawionego pierwszego pytania scenariusza', 'error')
+            return redirect(url_for('start'))
         foundKeyWord = False
         for keyWord in scenario['keyWords'].values():
             if keyWord.lower() in request.form['startingAnswer'].lower():
                 foundKeyWord = True
                 break
-        if (not scenario['keyWords'] or foundKeyWord) and scenario['firstQuestion'] in scenario['questions']:
+        if not scenario['keyWords'] or foundKeyWord:
             scenarioPath = session['scenarioPath']
             scenarioPath.append(scenario['firstQuestion'])
             session['scenarioPath'] = scenarioPath
@@ -884,6 +887,8 @@ def deleteQuestion():
     "Potwierdzenie usuwania."
     if request.args.get('confirmDelete'):
         del scenario['questions'][questionId]
+        if questionId == scenario['firstQuestion']:
+            scenario['firstQuestion'] = ""
         saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
         flash('Usunięto pytanie', 'delete')
         return redirect(url_for('editScenario', _anchor='questions'))
