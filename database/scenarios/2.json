@@ -35,7 +35,7 @@
                     },
                     "2": {
                         "text": "Nie",
-                        "questionId": "5",
+                        "questionId": "4",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }
@@ -47,13 +47,13 @@
                 "answers": {
                     "0": {
                         "text": "Tak",
-                        "questionId": "6",
+                        "questionId": "5",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     },
                     "1": {
                         "text": "Nie",
-                        "questionId": "7",
+                        "questionId": "6",
                         "conditionalAnswers": [],
                         "exclusionAnswers": []
                     }

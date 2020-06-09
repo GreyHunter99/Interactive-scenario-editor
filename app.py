@@ -7,7 +7,7 @@ import copy
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
-app.secret_key = 'extra secret key'
+app.secret_key = 'secret key'
 
 
 def createList(catalog):
@@ -474,7 +474,7 @@ def question():
     "Stworzenie listy odpowiedzi do wyświetlenia pod pytaniem."
     answers = dict(scenario['questions'][session['scenarioPath'][-1].split("-")[0]]['answers'])
     for answerId in list(answers):
-        if not checkRequirements(answers[answerId]):
+        if not checkRequirements(answers[answerId]) or answers[answerId]['questionId'] not in scenario['questions']:
             del answers[answerId]
 
     "Stworzenie listy tekstów opcjonalnych do wyświetlenia pod pytaniem."
@@ -522,6 +522,11 @@ def currentStory():
                 else:
                     key = str(int(max(storyList, key=int)) + 1)
                 storyList[key] = {'id': key, 'name': request.form.get('name'), 'scenario': session['scenarioId'], 'user': session['userId'], 'owner': session['scenarioData']['owner'], 'scenarioName': session['scenarioData']['scenarioName'], 'public': public, 'startingQuestion': session['scenarioData']['startingQuestion'], 'startingAnswer': session['scenarioData']['startingAnswer'], 'story': session['story']}
+                if storyList[key]['scenario'] not in scenarioList:
+                    storyList[key]['scenario'] = ""
+                    session.pop('scenarioId', None)
+                if storyList[key]['owner'] not in userList:
+                    storyList[key]['owner'] = ""
                 saveToDatabase(key + '.json', {key: storyList[key]}, 'stories')
                 session.pop('scenarioPath', None)
                 session.pop('story', None)
@@ -717,11 +722,14 @@ def editScenario():
 
     "Dodanie do scenariusza pytań poprzedzających."
     scenario = copy.deepcopy(scenario)
-    for scenarioQuestionKey, scenarioQuestion in scenario['questions'].items():
+    for scenarioQuestionKey, scenarioQuestion in list(scenario['questions'].items()):
         scenarioQuestion['previousQuestions'] = []
-    for scenarioQuestionKey, scenarioQuestion in scenario['questions'].items():
-        for answerKey, answer in scenarioQuestion['answers'].items():
-            scenario['questions'][answer['questionId']]['previousQuestions'].append(scenarioQuestionKey+'-'+answerKey)
+    for scenarioQuestionKey, scenarioQuestion in list(scenario['questions'].items()):
+        for answerKey, answer in list(scenarioQuestion['answers'].items()):
+            if answer['questionId'] in scenario['questions']:
+                scenario['questions'][answer['questionId']]['previousQuestions'].append(scenarioQuestionKey+'-'+answerKey)
+            else:
+                del scenario['questions'][scenarioQuestionKey]['answers'][answerKey]
 
     return render_template('editScenario.html', scenario=scenario, isGranted=isGranted(element=scenario), ownerExists=ownerExists(scenario, 'user'), isAdmin=isGranted())
 
@@ -801,7 +809,7 @@ def editQuestion():
             flash('Stworzono tekst opcjonalny')
             return redirect(url_for('editQuestion', _anchor='optionalText'+str(len(scenario['questions'][session['questionId']]['optionalTexts'])-1)))
         if request.args.get('element') == 'answer':
-            createElement('answer', {'text': 'Nowa odpowiedź', 'questionId': '0', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
+            createElement('answer', {'text': 'Nowa odpowiedź', 'questionId': '', 'conditionalAnswers': [], 'exclusionAnswers': []}, scenario)
             flash('Stworzono odpowiedź')
             return redirect(url_for('editQuestion', _anchor='answer'+str(len(scenario['questions'][session['questionId']]['answers'])-1)))
 
@@ -941,7 +949,7 @@ def createRequirement(requirement, scenario):
     "Funkcja stwarzająca wymaganie do danego elementu pytania."
     if (requirement[0] == 'optionalTexts' or requirement[0] == 'answers') and (requirement[1] == 'conditionalAnswers' or requirement[1] == 'exclusionAnswers'):
         if requirement[2] in scenario['questions'][session['questionId']][requirement[0]]:
-            scenario['questions'][session['questionId']][requirement[0]][requirement[2]][requirement[1]].append("0-0")
+            scenario['questions'][session['questionId']][requirement[0]][requirement[2]][requirement[1]].append("")
             saveToDatabase(session['scenarioId'] + '.json', {session['scenarioId']: scenario}, 'scenarios')
             if requirement[0] == 'optionalTexts' and requirement[1] == 'conditionalAnswers':
                 flash('Stworzono warunek dla tekstu opcjonalnego')

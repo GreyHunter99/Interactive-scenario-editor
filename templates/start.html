@@ -38,11 +38,6 @@
                 <p><textarea rows="3" name="startingAnswer" required="required" autofocus></textarea></p>
                 <p><input type="submit" value="Rozpocznij scenariusz"></p>
             </form>
-            <h3>Obecne słowa kluczowe:
-            {% for keyWord in scenario['keyWords'].values() %}
-                {{ keyWord }},
-            {% endfor %}
-            </h3>
         </div>
     </div>
 {% endblock %}

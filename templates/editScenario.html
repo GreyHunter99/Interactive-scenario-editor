@@ -41,6 +41,7 @@
                     <h2>Komunikat w przypadku braku słów kluczowych:</h2><p><textarea rows="3" name="noKeyWordsMessage" required="required">{{ scenario['noKeyWordsMessage'] }}</textarea></p>
                     <h2>Pierwsze pytanie scenariusza:</h2>
                     <p><select name="firstQuestion">
+                            <option value="">BRAK PYTANIA</option>
                         {% for questionKey, question in scenario['questions'].items() %}
                             <option value="{{ questionKey }}"{% if scenario['firstQuestion'] == questionKey %} selected="selected"{% endif %}>{{ question['text']|truncate(40) }}</option>
                         {% endfor %}

@@ -2,6 +2,7 @@ body {
     background-color: white;
     text-align: center;
     overflow-wrap: break-word;
+    font-family: "Georgia", serif;
 }
 
 h1, h2, h3, p {
@@ -139,6 +140,7 @@ input[type=text], input[type=password], textarea {
     padding: 0.5%;
     border: 3px solid royalblue;
     font-size: medium;
+    font-family: "Georgia", serif;
 }
 
 input[type=submit], button {
@@ -148,6 +150,7 @@ input[type=submit], button {
     font-size: large;
     cursor: pointer;
     font-weight: bold;
+    font-family: "Georgia", serif;
 }
 
 input[type=checkbox] {

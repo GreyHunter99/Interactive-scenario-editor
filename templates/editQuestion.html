@@ -49,6 +49,7 @@
                             <p><a href="{{ url_for('editQuestion', requirement='optionalTexts-conditionalAnswers-'+optionalTextKey) }}">Dodaj odpowiedź warunkową</a></p>
                             {% for requirementKey in range(optionalText['conditionalAnswers']|length) %}
                                 <p><select name="optionalText{{ optionalTextKey }}ConditionalAnswers{{ requirementKey }}">
+                                    <option value="">BRAK ODPOWIEDZI</option>
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
                                             <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
@@ -61,6 +62,7 @@
                             <p><a href="{{ url_for('editQuestion', requirement='optionalTexts-exclusionAnswers-'+optionalTextKey) }}">Dodaj odpowiedź wykluczającą</a></p>
                             {% for requirementKey in range(optionalText['exclusionAnswers']|length) %}
                                 <p><select name="optionalText{{ optionalTextKey }}ExclusionAnswers{{ requirementKey }}">
+                                    <option value="">BRAK ODPOWIEDZI</option>
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
                                             <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if optionalText['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
@@ -81,6 +83,7 @@
                             <p><textarea rows="3" name="answerText{{ answerKey }}" required="required" autofocus>{{ answer['text'] }}</textarea></p>
                             <h3>Pytanie docelowe:</h3>
                             <p><select name="answerQuestionId{{ answerKey }}">
+                                <option value="">BRAK PYTANIA</option>
                                 {% for questionKey, question in scenario['questions'].items() %}
                                     <option value="{{ questionKey }}"{% if scenario['questions'][questionId]['answers'][answerKey]['questionId'] == questionKey %} selected="selected"{% endif %}>{{ question['text']|truncate(40) }}</option>
                                 {% endfor %}
@@ -89,6 +92,7 @@
                             <p><a href="{{ url_for('editQuestion', requirement='answers-conditionalAnswers-'+answerKey) }}">Dodaj odpowiedź warunkową</a></p>
                             {% for requirementKey in range(answer['conditionalAnswers']|length) %}
                                 <p><select name="answer{{ answerKey }}ConditionalAnswers{{ requirementKey }}">
+                                    <option value="">BRAK ODPOWIEDZI</option>
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
                                             <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['conditionalAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
@@ -101,6 +105,7 @@
                             <p><a href="{{ url_for('editQuestion', requirement='answers-exclusionAnswers-'+answerKey) }}">Dodaj odpowiedź wykluczającą</a></p>
                             {% for requirementKey in range(answer['exclusionAnswers']|length) %}
                                 <p><select name="answer{{ answerKey }}ExclusionAnswers{{ requirementKey }}">
+                                    <option value="">BRAK ODPOWIEDZI</option>
                                     {% for questionKey, question in scenario['questions'].items() %}
                                         {% for questionAnswerKey, questionAnswer in question['answers'].items() %}
                                             <option value="{{ questionKey }}-{{ questionAnswerKey }}"{% if answer['exclusionAnswers'][requirementKey] == questionKey+"-"+questionAnswerKey %} selected="selected"{% endif %}>{{ question['text']|truncate(20) }} &rarr; {{ questionAnswer['text']|truncate(20) }}</option>
