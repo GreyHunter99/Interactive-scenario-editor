@@ -47,6 +47,12 @@ def instructions():
     return render_template('instructions.html', isAdmin=isGranted())
 
 
+@app.route('/info')
+def info():
+    "Podstrona o serwisie."
+    return render_template('info.html', isAdmin=isGranted())
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     "Logowanie."

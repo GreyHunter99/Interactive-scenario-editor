@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,6 +20,7 @@
                     {% endif %}
                     <p><a href="{{ url_for('gamebooks') }}">Gry paragrafowe</a></p>
                     <p><a href="{{ url_for('instructions') }}">Instrukcje</a></p>
+                    <p><a href="{{ url_for('info') }}">O serwisie</a></p>
                 </div>
             </div>
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -38,9 +39,8 @@
         <div class="footer">&copy; Bernard Świątek</div>
         <script>
         var menus = document.getElementsByClassName("collapseMenu");
-        var i;
 
-        for (i = 0; i < menus.length; i++) {
+        for (var i = 0; i < menus.length; i++) {
           menus[i].addEventListener("click", function() {
             this.nextElementSibling.classList.toggle("toggleMenu");
           });
