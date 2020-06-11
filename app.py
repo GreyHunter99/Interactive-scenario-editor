@@ -10,23 +10,6 @@ app = Flask(__name__)
 app.secret_key = 'secret key'
 
 
-def createList(catalog):
-    "Funkcja tworząca listę użytkowników lub scenariuszy."
-    itemList = {}
-    folder = os.listdir(PROJECT_ROOT + "/database/" + catalog + "/")
-    folder.sort(key=lambda x: int(x.split(".")[0]))
-    for file in folder:
-        with open(PROJECT_ROOT + "/database/" + catalog + "/" + file, "r") as read_file:
-            currentFile = json.load(read_file)
-        itemList.update(currentFile)
-    return itemList
-
-
-scenarioList = createList('scenarios')
-userList = createList('users')
-storyList = createList('stories')
-
-
 @app.route('/')
 def menu():
     "Menu główne."
@@ -56,11 +39,11 @@ def info():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     "Logowanie."
-    global userList
     if session.get('userId'):
         return redirect(url_for('menu'))
 
     if request.method == 'POST' and request.form.get('username') and request.form.get('password'):
+        userList = loadList('users')
         for user in userList:
             if userList[user]['username'] == request.form['username']:
                 if sha256_crypt.verify(request.form['password'], userList[user]['password']):
@@ -79,11 +62,11 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     "Rejestracja."
-    global userList
     if session.get('userId'):
         return redirect(url_for('menu'))
 
     if request.method == 'POST' and request.form.get('username') and request.form.get('password') and request.form.get('repeatPassword'):
+        userList = loadList('users')
         correctForm = True
         for user in userList:
             if userList[user]['username'] == request.form['username']:
@@ -104,8 +87,8 @@ def register():
                 key = '0'
             else:
                 key = str(int(max(userList, key=int)) + 1)
-            userList[key] = {'id': key, 'username': request.form['username'], 'password': sha256_crypt.encrypt(request.form['password']), 'description': '', 'isAdmin': False}
-            saveToDatabase(key + '.json', {key: userList[key]}, 'users')
+            user = {'id': key, 'username': request.form['username'], 'password': sha256_crypt.encrypt(request.form['password']), 'description': '', 'isAdmin': False}
+            saveToDatabase(key + '.json', {key: user}, 'users')
             session.clear()
             session['userId'] = key
             flash('Zarejestrowano')
@@ -136,14 +119,13 @@ def logout():
 @app.route('/changePassword', methods=['GET', 'POST'])
 def changePassword():
     "Zmiana hasła."
-    global userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     userId = request.args.get('userId')
+    userList = loadList('users')
 
-    if not userId or (not isGranted(userId=userId) and not isGranted()):
+    if not userId or userId not in userList or (not isGranted(userId=userId) and not isGranted()):
         return redirect(url_for('menu'))
 
     "Warunek na niewymaganie starego hasła."
@@ -176,14 +158,13 @@ def changePassword():
 @app.route('/grantAdmin')
 def grantAdmin():
     "Nadawanie lub odbieranie praw administratora."
-    global userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     userId = request.args.get('userId')
+    userList = loadList('users')
 
-    if not userId or not isGranted() or isGranted(userId=userId):
+    if not userId or userId not in userList or not isGranted() or isGranted(userId=userId):
         return redirect(url_for('menu'))
 
     if not userList[userId]['isAdmin']:
@@ -200,13 +181,13 @@ def grantAdmin():
 @app.route('/users')
 def users():
     "Lista użytkowników - tylko dla administratorów."
-    global userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     if not isGranted():
         return redirect(url_for('menu'))
+
+    userList = loadList('users')
 
     return render_template('users.html', userList=userList, isAdmin=isGranted())
 
@@ -214,12 +195,11 @@ def users():
 @app.route('/deleteUser', methods=['GET', 'POST'])
 def deleteUser():
     "Usuwanie konta użytkownika."
-    global scenarioList, userList, storyList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     userId = request.args.get('userId')
+    userList = loadList('users')
 
     if not userId or userId not in userList or (not isGranted(userId=userId) and not isGranted()):
         return redirect(url_for('menu'))
@@ -228,24 +208,24 @@ def deleteUser():
     if request.args.get('confirmDelete') and request.method == 'POST' and request.form.get('deleteUserScenarios') and request.form.get('deleteUserStories'):
         userIsAdmin = isGranted()
         "Usunięcie lub zmiana danych scenariuszy usuwaniego użytkownika."
-        for scenarioId in list(scenarioList):
+        scenarioList = loadList('scenarios')
+        storyList = loadList('stories')
+        for scenarioId in scenarioList:
             if scenarioList[scenarioId]['user'] == userId:
                 if request.form['deleteUserScenarios'] == 'Yes':
                     "Zmiana danych historii na podstawie usuwanego scenariusza."
-                    for storyId in list(storyList):
+                    for storyId in storyList:
                         if storyList[storyId]['scenario'] == scenarioId:
                             storyList[storyId]['scenario'] = ''
                             saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
-                    del scenarioList[scenarioId]
                     os.remove(PROJECT_ROOT + "/database/scenarios/" + scenarioId + ".json")
                 else:
                     scenarioList[scenarioId]['user'] = ''
                     saveToDatabase(scenarioId + '.json', {scenarioId: scenarioList[scenarioId]}, 'scenarios')
         "Usunięcie lub zmiana danych historii usuwaniego użytkownika."
-        for storyId in list(storyList):
+        for storyId in storyList:
             if storyList[storyId]['user'] == userId:
                 if request.form['deleteUserStories'] == 'Yes':
-                    del storyList[storyId]
                     os.remove(PROJECT_ROOT + "/database/stories/" + storyId + ".json")
                 else:
                     storyList[storyId]['user'] = ''
@@ -255,7 +235,6 @@ def deleteUser():
             elif storyList[storyId]['owner'] == userId:
                 storyList[storyId]['owner'] = ''
                 saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
-        del userList[userId]
         os.remove(PROJECT_ROOT + "/database/users/" + userId + ".json")
         flash('Usunięto konto użytkownika', 'delete')
         if request.form['deleteUserScenarios'] == 'Yes':
@@ -283,12 +262,11 @@ def deleteUser():
 @app.route('/userProfile', methods=['GET', 'POST'])
 def userProfile():
     "Profil użytkownika."
-    global scenarioList, userList, storyList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     userId = request.args.get('userId')
+    userList = loadList('users')
 
     if userId and userId in userList:
         pass
@@ -301,6 +279,7 @@ def userProfile():
     del userData['password']
 
     "Stworzenie listy scenariuszy użytkownika do wyświetlenia na profilu."
+    scenarioList = loadList('scenarios')
     userScenarioList = {'privateScenarios': {}, 'publicScenarios': {}, 'publicEditScenarios': {}}
     for key, scenario in scenarioList.items():
         if scenario['user'] == userId:
@@ -313,6 +292,7 @@ def userProfile():
                 userScenarioList['publicScenarios'][key] = scenario['name']
 
     "Stworzenie listy historii użytkownika do wyświetlenia na profilu."
+    storyList = loadList('stories')
     userStoryList = {'privateStories': {}, 'publicStories': {}}
     for key, story in storyList.items():
         if story['user'] == userId:
@@ -356,7 +336,7 @@ def userProfile():
 @app.route('/scenarios')
 def scenarios():
     "Lista scenariuszy."
-    global scenarioList
+    scenarioList = loadList('scenarios')
 
     "Stworzenie listy scenariuszy do wyświetlenia."
     publicScenarioList = {'privateScenarios': {}, 'publicScenarios': {}, 'publicEditScenarios': {}}
@@ -375,8 +355,6 @@ def scenarios():
 @app.route('/start', methods=['GET', 'POST'])
 def start():
     "Pytanie startowe scenariusza."
-    global scenarioList, userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
@@ -387,6 +365,7 @@ def start():
     session.pop('scenarioData', None)
 
     "Sprawdzenie poprawności id scenariusza."
+    scenarioList = loadList('scenarios')
     if scenarioId:
         if scenarioId in scenarioList:
             if scenarioList[scenarioId]['publicView'] or isGranted(element=scenarioList[scenarioId]):
@@ -432,14 +411,13 @@ def start():
 @app.route('/question')
 def question():
     "Pytania podczas przechodzenia scenariusza."
-    global scenarioList, userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     if checkScenarioSession(storyRedirect='start'):
         return checkScenarioSession(storyRedirect='start')
-    scenario = scenarioList[session['scenarioId']]
+
+    scenario = loadFromDatabase('scenarios', session['scenarioId'] + '.json')[session['scenarioId']]
 
     questionId = request.args.get('questionId')
     answerId = request.args.get('answerId')
@@ -498,8 +476,6 @@ def question():
 @app.route('/currentStory', methods=['GET', 'POST'])
 def currentStory():
     "Dotychczasowa historia na podstawie przechodzonego scenariusza."
-    global scenarioList, storyList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
@@ -510,6 +486,7 @@ def currentStory():
     "Obsługa żadania zapisania historii."
     if session.get('userId'):
         answers = {}
+        scenarioList = loadList('scenarios')
         if session.get('scenarioId') in scenarioList:
             if session['scenarioPath'][-1].split("-")[0] in scenarioList[session['scenarioId']]['questions']:
                 answers = dict(scenarioList[session['scenarioId']]['questions'][session['scenarioPath'][-1].split("-")[0]]['answers'])
@@ -519,6 +496,7 @@ def currentStory():
         if not answers:
             storyEnd = True
             if request.method == 'POST' and request.form.get('name'):
+                storyList = loadList('stories')
                 if len(request.form['name']) < 1 or len(request.form['name']) > 40:
                     flash('Nazwa historii musi mieć od 1 do 40 znaków', 'error')
                     return redirect(url_for('currentStory', saveStory=True))
@@ -534,6 +512,7 @@ def currentStory():
                 if storyList[key]['scenario'] not in scenarioList:
                     storyList[key]['scenario'] = ""
                     session.pop('scenarioId', None)
+                userList = loadList('users')
                 if storyList[key]['owner'] not in userList:
                     storyList[key]['owner'] = ""
                 saveToDatabase(key + '.json', {key: storyList[key]}, 'stories')
@@ -549,12 +528,11 @@ def currentStory():
 @app.route('/userStory', methods=['GET', 'POST'])
 def userStory():
     "Widok historii."
-    global scenarioList, storyList, userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     storyId = request.args.get('storyId')
+    storyList = loadList('stories')
 
     if storyId and storyId in storyList:
         story = storyList[storyId]
@@ -569,9 +547,10 @@ def userStory():
     if not story['public'] and not isOwner:
         return redirect(url_for('menu'))
 
+    scenarioList = loadList('scenarios')
     scenario = {}
-    if storyList[storyId]['scenario'] in scenarioList:
-        scenario = scenarioList[storyList[storyId]['scenario']]
+    if story['scenario'] in scenarioList:
+        scenario = scenarioList[story['scenario']]
 
     if isOwner:
         "Usuwanie historii."
@@ -581,7 +560,6 @@ def userStory():
         "Potwierdzenie usuwania."
         if request.args.get('confirmDelete'):
             userId = story['user']
-            del storyList[storyId]
             os.remove(PROJECT_ROOT + "/database/stories/" + storyId + ".json")
             flash('Usunięto historię', 'delete')
             return redirect(url_for('userProfile', userId=userId))
@@ -605,7 +583,7 @@ def userStory():
 @app.route('/stories')
 def stories():
     "Lista historii."
-    global storyList
+    storyList = loadList('stories')
 
     "Stworzenie listy historii do wyświetlenia."
     publicStoryList = {'privateStories': {}, 'publicStories': {}}
@@ -622,8 +600,6 @@ def stories():
 @app.route('/editScenario', methods=['GET', 'POST'])
 def editScenario():
     "Edycja scenariusza."
-    global scenarioList, userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
@@ -632,6 +608,7 @@ def editScenario():
 
     scenarioId = request.args.get('scenarioId')
     userId = request.args.get('userId')
+    scenarioList = loadList('scenarios')
 
     "Stworzenie scenariusza."
     if userId:
@@ -746,12 +723,11 @@ def editScenario():
 @app.route('/deleteScenario')
 def deleteScenario():
     "Usuwanie scenariusza."
-    global scenarioList, storyList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     scenarioId = request.args.get('scenarioId')
+    scenarioList = loadList('scenarios')
 
     if not scenarioId or scenarioId not in scenarioList or not isGranted(element=scenarioList[scenarioId]):
         return redirect(url_for('menu'))
@@ -761,12 +737,12 @@ def deleteScenario():
     "Potwierdzenie usuwania."
     if request.args.get('confirmDelete'):
         "Zmiana danych historii na podstawie usuwaniego scenariusza."
-        for storyId in list(storyList):
+        storyList = loadList('stories')
+        for storyId in storyList:
             if storyList[storyId]['scenario'] == scenarioId:
                 storyList[storyId]['scenario'] = ''
                 saveToDatabase(storyId + '.json', {storyId: storyList[storyId]}, 'stories')
         userId = scenario['user']
-        del scenarioList[scenarioId]
         os.remove(PROJECT_ROOT + "/database/scenarios/" + scenarioId + ".json")
         flash('Usunięto scenariusz', 'delete')
         return redirect(url_for('userProfile', userId=userId))
@@ -779,14 +755,13 @@ def deleteScenario():
 @app.route('/editQuestion', methods=['GET', 'POST'])
 def editQuestion():
     "Edycja pytania."
-    global scenarioList, userList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     if checkScenarioSession():
         return checkScenarioSession()
-    scenario = scenarioList[session['scenarioId']]
+
+    scenario = loadFromDatabase('scenarios', session['scenarioId'] + '.json')[session['scenarioId']]
 
     questionId = request.args.get('questionId')
 
@@ -876,14 +851,13 @@ def editQuestion():
 @app.route('/deleteQuestion')
 def deleteQuestion():
     "Usuwanie pytania."
-    global scenarioList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     if checkScenarioSession():
         return checkScenarioSession()
-    scenario = scenarioList[session['scenarioId']]
+
+    scenario = loadFromDatabase('scenarios', session['scenarioId'] + '.json')[session['scenarioId']]
 
     questionId = request.args.get('questionId')
 
@@ -907,14 +881,13 @@ def deleteQuestion():
 @app.route('/deleteQuestionElement')
 def deleteQuestionElement():
     "Usuwanie elementu pytania."
-    global scenarioList
-
     if noUserInDatabase():
         return noUserInDatabase()
 
     if checkScenarioSession():
         return checkScenarioSession()
-    scenario = scenarioList[session['scenarioId']]
+
+    scenario = loadFromDatabase('scenarios', session['scenarioId'] + '.json')[session['scenarioId']]
 
     if not session.get('questionId') or session['questionId'] not in scenario['questions']:
         return redirect(url_for('menu'))
@@ -1014,14 +987,14 @@ def checkRequirements(element):
 
 def noUserInDatabase():
     "Funkcja sprawdzająca czy zalogowany użytkownik znajduje się w bazie."
-    global userList
+    userList = loadList('users')
     if session.get('userId') and session['userId'] not in userList:
         return redirect(url_for('logout'))
 
 
 def checkScenarioSession(storyRedirect=None):
     "Funkcja sprawdzająca poprawność zmiennej sesyjnej przechowującej id scenariusza."
-    global scenarioList
+    scenarioList = loadList('scenarios')
     if session.get('scenarioId') and session['scenarioId'] in scenarioList:
         if storyRedirect:
             if not scenarioList[session['scenarioId']]['publicView'] and not isGranted(element=scenarioList[session['scenarioId']]):
@@ -1037,6 +1010,7 @@ def checkScenarioSession(storyRedirect=None):
 
 def ownerExists(element, key):
     "Sprawdzenie czy element posiada właściciela."
+    userList = loadList('users')
     if element[key] in userList:
         return True
     else:
@@ -1045,13 +1019,13 @@ def ownerExists(element, key):
 
 def isGranted(element=None, userId=None, publicEdit=None):
     "Funkcja zwracająca rolę zalogowanego użytkownika."
-    global userList
     if session.get('userId'):
+        user = loadFromDatabase('users', session['userId'] + '.json')
         if userId:
             if userId == session['userId']:
                 return 'profileOwner'
         else:
-            if userList[session['userId']]['isAdmin']:
+            if user[session['userId']]['isAdmin']:
                 return 'admin'
             if element:
                 if element['user'] == session['userId']:
@@ -1059,6 +1033,23 @@ def isGranted(element=None, userId=None, publicEdit=None):
                 if publicEdit:
                     if element['publicView'] and element['publicEdit']:
                         return 'granted'
+
+
+def loadList(catalog):
+    "Funkcja tworząca listę użytkowników, scenariuszy lub historii."
+    itemList = {}
+    folder = os.listdir(PROJECT_ROOT + "/database/" + catalog + "/")
+    folder.sort(key=lambda x: int(x.split(".")[0]))
+    for file in folder:
+        itemList.update(loadFromDatabase(catalog, file))
+    return itemList
+
+
+def loadFromDatabase(catalog, file):
+    "Funkcja wczytująca dane z bazy."
+    with open(PROJECT_ROOT + "/database/" + catalog + "/" + file, "r") as read_file:
+        targetFile = json.load(read_file)
+    return targetFile
 
 
 def saveToDatabase(name, data, catalog):
