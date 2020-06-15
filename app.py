@@ -18,12 +18,6 @@ def menu():
     return render_template('menu.html', isAdmin=isGranted())
 
 
-@app.route('/gamebooks')
-def gamebooks():
-    "Podstrona o grach paragrafowych."
-    return render_template('gamebooks.html', isAdmin=isGranted())
-
-
 @app.route('/instructions')
 def instructions():
     "Podstrona z instukcjami do aplikacji."
