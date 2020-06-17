@@ -59,7 +59,7 @@
                 <h2>Scenariusze prywatne:</h2>
                 {% if userScenarioList['privateScenarios'] %}
                     {% for key in userScenarioList['privateScenarios'] %}
-                        <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['privateScenarios'][key]|truncate(40) }}</a></p>
+                        <p class="blockList"><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['privateScenarios'][key]|truncate(40) }}</a></p>
                         <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p>
                         <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a></p><br>
                     {% endfor %}
@@ -70,7 +70,7 @@
             <h2>Scenariusze publiczne:</h2>
             {% if userScenarioList['publicScenarios'] %}
                 {% for key in userScenarioList['publicScenarios'] %}
-                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicScenarios'][key] }}</a></p>
+                    <p class="blockList"><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicScenarios'][key] }}</a></p>
                         {% if isProfileOwner or isAdmin %}
                             <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p>
                             <p><a class="deleteButton" href="{{ url_for('deleteScenario', scenarioId=key) }}">Usuń scenariusz</a></p><br>
@@ -82,7 +82,7 @@
             <h2>Scenariusze publiczne z możliwością edycji przez wszystkich:</h2>
             {% if userScenarioList['publicEditScenarios'] %}
                 {% for key in userScenarioList['publicEditScenarios'] %}
-                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicEditScenarios'][key] }}</a></p>
+                    <p class="blockList"><a href="{{ url_for('start', scenarioId=key) }}">{{ userScenarioList['publicEditScenarios'][key] }}</a></p>
                         {% if session.get('userId') %}
                             <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p>
                             {% if isProfileOwner or isAdmin %}
@@ -101,7 +101,7 @@
                 <h2>Historie prywatne:</h2>
                 {% if userStoryList['privateStories'] %}
                     {% for key in userStoryList['privateStories'] %}
-                        <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['privateStories'][key] }}</a></p>
+                        <p class="blockList"><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['privateStories'][key] }}</a></p>
                         <p><a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń historię</a></p><br>
                     {% endfor %}
                 {% else %}
@@ -111,7 +111,7 @@
             <h2>Historie publiczne:</h2>
             {% if userStoryList['publicStories'] %}
                 {% for key in userStoryList['publicStories'] %}
-                    <p><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['publicStories'][key] }}</a></p>
+                    <p class="blockList"><a href="{{ url_for('userStory', storyId=key) }}">{{ userStoryList['publicStories'][key] }}</a></p>
                         {% if isProfileOwner or isAdmin %}
                             <p><a class="deleteButton" href="{{ url_for('userStory', storyId=key, deleteStory=True) }}">Usuń historię</a></p>
                         {% endif %}

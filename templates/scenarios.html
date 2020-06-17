@@ -27,7 +27,7 @@
                 {% endif %}
                 {% if publicScenarioList['privateScenarios'] %}
                     {% for key in publicScenarioList['privateScenarios'] %}
-                        <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['privateScenarios'][key] }}</a></p>
+                        <p class="blockList"><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['privateScenarios'][key] }}</a></p>
                     {% endfor %}
                 {% else %}
                     <h3>Brak scenariuszy</h3>
@@ -36,7 +36,7 @@
             <h2>Scenariusze publiczne:</h2>
             {% if publicScenarioList['publicScenarios'] %}
                 {% for key in publicScenarioList['publicScenarios'] %}
-                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicScenarios'][key] }}</a></p>
+                    <p class="blockList"><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicScenarios'][key] }}</a></p>
                 {% endfor %}
             {% else %}
                 <h3>Brak scenariuszy</h3>
@@ -44,7 +44,7 @@
             <h2>Scenariusze publiczne z możliwością edycji przez wszystkich:</h2>
             {% if publicScenarioList['publicEditScenarios'] %}
                 {% for key in publicScenarioList['publicEditScenarios'] %}
-                    <p><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicEditScenarios'][key] }}</a></p>
+                    <p class="blockList"><a href="{{ url_for('start', scenarioId=key) }}">{{ publicScenarioList['publicEditScenarios'][key] }}</a></p>
                     {% if session.get('userId') %}
                         <p><a href="{{ url_for('editScenario', scenarioId=key) }}">Edytuj scenariusz</a></p><br>
                     {% endif %}
