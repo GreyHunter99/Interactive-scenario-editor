@@ -542,7 +542,7 @@ def currentStory():
                 if session['scenarioPath'][-1].split("-")[0] in scenarioList[session['scenarioId']]['questions']:
                     answers = dict(scenarioList[session['scenarioId']]['questions'][session['scenarioPath'][-1].split("-")[0]]['answers'])
                     for answerId in list(answers):
-                        if not checkRequirements(answers[answerId]):
+                        if not answers[answerId]['questionId'] or not checkRequirements(answers[answerId]):
                             del answers[answerId]
             if not answers:
                 storyEnd = True
