@@ -240,7 +240,7 @@ def deleteUser():
         "Potwierdzenie usunięcia."
         if request.args.get('confirmDelete') and request.method == 'POST' and request.form.get('deleteUserScenarios') and request.form.get('deleteUserStories'):
             userIsAdmin = isGranted()
-            "Usunięcie lub zmiana danych scenariuszy usuwaniego użytkownika."
+            "Usunięcie lub zmiana danych scenariuszy usuwanego użytkownika."
             scenarioList = loadList('scenarios')
             storyList = loadList('stories')
             for scenarioId in scenarioList:
@@ -255,7 +255,7 @@ def deleteUser():
                     else:
                         scenarioList[scenarioId]['user'] = ''
                         saveToDatabase(scenarioId + '.json', {scenarioId: scenarioList[scenarioId]}, 'scenarios')
-            "Usunięcie lub zmiana danych historii usuwaniego użytkownika."
+            "Usunięcie lub zmiana danych historii usuwanego użytkownika."
             for storyId in storyList:
                 if storyList[storyId]['user'] == userId:
                     if request.form['deleteUserStories'] == 'Yes':
