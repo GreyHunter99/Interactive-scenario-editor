@@ -1133,7 +1133,6 @@ def saveToDatabase(name, data, catalog):
     "Funkcja zapisująca dane do bazy."
     with open(PROJECT_ROOT + "/database/" + catalog + "/" + name, "w") as write_file:
         json.dump(data, write_file, indent=4)
-    #print(oct(os.stat(PROJECT_ROOT + "/database/" + catalog + "/" + name).st_mode)[-3:])
 
 
 if __name__ == '__main__':
