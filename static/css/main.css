@@ -143,6 +143,7 @@ select {
     border: 4px solid royalblue;
     text-overflow: ellipsis;
     border-radius: 6px;
+    font-family: "Georgia", serif;
 }
 
 input[type=text], input[type=password], textarea {

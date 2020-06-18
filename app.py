@@ -457,7 +457,7 @@ def start():
 
 @app.route('/question')
 def question():
-    "Pytanie podczas przechodzenia scenariusza."
+    "Widok pytania podczas przechodzenia scenariusza."
     try:
         if noUserInDatabase():
             return noUserInDatabase()
@@ -802,7 +802,7 @@ def deleteScenario():
 
         "Potwierdzenie usuwania."
         if request.args.get('confirmDelete'):
-            "Zmiana danych historii na podstawie usuwaniego scenariusza."
+            "Zmiana danych historii na podstawie usuwanego scenariusza."
             storyList = loadList('stories')
             for storyId in storyList:
                 if storyList[storyId]['scenario'] == scenarioId:
