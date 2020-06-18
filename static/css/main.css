@@ -75,7 +75,7 @@ a:hover {
     background-color: lemonchiffon;
 }
 
-.menuContent{
+.menuContent {
     display: block;
     padding-bottom: 2%;
     padding-top: 2%;
@@ -197,7 +197,7 @@ textarea {
     color: crimson;
 }
 
-@media screen and (max-width:1000px) {
+@media screen and (max-width: 1000px) {
     .menu {
         width: 100%;
         position: relative;
@@ -209,7 +209,7 @@ textarea {
         margin: 0;
     }
 
-    .menuContent{
+    .menuContent {
         display: none;
     }
 

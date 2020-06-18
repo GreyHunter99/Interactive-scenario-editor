@@ -480,7 +480,7 @@ def question():
                         if checkRequirements(answer):
                             scenarioPath = session['scenarioPath']
                             scenarioPath.append(questionId)
-                            scenarioPath[-2] += "-"+answerId
+                            scenarioPath[-2] += "-" + answerId
                             session['scenarioPath'] = scenarioPath
                             story = session['story']
                             story.append({'question': scenario['questions'][questionId]['text']})
