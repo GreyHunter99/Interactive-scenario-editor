@@ -12,7 +12,7 @@
             "4": "Miasto",
             "5": "Wie\u015b"
         },
-        "noKeyWordsMessage": "Nie znaleziono takiego miejsca. (s\u0142owa kluczowe: G\u00f3ry, Morze, Ocean, Jezioro, Miasto, Wie\u015b)",
+        "noKeyWordsMessage": "Nie znaleziono takiego miejsca. Spr\u00f3buj jeszcze raz. (s\u0142owa kluczowe: G\u00f3ry, Morze, Ocean, Jezioro, Miasto, Wie\u015b)",
         "firstQuestion": "0",
         "goBack": true,
         "publicView": true,
