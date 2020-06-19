@@ -731,13 +731,13 @@ def editScenario():
                 formError = True
             else:
                 scenario['name'] = request.form['name']
-            if len(request.form['startingQuestion']) < 1 or len(request.form['startingQuestion']) > 100:
-                flash('Pytanie startowe musi mieć od 1 do 100 znaków', 'error')
+            if len(request.form['startingQuestion']) < 1 or len(request.form['startingQuestion']) > 200:
+                flash('Pytanie startowe musi mieć od 1 do 200 znaków', 'error')
                 formError = True
             else:
                 scenario['startingQuestion'] = request.form['startingQuestion']
-            if len(request.form['noKeyWordsMessage']) < 1 or len(request.form['noKeyWordsMessage']) > 100:
-                flash('Komunikat w przypadku braku słów kluczowych musi mieć od 1 do 100 znaków', 'error')
+            if len(request.form['noKeyWordsMessage']) < 1 or len(request.form['noKeyWordsMessage']) > 200:
+                flash('Komunikat w przypadku braku słów kluczowych musi mieć od 1 do 200 znaków', 'error')
                 formError = True
             else:
                 scenario['noKeyWordsMessage'] = request.form['noKeyWordsMessage']
