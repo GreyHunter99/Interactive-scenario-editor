@@ -16,7 +16,7 @@
         "firstQuestion": "0",
         "goBack": true,
         "publicView": true,
-        "publicEdit": false,
+        "publicEdit": true,
         "questions": {
             "0": {
                 "text": "Jaki jest rodzaj terenu w miejscu docelowym?",

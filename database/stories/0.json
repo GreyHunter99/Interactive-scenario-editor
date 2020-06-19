@@ -6,7 +6,7 @@
         "user": "1",
         "owner": "1",
         "scenarioName": "Scenariusz Podr\u00f3\u017cy",
-        "public": false,
+        "public": true,
         "startingQuestion": "Jaki jest cel podr\u00f3\u017cy?",
         "startingAnswer": "morze",
         "story": [
