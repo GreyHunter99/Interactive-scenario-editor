@@ -13,7 +13,7 @@
             <h2>USUWANIE ELEMENTU:</h2>
             {% if elementData['name'] == 'user' %}
                 <h3>Użytkownik: {{ elementData['username'] }}</h3>
-                <h3>UWAGA!<br>Scenariusze i historie użytkownika NIE zostaną usunięte automatycznie!<br>
+                <h3 class="error">UWAGA!<br>Scenariusze i historie użytkownika NIE zostaną usunięte automatycznie!<br>
                     Jeśli ich nie usuniesz pozostaną one w bazie jako scenariusze i historie bez twórcy.</h3>
                 <form action="{{ url_for('deleteUser', confirmDelete=True, userId=elementData['id']) }}" method="post">
                     <h3>Czy chcesz również usunąć wszystkie SCENARIUSZE użytkownika?</h3>
